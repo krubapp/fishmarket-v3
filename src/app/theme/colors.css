@@ -1,0 +1,185 @@
+/**
+ * Theme: Colors
+ * Source: Figma variable collection "Colors" (Mode 1).
+ * RGB 0–1 values converted to hex. Use via Tailwind (e.g. bg-lime-500) or var(--color-*).
+ */
+
+:root {
+  /* Foundations */
+  --color-foundations-white: #ffffff;
+  --color-foundations-black: #000000;
+
+  /* Lime */
+  --color-lime-50: #e5fde1;
+  --color-lime-100: #befbb1;
+  --color-lime-200: #8af26a;
+  --color-lime-300: #7ddd60;
+  --color-lime-400: #72ca58;
+  --color-lime-500: #66b64e;
+  --color-lime-600: #50903c;
+  --color-lime-700: #396a2a;
+  --color-lime-800: #25481a;
+  --color-lime-900: #11270b;
+  --color-lime-950: #091905;
+
+  /* Grey */
+  --color-grey-50: #f1f4f0;
+  --color-grey-100: #e3eae1;
+  --color-grey-200: #cbd4c9;
+  --color-grey-300: #b6beb3;
+  --color-grey-400: #a1a89f;
+  --color-grey-500: #8b9189;
+  --color-grey-600: #6e736d;
+  --color-grey-700: #525651;
+  --color-grey-800: #373a36;
+  --color-grey-900: #1e201e;
+  --color-grey-950: #121412;
+
+  /* Yellow */
+  --color-yellow-50: #fff8f1;
+  --color-yellow-100: #fff2e2;
+  --color-yellow-200: #fee4c1;
+  --color-yellow-300: #fed79b;
+  --color-yellow-400: #fecd76;
+  --color-yellow-500: #fbbf25;
+  --color-yellow-600: #c69619;
+  --color-yellow-700: #906c0f;
+  --color-yellow-800: #604708;
+  --color-yellow-900: #352502;
+  --color-yellow-950: #201601;
+
+  /* Green */
+  --color-green-50: #bdffdf;
+  --color-green-100: #6cffc2;
+  --color-green-200: #09e8a4;
+  --color-green-300: #0acc90;
+  --color-green-400: #0ab17c;
+  --color-green-500: #079669;
+  --color-green-600: #047753;
+  --color-green-700: #03593d;
+  --color-green-800: #023d29;
+  --color-green-900: #002316;
+  --color-green-950: #00150b;
+
+  /* Red */
+  --color-red-50: #ffeded;
+  --color-red-100: #fadada;
+  --color-red-200: #feb3b3;
+  --color-red-300: #fd8585;
+  --color-red-400: #fd4f4f;
+  --color-red-500: #e90f0f;
+  --color-red-600: #ba0a09;
+  --color-red-700: #8e0505;
+  --color-red-800: #660202;
+  --color-red-900: #400101;
+  --color-red-950: #2c0000;
+
+  /* Slate */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cad5e2;
+  --color-slate-400: #99a1af;
+  --color-slate-500: #6a7282;
+  --color-slate-600: #4a5565;
+  --color-slate-700: #364153;
+  --color-slate-800: #1e2939;
+  --color-slate-900: #101828;
+  --color-slate-950: #030712;
+
+  /* Blue */
+  --color-blue-50: #ebf5ff;
+  --color-blue-100: #dcedff;
+  --color-blue-200: #b6dbff;
+  --color-blue-300: #82c8fe;
+  --color-blue-400: #39b8fe;
+  --color-blue-500: #0da5e9;
+  --color-blue-600: #0981b8;
+  --color-blue-700: #056589;
+  --color-blue-800: #024260;
+  --color-blue-900: #012437;
+  --color-blue-950: #001523;
+}
+
+/* Expose palette to Tailwind (bg-*, text-*, border-*, etc.) */
+@theme inline {
+  --color-foundations-white: var(--color-foundations-white);
+  --color-foundations-black: var(--color-foundations-black);
+  --color-lime-50: var(--color-lime-50);
+  --color-lime-100: var(--color-lime-100);
+  --color-lime-200: var(--color-lime-200);
+  --color-lime-300: var(--color-lime-300);
+  --color-lime-400: var(--color-lime-400);
+  --color-lime-500: var(--color-lime-500);
+  --color-lime-600: var(--color-lime-600);
+  --color-lime-700: var(--color-lime-700);
+  --color-lime-800: var(--color-lime-800);
+  --color-lime-900: var(--color-lime-900);
+  --color-lime-950: var(--color-lime-950);
+  --color-grey-50: var(--color-grey-50);
+  --color-grey-100: var(--color-grey-100);
+  --color-grey-200: var(--color-grey-200);
+  --color-grey-300: var(--color-grey-300);
+  --color-grey-400: var(--color-grey-400);
+  --color-grey-500: var(--color-grey-500);
+  --color-grey-600: var(--color-grey-600);
+  --color-grey-700: var(--color-grey-700);
+  --color-grey-800: var(--color-grey-800);
+  --color-grey-900: var(--color-grey-900);
+  --color-grey-950: var(--color-grey-950);
+  --color-yellow-50: var(--color-yellow-50);
+  --color-yellow-100: var(--color-yellow-100);
+  --color-yellow-200: var(--color-yellow-200);
+  --color-yellow-300: var(--color-yellow-300);
+  --color-yellow-400: var(--color-yellow-400);
+  --color-yellow-500: var(--color-yellow-500);
+  --color-yellow-600: var(--color-yellow-600);
+  --color-yellow-700: var(--color-yellow-700);
+  --color-yellow-800: var(--color-yellow-800);
+  --color-yellow-900: var(--color-yellow-900);
+  --color-yellow-950: var(--color-yellow-950);
+  --color-green-50: var(--color-green-50);
+  --color-green-100: var(--color-green-100);
+  --color-green-200: var(--color-green-200);
+  --color-green-300: var(--color-green-300);
+  --color-green-400: var(--color-green-400);
+  --color-green-500: var(--color-green-500);
+  --color-green-600: var(--color-green-600);
+  --color-green-700: var(--color-green-700);
+  --color-green-800: var(--color-green-800);
+  --color-green-900: var(--color-green-900);
+  --color-green-950: var(--color-green-950);
+  --color-red-50: var(--color-red-50);
+  --color-red-100: var(--color-red-100);
+  --color-red-200: var(--color-red-200);
+  --color-red-300: var(--color-red-300);
+  --color-red-400: var(--color-red-400);
+  --color-red-500: var(--color-red-500);
+  --color-red-600: var(--color-red-600);
+  --color-red-700: var(--color-red-700);
+  --color-red-800: var(--color-red-800);
+  --color-red-900: var(--color-red-900);
+  --color-red-950: var(--color-red-950);
+  --color-slate-50: var(--color-slate-50);
+  --color-slate-100: var(--color-slate-100);
+  --color-slate-200: var(--color-slate-200);
+  --color-slate-300: var(--color-slate-300);
+  --color-slate-400: var(--color-slate-400);
+  --color-slate-500: var(--color-slate-500);
+  --color-slate-600: var(--color-slate-600);
+  --color-slate-700: var(--color-slate-700);
+  --color-slate-800: var(--color-slate-800);
+  --color-slate-900: var(--color-slate-900);
+  --color-slate-950: var(--color-slate-950);
+  --color-blue-50: var(--color-blue-50);
+  --color-blue-100: var(--color-blue-100);
+  --color-blue-200: var(--color-blue-200);
+  --color-blue-300: var(--color-blue-300);
+  --color-blue-400: var(--color-blue-400);
+  --color-blue-500: var(--color-blue-500);
+  --color-blue-600: var(--color-blue-600);
+  --color-blue-700: var(--color-blue-700);
+  --color-blue-800: var(--color-blue-800);
+  --color-blue-900: var(--color-blue-900);
+  --color-blue-950: var(--color-blue-950);
+}

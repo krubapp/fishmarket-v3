@@ -1,0 +1,98 @@
+/**
+ * Theme: Responsive (typography + layout spacing)
+ * Source: Figma variable collection "Reponsive" (Mode 1).
+ * Typography: font size, line height, paragraph spacing.
+ * Spacing: layout scale (xxxs → xxl). Use for padding, margin, gap.
+ * Names fix Figma typos: paragarph → paragraph, "line  height" → line-height.
+ */
+
+:root {
+  /* ─── Typography: font size (px) ─── */
+  --font-size-hero: 96px;
+  --font-size-h1: 72px;
+  --font-size-h2: 60px;
+  --font-size-h3: 48px;
+  --font-size-h4: 36px;
+  --font-size-h5: 30px;
+  --font-size-h6: 24px;
+  --font-size-paragraph-xl: 24px;
+  --font-size-paragraph-lg: 20px;
+  --font-size-paragraph-md: 16px;
+  --font-size-paragraph-sm: 14px;
+  --font-size-caption: 12px;
+
+  /* ─── Typography: line height (px) ─── */
+  --line-height-hero: 112px;
+  --line-height-h1: 88px;
+  --line-height-h2: 72px;
+  --line-height-h3: 64px;
+  --line-height-h4: 48px;
+  --line-height-h5: 40px;
+  --line-height-h6: 32px;
+  --line-height-paragraph-xl: 32px;
+  --line-height-paragraph-lg: 28px;
+  --line-height-paragraph-md: 24px;
+  --line-height-paragraph-sm: 20px;
+  --line-height-caption: 16px;
+
+  /* ─── Typography: paragraph spacing (px) ─── */
+  --paragraph-spacing-hero: 48px;
+  --paragraph-spacing-h1: 40px;
+  --paragraph-spacing-h2: 40px;
+  --paragraph-spacing-h3: 32px;
+  --paragraph-spacing-h4: 24px;
+  --paragraph-spacing-h5: 20px;
+  --paragraph-spacing-h6: 60px;
+  --paragraph-spacing-paragraph-xl: 16px;
+  --paragraph-spacing-paragraph-lg: 16px;
+  --paragraph-spacing-paragraph-md: 12px;
+  --paragraph-spacing-paragraph-sm: 8px;
+  --paragraph-spacing-caption: 8px;
+
+  /* ─── Spacing: layout (px) ─── */
+  --spacing-layout-xxxs: 4px;
+  --spacing-layout-xsm: 8px;
+  --spacing-layout-sm: 12px;
+  --spacing-layout-md: 16px;
+  --spacing-layout-lg: 32px;
+  --spacing-layout-xl: 64px;
+  --spacing-layout-xxl: 256px;
+}
+
+/* Expose to Tailwind */
+@theme inline {
+  /* Font size → text-* */
+  --text-hero: var(--font-size-hero);
+  --text-h1: var(--font-size-h1);
+  --text-h2: var(--font-size-h2);
+  --text-h3: var(--font-size-h3);
+  --text-h4: var(--font-size-h4);
+  --text-h5: var(--font-size-h5);
+  --text-h6: var(--font-size-h6);
+  --text-paragraph-xl: var(--font-size-paragraph-xl);
+  --text-paragraph-lg: var(--font-size-paragraph-lg);
+  --text-paragraph-md: var(--font-size-paragraph-md);
+  --text-paragraph-sm: var(--font-size-paragraph-sm);
+  --text-caption: var(--font-size-caption);
+  /* Line height → leading-* */
+  --lead-hero: var(--line-height-hero);
+  --lead-h1: var(--line-height-h1);
+  --lead-h2: var(--line-height-h2);
+  --lead-h3: var(--line-height-h3);
+  --lead-h4: var(--line-height-h4);
+  --lead-h5: var(--line-height-h5);
+  --lead-h6: var(--line-height-h6);
+  --lead-paragraph-xl: var(--line-height-paragraph-xl);
+  --lead-paragraph-lg: var(--line-height-paragraph-lg);
+  --lead-paragraph-md: var(--line-height-paragraph-md);
+  --lead-paragraph-sm: var(--line-height-paragraph-sm);
+  --lead-caption: var(--line-height-caption);
+  /* Layout spacing → p-*, m-*, gap-*, etc. (spacing-* scale) */
+  --spacing-layout-xxxs: var(--spacing-layout-xxxs);
+  --spacing-layout-xsm: var(--spacing-layout-xsm);
+  --spacing-layout-sm: var(--spacing-layout-sm);
+  --spacing-layout-md: var(--spacing-layout-md);
+  --spacing-layout-lg: var(--spacing-layout-lg);
+  --spacing-layout-xl: var(--spacing-layout-xl);
+  --spacing-layout-xxl: var(--spacing-layout-xxl);
+}

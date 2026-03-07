@@ -1,4 +1,9 @@
 @import "tailwindcss";
+@import "./theme/colors.css";
+@import "./theme/aliases.css";
+@import "./theme/borders.css";
+@import "./theme/mapped.css";
+@import "./theme/responsive.css";
 
 :root {
   --background: #ffffff;

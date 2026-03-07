@@ -1,0 +1,45 @@
+/**
+ * Theme: Borders (width + radius)
+ * Source: Figma variable collection "Alias" (Mode 1).
+ * border-width → scale/25,50,100,200; border-radius → scale/50–700 + round.
+ */
+
+:root {
+  /* ─── Border width ─── */
+  --border-width-xs: 1px;
+  --border-width-sm: 2px;
+  --border-width-md: 4px;
+  --border-width-lg: 8px;
+
+  /* ─── Border radius ─── */
+  --radius-0: 0;
+  --radius-50: 2px;
+  --radius-100: 4px;
+  --radius-200: 8px;
+  --radius-300: 12px;
+  --radius-400: 16px;
+  --radius-500: 20px;
+  --radius-600: 24px;
+  --radius-700: 24px;
+  --radius-800: 24px;
+  --radius-round: 1024px;
+}
+
+/* Expose to Tailwind (border, rounded-*) */
+@theme inline {
+  --border-width-xs: var(--border-width-xs);
+  --border-width-sm: var(--border-width-sm);
+  --border-width-md: var(--border-width-md);
+  --border-width-lg: var(--border-width-lg);
+  --radius-0: var(--radius-0);
+  --radius-50: var(--radius-50);
+  --radius-100: var(--radius-100);
+  --radius-200: var(--radius-200);
+  --radius-300: var(--radius-300);
+  --radius-400: var(--radius-400);
+  --radius-500: var(--radius-500);
+  --radius-600: var(--radius-600);
+  --radius-700: var(--radius-700);
+  --radius-800: var(--radius-800);
+  --radius-round: var(--radius-round);
+}
