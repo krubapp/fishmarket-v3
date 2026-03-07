@@ -3,19 +3,14 @@ import type { MaterialSymbol } from "material-symbols";
 type IconStyle = "outlined" | "rounded" | "sharp";
 
 type IconProps = {
-  /** Icon name (e.g. "home", "settings"). Browse at https://fonts.google.com/icons */
+  /** Icon name; see https://fonts.google.com/icons */
   name: MaterialSymbol;
-  /** Style: outlined (default), rounded, or sharp */
   style?: IconStyle;
-  /** Size in pixels (default 24) */
   size?: number;
-  /** Fill: 0 = outline, 1 = filled */
+  /** 0 = outline, 1 = filled */
   fill?: 0 | 1;
-  /** Font weight 100–700 */
   weight?: 100 | 200 | 300 | 400 | 500 | 600 | 700;
-  /** Grade -50 to 200 (affects thickness) */
   grade?: number;
-  /** Optical size in px (affects stroke weight) */
   opticalSize?: number;
   className?: string;
 };

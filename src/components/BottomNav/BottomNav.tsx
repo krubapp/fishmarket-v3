@@ -22,12 +22,16 @@ export function BottomNav({
   className = "",
 }: BottomNavProps) {
   return (
-    <nav
-      className={`flex flex-row items-stretch justify-center gap-0 rounded-[5px] bg-white px-6 py-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.13)] ${className}`}
-      style={{ minHeight: 80 }}
-      role="navigation"
-      aria-label="Bottom navigation"
+    <div
+      className={`fixed bottom-0 left-0 right-0 z-50 flex justify-center px-5 pt-0 ${className}`}
+      style={{ paddingBottom: "max(20px, env(safe-area-inset-bottom))" }}
     >
+      <nav
+        className="flex w-full max-w-[410px] flex-row items-stretch justify-center gap-0 rounded-full border border-grey-200 bg-white px-6 py-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.13)]"
+        style={{ minHeight: 80 }}
+        role="navigation"
+        aria-label="Bottom navigation"
+      >
       {BOTTOM_NAV_ITEMS.map(({ id, label }) => {
         const isActive = activeItem === id;
         return (
@@ -61,6 +65,7 @@ export function BottomNav({
           </button>
         );
       })}
-    </nav>
+      </nav>
+    </div>
   );
 }

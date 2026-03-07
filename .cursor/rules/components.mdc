@@ -1,0 +1,160 @@
+---
+description: Primitive UI components — location, API, and usage
+alwaysApply: true
+---
+
+# Fishmarket v3 – Components
+
+## Convention
+
+- **Location**: `src/components/<ComponentName>/` with related files (e.g. `ComponentName.tsx`, `types.ts`, `index.ts`).
+- **Import**: Prefer the barrel: `import { ComponentName } from "@/components/ComponentName";`
+- **Source**: Primitives are implemented from Figma (Roy design system); keep design tokens in `src/app/theme/`.
+- **Showcase**: After creating a new primitive, add it to `src/app/page.tsx` so it appears on the home page for review.
+
+---
+
+## BottomNav
+
+**Path**: `@/components/BottomNav`  
+**Figma**: Roy design system → bottom nav (floating bar, pill shape, bordered).
+
+Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: Home, Shop, Create, Map, Profile.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `activeItem` | `BottomNavItemId` | Yes | Current tab: `"home"` \| `"shop"` \| `"create"` \| `"map"` \| `"profile"` |
+| `onItemChange` | `(item: BottomNavItemId) => void` | No | Called when user selects a tab |
+| `className` | `string` | No | Applied to the outer wrapper (fixed container) |
+
+**Exports**: `BottomNav`, `BOTTOM_NAV_ITEMS`, `BottomNavItemId`, `BottomNavProps`.
+
+**Example**
+
+```tsx
+import { BottomNav } from "@/components/BottomNav";
+
+<BottomNav
+  activeItem={activeTab}
+  onItemChange={(id) => setActiveTab(id)}
+/>
+```
+
+---
+
+## RootTopBar
+
+**Path**: `@/components/RootTopBar`  
+**Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260).
+
+Horizontal bar: avatar + title on the left; Add product, Feed, and Search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; action buttons 40×40.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | Yes | Display name or screen title |
+| `avatarSrc` | `string \| null` | No | Avatar image URL; omit for placeholder |
+| `onAddProduct` | `() => void` | No | Called when Add product is pressed |
+| `onFeed` | `() => void` | No | Called when Feed is pressed |
+| `onSearch` | `() => void` | No | Called when Search is pressed |
+| `className` | `string` | No | Applied to the root `<header>` |
+
+**Exports**: `RootTopBar`, `RootTopBarProps`.
+
+**Example**
+
+```tsx
+import { RootTopBar } from "@/components/RootTopBar";
+
+<RootTopBar
+  title="TheLifeoftoy"
+  avatarSrc={user.avatarUrl}
+  onAddProduct={() => openAddProduct()}
+  onFeed={() => goToFeed()}
+  onSearch={() => openSearch()}
+/>
+```
+
+---
+
+## ContextTopBar
+
+**Path**: `@/components/ContextTopBar`  
+**Figma**: Roy design system → top nav bar, types=Shopping (node 496:658).
+
+Contextual top bar: back button + section label on the left; center title; filter and search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Back label: medium/paragraph-sm (14px, #101828). Title: semi/body-md (16px, #121412). Back and action icons 24px and 20px in 40×40 hit areas.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `backLabel` | `string` | Yes | Label next to back (e.g. "Section", "Categories") |
+| `title` | `string` | Yes | Center title (e.g. "Perch") |
+| `onBack` | `() => void` | No | Called when back is pressed |
+| `onFilter` | `() => void` | No | Called when filter is pressed |
+| `onSearch` | `() => void` | No | Called when search is pressed |
+| `className` | `string` | No | Applied to the root `<header>` |
+
+**Exports**: `ContextTopBar`, `ContextTopBarProps`.
+
+**Example**
+
+```tsx
+import { ContextTopBar } from "@/components/ContextTopBar";
+
+<ContextTopBar
+  backLabel="Section"
+  title="Perch"
+  onBack={() => router.back()}
+  onFilter={() => openFilters()}
+  onSearch={() => openSearch()}
+/>
+```
+
+---
+
+## SearchBar
+
+**Path**: `@/components/SearchBar`  
+**Figma**: Roy design system → Search-bar (node 496:4771), results panel (node 496:4769 Order-cards).
+
+Single row: text input with leading search icon and optional trailing clear (when there is text), plus Cancel button. When `results` is provided and non-empty, a **floating results panel** appears below: white background, "Top Suggestions" heading (semi/paragraph-sm, grey-500), list of rows (title = medium/body-md grey-800, 16px avatar + seller name = paragraph-sm grey-500). Bar padding 16px 24px; input height 40px, border-radius 8px. Panel padding 24px, gap 24px between heading and list and between rows.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `string` | No | Controlled value |
+| `defaultValue` | `string` | No | Default when uncontrolled |
+| `placeholder` | `string` | No | Placeholder (default "Search") |
+| `onValueChange` | `(value: string) => void` | No | Called when input changes |
+| `onSubmit` | `(value: string) => void` | No | Called on form submit (e.g. Enter) |
+| `onCancel` | `() => void` | No | Called when Cancel is pressed |
+| `showCancel` | `boolean` | No | Show Cancel button (default true) |
+| `results` | `SearchBarResult[]` | No | Results to show in floating panel below |
+| `onResultSelect` | `(result: SearchBarResult) => void` | No | Called when a result row is selected |
+| `className` | `string` | No | Applied to the root wrapper |
+
+**Exports**: `SearchBar`, `SearchBarProps`, `SearchBarResult`.
+
+**Example**
+
+```tsx
+import { SearchBar } from "@/components/SearchBar";
+
+<SearchBar
+  placeholder="Search"
+  onValueChange={(v) => setQuery(v)}
+  onSubmit={(v) => doSearch(v)}
+  onCancel={() => closeSearch()}
+  results={searchResults}
+  onResultSelect={(r) => goToResult(r)}
+/>
+```
+
+---
+
+When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

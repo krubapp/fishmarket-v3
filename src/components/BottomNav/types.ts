@@ -5,11 +5,8 @@
 export type BottomNavItemId = "home" | "shop" | "create" | "map" | "profile";
 
 export type BottomNavProps = {
-  /** Which item is currently active (selected). */
   activeItem: BottomNavItemId;
-  /** Called when an item is pressed. */
   onItemChange?: (item: BottomNavItemId) => void;
-  /** Optional class for the root nav element. */
   className?: string;
 };
 

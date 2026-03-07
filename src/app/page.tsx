@@ -1,15 +1,56 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BottomNav } from "@/components/BottomNav";
 import type { BottomNavItemId } from "@/components/BottomNav";
+import { ContextTopBar } from "@/components/ContextTopBar";
+import { RootTopBar } from "@/components/RootTopBar";
+import { SearchBar } from "@/components/SearchBar";
+import type { SearchBarResult } from "@/components/SearchBar";
+
+const SAMPLE_SEARCH_RESULTS: SearchBarResult[] = [
+  { id: "1", title: "Slayer 10 pack 3 Inch", sellerName: "LimeStoneSoft..." },
+  { id: "2", title: "Barracuda 3.8\" Sunset Orange", sellerName: "LimeStoneSoft..." },
+  { id: "3", title: "Hammer Craw 4\" Watermelon Red", sellerName: "LimeStoneSoft..." },
+  { id: "4", title: "Rattlesnake 5\" Midnight Black", sellerName: "LimeStoneSoft..." },
+  { id: "5", title: "Cobra Tube 6\" Emerald Green", sellerName: "LimeStoneSoft..." },
+];
 
 export default function Home() {
   const [activeItem, setActiveItem] = useState<BottomNavItemId>("home");
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchResults = useMemo(
+    () => (searchQuery.trim() ? SAMPLE_SEARCH_RESULTS : []),
+    [searchQuery]
+  );
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 font-sans dark:bg-black">
+      <div className="flex w-full max-w-3xl flex-col self-center bg-white dark:bg-black">
+        <RootTopBar
+          title="TheLifeoftoy"
+          avatarSrc={null}
+          onAddProduct={() => {}}
+          onFeed={() => {}}
+          onSearch={() => {}}
+        />
+        <ContextTopBar
+          backLabel="Section"
+          title="Perch"
+          onBack={() => {}}
+          onFilter={() => {}}
+          onSearch={() => {}}
+        />
+        <SearchBar
+          value={searchQuery}
+          placeholder="Search"
+          onValueChange={setSearchQuery}
+          onCancel={() => setSearchQuery("")}
+          results={searchResults}
+          onResultSelect={(r) => setSearchQuery(r.title)}
+        />
+      </div>
       <main className="flex min-h-0 flex-1 w-full max-w-3xl flex-col items-center justify-between self-center py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert"
