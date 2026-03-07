@@ -7,6 +7,8 @@ import { ContextTopBar } from "@/components/ContextTopBar";
 import { RootTopBar } from "@/components/RootTopBar";
 import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
+import { BorderLine } from "@/components/BorderLine";
+import { Button } from "@/components/Button";
 import { ColorBlock } from "@/components/ColorBlock";
 import { IconButton } from "@/components/IconButton";
 import { ImageBlock } from "@/components/ImageBlock";
@@ -17,8 +19,10 @@ import { MediaDropzone } from "@/components/MediaDropzone";
 import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { ProductListing } from "@/components/ProductListing";
 import { SearchBar } from "@/components/SearchBar";
+import { SectionLine } from "@/components/SectionLine";
 import { Tabs, TabsBox } from "@/components/Tabs";
 import type { TabItem, TabsBoxItem } from "@/components/Tabs";
+import { VariantOptionButton } from "@/components/VariantOptionButton";
 import type { SearchBarResult } from "@/components/SearchBar";
 
 const SAMPLE_SEARCH_RESULTS: SearchBarResult[] = [
@@ -53,7 +57,7 @@ export default function Home() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100 font-sans dark:bg-zinc-500 px-1">
+    <div className="flex min-h-screen flex-col bg-gray-100 font-sans dark:bg-zinc-500 px-1 pb-50">
       <div className="flex w-full max-w-3xl flex-col self-center">
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">RootTopBar</span>
@@ -182,6 +186,14 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">VariantOptionButton</span>
+          <div className="flex flex-wrap items-end gap-6">
+            <VariantOptionButton onClick={() => {}}>large</VariantOptionButton>
+            <VariantOptionButton selected>large</VariantOptionButton>
+            <VariantOptionButton>medium</VariantOptionButton>
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ProductListing</span>
           <div className="flex flex-wrap items-start gap-6">
             <ProductListing
@@ -269,8 +281,30 @@ export default function Home() {
             <Badge variant="success">Success</Badge>
           </div>
         </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Button</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button size="mini" variant="subtle" leadingIcon="school" onClick={() => {}}>Sign Up</Button>
+            <Button size="extraSmall" onClick={() => {}}>Sign Up</Button>
+            <Button size="small" variant="subtle" onClick={() => {}}>Sign Up</Button>
+            <Button size="medium" variant="outline" trailingIcon="chevron_right" onClick={() => {}}>Sign Up</Button>
+            <Button size="large" onClick={() => {}}>Sign Up</Button>
+            <Button variant="default" disabled>Disabled</Button>
+            <Button size="mini" variant="subtle" leadingIcon="school" active>Active</Button>
+          </div>
+        </section>
+        <section className="flex flex-col gap-4">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">BorderLine & SectionLine</span>
+          <div className="w-full max-w-md rounded bg-white p-4">
+            <p className="text-slate-700 text-sm">Content above</p>
+            <BorderLine className="my-3" />
+            <p className="text-slate-700 text-sm">Content between border and section line</p>
+            <SectionLine className="my-3" />
+            <p className="text-slate-700 text-sm">Content below</p>
+          </div>
+        </section>
       </main>
-      <div className="flex w-full max-w-3xl flex-col self-center">
+      <div className="flex w-full max-w-3xl flex-col self-center fixed bottom-0">
         <section className="flex flex-col">
           <span className="text-center font-medium text-white text-[length:var(--font-size-paragraph-md)]">BottomNav</span>
           <BottomNav

@@ -157,6 +157,32 @@ import { SearchBar } from "@/components/SearchBar";
 
 ---
 
+## SectionLine
+
+**Path**: `@/components/SectionLine`  
+**Figma**: Roy design system → Section-lines (node 410:9145).
+
+Horizontal section divider: 8px height, full width, slate-100. Use to separate major sections.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `className` | `string` | No | Root class |
+
+**Exports**: `SectionLine`, `SectionLineProps`.
+
+**Example**
+
+```tsx
+import { SectionLine } from "@/components/SectionLine";
+
+<SectionLine />
+<SectionLine className="my-6" />
+```
+
+---
+
 ## Badge
 
 **Path**: `@/components/Badge`  
@@ -246,6 +272,70 @@ import { TabsBox } from "@/components/Tabs";
   value={activeId}
   onValueChange={setActiveId}
 />
+```
+
+---
+
+## BorderLine
+
+**Path**: `@/components/BorderLine`  
+**Figma**: Roy design system → border-line (node 470:1703).
+
+Horizontal divider: 2px height, full width, slate-200. Use between content areas.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `className` | `string` | No | Root class |
+
+**Exports**: `BorderLine`, `BorderLineProps`.
+
+**Example**
+
+```tsx
+import { BorderLine } from "@/components/BorderLine";
+
+<BorderLine />
+<section className="..."><BorderLine className="my-4" /></section>
+```
+
+---
+
+## Button
+
+**Path**: `@/components/Button`  
+**Figma**: Roy design system → Button-mini (295:3020), Button-extra small (604:10317), Button-small (295:2939), Button-medium (82:993), Button-larger (10:116).
+
+Text button with optional leading/trailing icon. **Sizes**: mini (24px height, caption, 4px radius), extraSmall / small (32px, paragraph-sm, pill), medium (body-md, pill), large (56px, body-lg, pill). **Variants**: default (filled slate-900), subtle (slate-100 bg), outline (1px border), transparent. **States**: hover, focus (2px border), disabled (grey-200, grey-700); mini subtle has active (blue-100 bg, blue-900 text).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `React.ReactNode` | Yes | Button label |
+| `size` | `ButtonSize` | No | `"mini"` \| `"extraSmall"` \| `"small"` \| `"medium"` \| `"large"` (default `"medium"`) |
+| `variant` | `ButtonVariant` | No | `"default"` \| `"subtle"` \| `"outline"` \| `"transparent"` (default `"default"`) |
+| `leadingIcon` | `MaterialSymbol` | No | Leading icon name |
+| `trailingIcon` | `MaterialSymbol` | No | Trailing icon name |
+| `disabled` | `boolean` | No | Disabled state |
+| `active` | `boolean` | No | Mini subtle: active/pressed state (blue tint) |
+| `onClick` | `() => void` | No | Click handler |
+| `type` | `"button"` \| `"submit"` | No | Button type (default `"button"`) |
+| `aria-label` | `string` | No | Accessible name |
+| `className` | `string` | No | Root class |
+
+**Exports**: `Button`, `ButtonProps`, `ButtonSize`, `ButtonVariant`.
+
+**Example**
+
+```tsx
+import { Button } from "@/components/Button";
+
+<Button onClick={() => {}}>Sign Up</Button>
+<Button variant="subtle" size="small" trailingIcon="chevron_right">Next</Button>
+<Button size="mini" variant="subtle" leadingIcon="school" active>Sign Up</Button>
+<Button variant="outline" size="large" disabled>Submit</Button>
 ```
 
 ---
@@ -377,6 +467,37 @@ import { ImageButton } from "@/components/ImageButton";
 
 <ImageButton src={thumbUrl} alt="Product" onClick={() => {}} />
 <ImageButton src={thumbUrl} alt="Product" selected />
+```
+
+---
+
+## VariantOptionButton
+
+**Path**: `@/components/VariantOptionButton`  
+**Figma**: Roy design system → variant-Option-Button (node 535:1510).
+
+Option button for variant selection (e.g. size "large"). **Layout**: min-width 130px, padding 16px 32px, 4px radius, 2px border. **Typography**: body/body-md (16px, regular). **States**: default (slate-100 bg, slate-400 border, slate-900 text), hover (slate-200 bg, slate-500 border, slate-950 text), focus (slate-900 border), selected (grey-200 bg, slate-200 border, grey-700 text).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `React.ReactNode` | Yes | Label (e.g. "large", "medium") |
+| `selected` | `boolean` | No | Selected state |
+| `onClick` | `() => void` | No | Click handler |
+| `disabled` | `boolean` | No | Disabled state |
+| `aria-label` | `string` | No | Override for accessible name |
+| `className` | `string` | No | Root class |
+
+**Exports**: `VariantOptionButton`, `VariantOptionButtonProps`.
+
+**Example**
+
+```tsx
+import { VariantOptionButton } from "@/components/VariantOptionButton";
+
+<VariantOptionButton onClick={() => setSize("large")}>large</VariantOptionButton>
+<VariantOptionButton selected>large</VariantOptionButton>
 ```
 
 ---
