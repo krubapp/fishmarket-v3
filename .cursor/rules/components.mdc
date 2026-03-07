@@ -370,6 +370,125 @@ import { ColorBlock } from "@/components/ColorBlock";
 
 ---
 
+## Checkbox
+
+**Path**: `@/components/Checkbox`  
+**Figma**: Roy design system → checkbox (184:967), checkbox-items (505:2158).
+
+24×24 box, 4px radius, 2px border. Optional **label**: row layout, 12px gap, medium/body-md; label colors: default slate-900, hover slate-950, disabled grey-700, error red-700. **Unchecked**: default (white, slate-400 border), hover (slate-200, slate-500), focus (slate-100, slate-900), disabled (grey-200, slate-200), error (red-100, red-400). **Checked**: same states with slate-100 bg (or grey-200 / red-100 when disabled/error) and check icon (slate-900, or grey-700 / red-700 when disabled/error). Supports controlled (`checked` + `onChange`) or uncontrolled (`defaultChecked`).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `checked` | `boolean` | No | Controlled checked state |
+| `onChange` | `(checked: boolean) => void` | No | Called when checked changes |
+| `defaultChecked` | `boolean` | No | Initial checked when uncontrolled |
+| `disabled` | `boolean` | No | Disabled state |
+| `error` | `boolean` | No | Error state (red border/bg) |
+| `label` | `React.ReactNode` | No | Label next to box (12px gap, medium/body-md) |
+| `id` | `string` | No | Input id for form/label association |
+| `name` | `string` | No | Input name for forms |
+| `aria-label` | `string` | No | Accessible name (when no `label`) |
+| `className` | `string` | No | Root label class |
+
+**Exports**: `Checkbox`, `CheckboxProps`.
+
+**Example**
+
+```tsx
+import { Checkbox } from "@/components/Checkbox";
+
+<Checkbox label="Soft Plastic" onChange={(c) => setAccepted(c)} />
+<Checkbox label="Accept terms" checked={value} onChange={setValue} />
+<Checkbox aria-label="Accept terms" onChange={(c) => setAccepted(c)} />
+<Checkbox defaultChecked disabled label="Disabled" />
+<Checkbox checked error label="Error" />
+```
+
+---
+
+## Drawer
+
+**Path**: `@/components/Drawer`
+
+Slide-in panel with overlay for filters, settings, or secondary content. Renders in a portal. White panel, slate-200 border on inner edge, theme spacing (padding 24px). Optional header with title (medium/body-lg) and close IconButton. Closes on Escape, backdrop click (optional), or close button. Panel slides in from left or right with transition.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `open` | `boolean` | Yes | When true, drawer and overlay are visible |
+| `onClose` | `() => void` | Yes | Called when drawer should close |
+| `children` | `React.ReactNode` | Yes | Panel content |
+| `title` | `string` | No | Optional title in header with close button |
+| `side` | `DrawerSide` | No | `"left"` \| `"right"` (default `"right"`) |
+| `width` | `number` | No | Panel width in px (default 320, max 100vw) |
+| `closeOnBackdropClick` | `boolean` | No | Close when clicking backdrop (default true) |
+| `aria-label` | `string` | No | Accessible label when no title |
+| `className` | `string` | No | Applied to the panel |
+
+**Exports**: `Drawer`, `DrawerProps`, `DrawerSide`.
+
+**Example**
+
+```tsx
+import { Drawer } from "@/components/Drawer";
+
+const [open, setOpen] = useState(false);
+
+<Drawer open={open} onClose={() => setOpen(false)} title="Filters">
+  <p>Filter content here.</p>
+</Drawer>
+<Drawer open={open} onClose={() => setOpen(false)} side="left" aria-label="Menu">
+  <nav>...</nav>
+</Drawer>
+```
+
+---
+
+## DrawerTopBar
+
+**Path**: `@/components/DrawerTopBar`  
+**Figma**: Roy design system → Drawer-navebar (node 322:5273).
+
+Header bar for use at the top of a drawer: back button (40×40, subtle), center title (semi/body-md, grey-900), optional action button (small, subtle). Padding 16px 24px, bottom border 1px slate-200, top corners rounded 34px. Use as first child of `Drawer` content; pass `className="-mx-6 -mt-4"` so the bar spans full width when the drawer content has default padding.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | Yes | Center title |
+| `onBack` | `() => void` | Yes | Called when back is pressed |
+| `actionLabel` | `string` | No | Right-side action button label (e.g. "Add group") |
+| `onAction` | `() => void` | No | Called when action button is pressed |
+| `actionIcon` | `MaterialSymbol` | No | Optional icon for action button |
+| `backAriaLabel` | `string` | No | Accessible name for back button (default "Back") |
+| `className` | `string` | No | Root class (use `-mx-6 -mt-4` when inside Drawer) |
+
+**Exports**: `DrawerTopBar`, `DrawerTopBarProps`.
+
+**Example**
+
+```tsx
+import { Drawer } from "@/components/Drawer";
+import { DrawerTopBar } from "@/components/DrawerTopBar";
+
+<Drawer open={open} onClose={() => setOpen(false)} aria-label="Variants">
+  <DrawerTopBar
+    title="Variants"
+    onBack={() => setOpen(false)}
+    actionLabel="Add group"
+    onAction={() => addGroup()}
+    actionIcon="add"
+    className="-mx-6 -mt-4"
+  />
+  <div className="px-6 py-4">…</div>
+</Drawer>
+```
+
+---
+
 ## IconButton
 
 **Path**: `@/components/IconButton`  

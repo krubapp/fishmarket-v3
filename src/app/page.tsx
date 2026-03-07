@@ -9,12 +9,15 @@ import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
 import { BorderLine } from "@/components/BorderLine";
 import { Button } from "@/components/Button";
+import { Checkbox } from "@/components/Checkbox";
 import { ColorBlock } from "@/components/ColorBlock";
 import { IconButton } from "@/components/IconButton";
 import { ImageBlock } from "@/components/ImageBlock";
 import { ImageButton } from "@/components/ImageButton";
 import { Link } from "@/components/Link";
 import { CostBreakdown } from "@/components/CostBreakdown";
+import { Drawer } from "@/components/Drawer";
+import { DrawerTopBar } from "@/components/DrawerTopBar";
 import { MediaDropzone } from "@/components/MediaDropzone";
 import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { ProductListing } from "@/components/ProductListing";
@@ -51,6 +54,8 @@ export default function Home() {
   const [activeTabId, setActiveTabId] = useState("all");
   const [activeTabsBoxId, setActiveTabsBoxId] = useState("orders");
   const [searchQuery, setSearchQuery] = useState("");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerWithTopBarOpen, setDrawerWithTopBarOpen] = useState(false);
   const searchResults = useMemo(
     () => (searchQuery.trim() ? SAMPLE_SEARCH_RESULTS : []),
     [searchQuery]
@@ -130,6 +135,54 @@ export default function Home() {
             <ColorBlock color="red" label="Red" />
             <ColorBlock color="green" label="Green" selected />
             <ColorBlock color="blue" label="Blue" />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Drawer</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button variant="outline" size="small" onClick={() => setDrawerOpen(true)}>
+              Open drawer
+            </Button>
+            <Button variant="outline" size="small" onClick={() => setDrawerWithTopBarOpen(true)}>
+              Open drawer with top bar
+            </Button>
+            <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Filters">
+              <p className="text-slate-700 text-[length:var(--font-size-paragraph-md)]">
+                Drawer content. Use for filters, settings, or secondary panels.
+              </p>
+              <div className="mt-4">
+                <Checkbox label="Option A" onChange={() => {}} />
+                <Checkbox label="Option B" onChange={() => {}} className="mt-2" />
+              </div>
+            </Drawer>
+            <Drawer
+              open={drawerWithTopBarOpen}
+              onClose={() => setDrawerWithTopBarOpen(false)}
+              aria-label="Variants"
+            >
+              <DrawerTopBar
+                title="Variants"
+                onBack={() => setDrawerWithTopBarOpen(false)}
+                actionLabel="Add group"
+                onAction={() => {}}
+                actionIcon="add"
+                className="-mx-6 -mt-4"
+              />
+              <div className="text-slate-700 text-[length:var(--font-size-paragraph-md)]">
+                Drawer content with custom top bar (back, title, action button).
+              </div>
+            </Drawer>
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Checkbox</span>
+          <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
+            <Checkbox aria-label="Unchecked" onChange={() => {}} />
+            <Checkbox checked aria-label="Checked" onChange={() => {}} />
+            <Checkbox label="Soft Plastic" onChange={() => {}} />
+            <Checkbox label="Checked option" checked onChange={() => {}} />
+            <Checkbox disabled label="Disabled" />
+            <Checkbox checked error label="Error" onChange={() => {}} />
           </div>
         </section>
         <section className="flex flex-col">
