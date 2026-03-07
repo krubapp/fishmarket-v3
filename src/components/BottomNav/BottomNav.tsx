@@ -2,6 +2,7 @@
 
 import { Icon } from "@/components/Icon";
 import type { MaterialSymbol } from "material-symbols";
+import NextLink from "next/link";
 import {
   BOTTOM_NAV_ITEMS,
   type BottomNavItemId,
@@ -32,13 +33,13 @@ export function BottomNav({
         role="navigation"
         aria-label="Bottom navigation"
       >
-      {BOTTOM_NAV_ITEMS.map(({ id, label }) => {
+      {BOTTOM_NAV_ITEMS.map(({ id, label, href }) => {
         const isActive = activeItem === id;
         return (
-          <button
+          <NextLink
             key={id}
-            type="button"
-            className="flex flex-1 flex-col items-center justify-center gap-1 border-none bg-transparent p-0 text-left outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+            href={href}
+            className="flex flex-1 flex-col items-center justify-center gap-1 border-none bg-transparent p-0 text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             onClick={() => onItemChange?.(id)}
             aria-current={isActive ? "page" : undefined}
             aria-label={label}
@@ -62,7 +63,7 @@ export function BottomNav({
             >
               {label}
             </span>
-          </button>
+          </NextLink>
         );
       })}
       </nav>

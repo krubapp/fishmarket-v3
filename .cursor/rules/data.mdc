@@ -1,0 +1,37 @@
+---
+description: Fishmarket v3 data models and Firebase
+alwaysApply: true
+---
+
+# Fishmarket v3 – Data
+
+## Firestore
+
+### `listings` collection
+
+Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
+
+**Document shape** (matches `Listing` type):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | `string` | Product title |
+| `description` | `string` | Optional description |
+| `specifications` | `string` | Optional specifications text |
+| `price` | `number` | Price amount |
+| `shippingCost` | `number` | Optional shipping cost |
+| `currency` | `string` | Default "SEK" |
+| `condition` | `"new" \| "used" \| "refurbished"` | Product condition |
+| `category` | `string` | Category (e.g. Lures, Rods) |
+| `acceptTerms` | `boolean` | Whether seller accepted terms (default false) |
+| `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, and optional `imageUrl` |
+| `imageUrls` | `string[]` | URLs from Firebase Storage |
+| `createdAt` | `Timestamp` | Server timestamp |
+| `sellerId` | `string` | Optional; for future auth |
+
+**Helpers** (in `src/lib/`):
+
+- `createListing(data)` — `src/lib/firestore.ts` — adds doc to `listings`, returns doc id
+- `updateListing(listingId, data)` — `src/lib/firestore.ts` — partial update
+- `uploadListingImages(files, listingId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/`, returns download URLs
+- `uploadVariantImage(file, listingId, valueId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/variants/{valueId}.{ext}`, returns download URL

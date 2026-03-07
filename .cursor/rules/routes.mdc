@@ -1,0 +1,32 @@
+---
+description: Fishmarket v3 app routes
+alwaysApply: true
+---
+
+# Fishmarket v3 – Routes
+
+All routes live under `src/app/` using the Next.js App Router. Update this file whenever routes are added, removed, or restructured.
+
+## `ROUTES` constant
+
+All route paths are defined in **`src/lib/routes.ts`** as the `ROUTES` object. Always import from there instead of hardcoding path strings:
+
+```ts
+import { ROUTES } from "@/lib/routes";
+
+router.push(ROUTES.createListing);   // "/create-listing"
+<Link href={ROUTES.home}>Home</Link> // "/"
+```
+
+When adding a new route, add its path to `ROUTES` first, then reference the key everywhere.
+
+## Route table
+
+| Key | Path | File | Description |
+|-----|------|------|-------------|
+| `home` | `/` | `src/app/page.tsx` | Component showcase (design system demo) |
+| `shop` | `/shop` | — | Shop (placeholder) |
+| `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
+| `createListingForm` | `/create-listing/form` | `src/app/create-listing/form/page.tsx` | Advance listing form (Figma node `417:1722`). react-hook-form + zod. MediaDropzone, title, description, price, condition, category, variants (via VariantDrawer + VariantList). Submits to Firestore and Storage (including variant images). |
+| `map` | `/map` | — | Map (placeholder) |
+| `profile` | `/profile` | — | Profile (placeholder) |

@@ -20,6 +20,13 @@ alwaysApply: true
 - Prefer the shared `Icon` component for Material Symbols; icon names match [fonts.google.com/icons](https://fonts.google.com/icons) (e.g. `home`, `settings`, `favorite`)
 - CSS variables: `--background` and `--foreground` for theming; dark mode via `prefers-color-scheme`
 - Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`
+- **Lib**: Shared utilities and SDK singletons live in `src/lib/`. Key modules:
+  - `firebase.ts` — Firebase client SDK singleton (uses `NEXT_PUBLIC_*` env vars, safe for client and server)
+  - `firebase-admin.ts` — Firebase Admin SDK singleton (server-only, uses `FIREBASE_ADMIN_*` env vars)
+  - `firestore.ts` — Firestore helpers (`createListing`, `updateListing`)
+  - `storage.ts` — Firebase Storage helpers (`uploadListingImages`, `uploadVariantImage`)
+  - `routes.ts` — Centralized `ROUTES` constant (all app paths in one place). Always import from here instead of hardcoding path strings. See `.cursor/rules/routes.mdc`.
+  - `schemas/` — Zod schemas (e.g. `listing.ts`). See `.cursor/rules/forms.mdc` and `data.mdc`.
 - **Components**: Components live in `src/components/<ComponentName>/`. See `.cursor/rules/components.mdc` for documented components (API, usage, Figma source).
 - **Comments**: Comment only where it adds value — e.g. above a function, util, or non-obvious/complex logic. Avoid over-commenting; prefer clear names and structure over inline noise.
 

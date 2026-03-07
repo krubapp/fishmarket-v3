@@ -85,7 +85,7 @@ import { RootTopBar } from "@/components/RootTopBar";
 **Path**: `@/components/ContextTopBar`  
 **Figma**: Roy design system → top nav bar, types=Shopping (node 496:658).
 
-Contextual top bar: back button + section label on the left; center title; filter and search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Back label: medium/paragraph-sm (14px, #101828). Title: semi/body-md (16px, #121412). Back and action icons 24px and 20px in 40×40 hit areas.
+Contextual top bar: back button + section label on the left; center title (absolute-centered, always centered regardless of left/right content width); optional filter and search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Back label: medium/paragraph-sm (14px, #101828). Title: semi/body-md (16px, #121412), absolutely positioned for true centering. Back and action icons 24px and 20px in 40×40 hit areas. Filter/search buttons only render when their handlers (`onFilter`/`onSearch`) are provided.
 
 **Props**
 
@@ -1276,6 +1276,80 @@ import { Avatar } from "@/components/Avatar";
 <Avatar src={user.avatarUrl} alt={user.name} size={48} />
 <Avatar size={80} label="LimeStones.." />
 <Avatar size={32} label="TheLifeoftoy" labelPosition="right" />
+```
+
+---
+
+## VariantDrawer
+
+**Path**: `@/components/VariantDrawer` 
+**Figma**: Roy design system → variant headers flow (node 410:10870), initial drawer (node 410:10422).
+
+Drawer for creating and managing variant groups on a listing. Full flow: create variant groups (Color, Size, etc.), add values (Red, Blue, etc.), collapse/expand groups, delete/rename via dropdown menu. Uses `Drawer` + `DrawerTopBar` internally. Width 440px.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `open` | `boolean` | Yes | Whether the drawer is open |
+| `onClose` | `() => void` | Yes | Called when the drawer should close |
+| `groups` | `VariantGroup[]` | Yes | Current variant groups |
+| `onGroupsChange` | `(groups: VariantGroup[]) => void` | Yes | Called when groups change |
+
+**VariantGroup** shape: `{ id: string; name: string; values: VariantValue[] }`. **VariantValue**: `{ id: string; name: string; price: number; available: number; imageUrl?: string }`. Both exported from `@/lib/schemas/listing`.
+
+**Exports**: `VariantDrawer`, `VariantDrawerProps`, `VariantGroup`, `VariantValue`.
+
+**Example**
+
+```tsx
+import { VariantDrawer } from "@/components/VariantDrawer";
+import type { VariantGroup } from "@/components/VariantDrawer";
+
+const [groups, setGroups] = useState<VariantGroup[]>([]);
+const [open, setOpen] = useState(false);
+
+<VariantDrawer
+  open={open}
+  onClose={() => setOpen(false)}
+  groups={groups}
+  onGroupsChange={setGroups}
+/>
+```
+
+---
+
+## VariantList
+
+**Path**: `@/components/VariantList` 
+**Figma**: Nike Fishing Maning 2026 → variant table (node 443:1585).
+
+Table display of variant groups on the create-listing form. Each group is a collapsible section: group header row (name, value count, expand/collapse chevron) followed by indented value rows. Header row with select-all checkbox, "Variant - Expand all / Collapse all" toggle, Price and Available column headers. Value rows: checkbox, 48×48 image upload button, name, price input (92px), available input (92px). Groups start expanded. "Add variants" button at the bottom opens the variant drawer.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `groups` | `VariantGroup[]` | Yes | Variant groups to display |
+| `onGroupsChange` | `(groups: VariantGroup[]) => void` | Yes | Called when groups change (price, available updates) |
+| `onOpenDrawer` | `() => void` | Yes | Called when user wants to open the variant drawer |
+| `variantImageFiles` | `Map<string, File>` | Yes | Local variant image files keyed by value ID |
+| `onVariantImageSelect` | `(valueId: string, file: File) => void` | Yes | Called when a variant image file is selected |
+
+**Exports**: `VariantList`, `VariantListProps`.
+
+**Example**
+
+```tsx
+import { VariantList } from "@/components/VariantList";
+
+<VariantList
+  groups={variantGroups}
+  onGroupsChange={setVariantGroups}
+  onOpenDrawer={() => setVariantDrawerOpen(true)}
+  variantImageFiles={variantImageFiles}
+  onVariantImageSelect={handleVariantImageSelect}
+/>
 ```
 
 ---

@@ -1,0 +1,27 @@
+---
+description: Fishmarket v3 form patterns
+alwaysApply: true
+---
+
+# Fishmarket v3 – Forms
+
+## Stack
+
+- **react-hook-form** — form state and validation integration
+- **zod** — schema validation
+- **@hookform/resolvers** — `zodResolver` to connect zod with react-hook-form
+
+## Pattern
+
+1. Define a Zod schema in `src/lib/schemas/<domain>.ts` (e.g. `listing.ts`).
+2. Use `useForm({ resolver: zodResolver(schema) })` with the schema.
+3. Wire `register` to native inputs or `Controller` to custom components (Dropdown, etc.).
+4. Pass `error={Boolean(errors.fieldName)}` and `helperText={errors.fieldName?.message}` to form components from `@/components/` (Input, Textarea, etc.).
+
+## Conventions
+
+- Schemas live in `src/lib/schemas/<domain>.ts`.
+- Export both the schema and inferred type: `export type X = z.infer<typeof xSchema>`.
+- Use form components (Input, Textarea, Checkbox, Radio, Dropdown) with the `error` prop from `formState.errors`.
+- For components that don't support `register` (e.g. Dropdown), use `Controller` from react-hook-form.
+- File uploads (e.g. MediaDropzone): store `File[]` in local state, validate in `onSubmit` before calling the submit handler.
