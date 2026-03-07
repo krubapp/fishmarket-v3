@@ -408,6 +408,34 @@ import { Checkbox } from "@/components/Checkbox";
 
 ---
 
+## DataItem
+
+**Path**: `@/components/DataItem`  
+**Figma**: Roy design system → Data items (node 32:592).
+
+Label + value pair: column layout, 4px gap, 8px vertical padding. **Typography**: semi/paragraph-sm (14px, 600). Label grey-950, value grey-900. When value is missing or empty, value shows "--".
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `label` | `string` | Yes | Label (e.g. "Amount") |
+| `value` | `string \| null` | No | Value; empty/missing → "--" |
+| `className` | `string` | No | Root wrapper class |
+
+**Exports**: `DataItem`, `DataItemProps`.
+
+**Example**
+
+```tsx
+import { DataItem } from "@/components/DataItem";
+
+<DataItem label="Amount" value="11k" />
+<DataItem label="Amount" />
+```
+
+---
+
 ## Drawer
 
 **Path**: `@/components/Drawer`
@@ -485,6 +513,49 @@ import { DrawerTopBar } from "@/components/DrawerTopBar";
   />
   <div className="px-6 py-4">…</div>
 </Drawer>
+```
+
+---
+
+## Dropdown
+
+**Path**: `@/components/Dropdown`  
+**Figma**: Roy design system → Menu (32:334), Menu-items (32:27).
+
+Dropdown with two trigger types. **Default**: trigger row with label + chevron (bg slate-100, 8px padding, 4px radius). **Toggle**: 40px icon button (more_vert, transparent). Panel: white bg, 4px radius, 1px slate-200 border, shadow; list of items (medium/paragraph-sm, 8px padding, 8px gap, optional 16px icon). Item states: default (white), hover (slate-100), active (slate-200), disabled (grey-200, grey-700). First item rounded top, last rounded bottom; 1px bottom border between items. Supports controlled or uncontrolled open state; closes on Escape and click outside.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `variant` | `DropdownVariant` | No | `"default"` (label + chevron) \| `"toggle"` (icon button) |
+| `label` | `string` | No | Trigger label for default (default "Select") |
+| `value` | `string` | No | Selected item id (for default trigger display) |
+| `items` | `DropdownItemOption[]` | Yes | `{ id, label, icon?, disabled? }[]` |
+| `onSelect` | `(id: string) => void` | No | Called when an item is selected |
+| `open` | `boolean` | No | Controlled open state |
+| `onOpenChange` | `(open: boolean) => void` | No | Called when open changes |
+| `aria-label` | `string` | No | Accessible name for trigger |
+| `className` | `string` | No | Root wrapper class |
+
+**Exports**: `Dropdown`, `DropdownProps`, `DropdownVariant`, `DropdownItemOption`.
+
+**Example**
+
+```tsx
+import { Dropdown } from "@/components/Dropdown";
+
+<Dropdown
+  variant="default"
+  label="Last 6 months"
+  items={[
+    { id: "1", label: "My Account", icon: "person" },
+    { id: "2", label: "Settings", icon: "settings" },
+    { id: "3", label: "Disabled", disabled: true },
+  ]}
+  onSelect={(id) => setPeriod(id)}
+/>
+<Dropdown variant="toggle" items={[...]} onSelect={(id) => {}} aria-label="Options" />
 ```
 
 ---
@@ -696,6 +767,36 @@ import { ProductListing } from "@/components/ProductListing";
   conditionValue="New"
 />
 <ProductListing contentPosition="right" imageSrc={...} title="..." price="..." sellerName="..." />
+```
+
+---
+
+## ProgressBar
+
+**Path**: `@/components/ProgressBar`  
+**Figma**: Roy design system → progress-bar (node 32:656).
+
+Horizontal progress bar: track slate-100 (full width), fill slate-900 by percentage. **Size**: small (8px height), large (16px height). Rounded ends. Use `value` and `max` (default 1) for progress; e.g. `value={0.75}` for 75%.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `number` | Yes | Current value (0 ≤ value ≤ max) |
+| `max` | `number` | No | Maximum value (default 1) |
+| `size` | `ProgressBarSize` | No | `"small"` (8px) \| `"large"` (16px, default) |
+| `aria-label` | `string` | No | Accessible name (e.g. "Upload progress 75%") |
+| `className` | `string` | No | Root wrapper class |
+
+**Exports**: `ProgressBar`, `ProgressBarProps`, `ProgressBarSize`.
+
+**Example**
+
+```tsx
+import { ProgressBar } from "@/components/ProgressBar";
+
+<ProgressBar value={0.75} aria-label="Progress 75%" />
+<ProgressBar value={50} max={100} size="small" />
 ```
 
 ---

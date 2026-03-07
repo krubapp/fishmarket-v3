@@ -16,11 +16,14 @@ import { ImageBlock } from "@/components/ImageBlock";
 import { ImageButton } from "@/components/ImageButton";
 import { Link } from "@/components/Link";
 import { CostBreakdown } from "@/components/CostBreakdown";
+import { DataItem } from "@/components/DataItem";
+import { Dropdown } from "@/components/Dropdown";
 import { Drawer } from "@/components/Drawer";
 import { DrawerTopBar } from "@/components/DrawerTopBar";
 import { MediaDropzone } from "@/components/MediaDropzone";
 import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { ProductListing } from "@/components/ProductListing";
+import { ProgressBar } from "@/components/ProgressBar";
 import { SearchBar } from "@/components/SearchBar";
 import { SectionLine } from "@/components/SectionLine";
 import { Tabs, TabsBox } from "@/components/Tabs";
@@ -56,6 +59,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerWithTopBarOpen, setDrawerWithTopBarOpen] = useState(false);
+  const [dropdownPeriod, setDropdownPeriod] = useState("6m");
   const searchResults = useMemo(
     () => (searchQuery.trim() ? SAMPLE_SEARCH_RESULTS : []),
     [searchQuery]
@@ -175,6 +179,57 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Dropdown</span>
+          <div className="flex flex-col gap-8 rounded bg-white p-6">
+            <div className="flex flex-col gap-2">
+              <span className="text-grey-700 text-[length:var(--font-size-paragraph-sm)]">Default (with selection)</span>
+              <Dropdown
+                variant="default"
+                label="Select period"
+                value={dropdownPeriod}
+                items={[
+                  { id: "1m", label: "Last month" },
+                  { id: "3m", label: "Last 3 months" },
+                  { id: "6m", label: "Last 6 months" },
+                  { id: "12m", label: "Last 12 months" },
+                ]}
+                onSelect={(id) => setDropdownPeriod(id)}
+                aria-label="Select period"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-grey-700 text-[length:var(--font-size-paragraph-sm)]">Default with icons</span>
+              <Dropdown
+                variant="default"
+                label="View"
+                items={[
+                  { id: "list", label: "List view", icon: "list" },
+                  { id: "grid", label: "Grid view", icon: "grid_view" },
+                  { id: "calendar", label: "Calendar", icon: "calendar_today" },
+                ]}
+                onSelect={() => {}}
+                aria-label="Select view"
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-grey-700 text-[length:var(--font-size-paragraph-sm)]">Toggle (icon trigger, items with icons + disabled)</span>
+              <div className="flex items-center gap-2">
+                <Dropdown
+                  variant="toggle"
+                  items={[
+                    { id: "account", label: "My Account", icon: "person" },
+                    { id: "settings", label: "Settings", icon: "settings" },
+                    { id: "help", label: "Help", icon: "help" },
+                    { id: "disabled", label: "Disabled option", disabled: true },
+                  ]}
+                  onSelect={() => {}}
+                  aria-label="Options menu"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Checkbox</span>
           <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
             <Checkbox aria-label="Unchecked" onChange={() => {}} />
@@ -271,6 +326,15 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ProgressBar</span>
+          <div className="w-full max-w-md space-y-4 rounded bg-white p-4">
+            <ProgressBar value={0} aria-label="Progress 0%" />
+            <ProgressBar value={0.75} aria-label="Progress 75%" />
+            <ProgressBar value={1} aria-label="Progress 100%" />
+            <ProgressBar value={0.5} size="small" aria-label="Progress 50% (small)" />
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">CostBreakdown</span>
           <div className="w-full max-w-sm rounded bg-white">
             <CostBreakdown
@@ -280,6 +344,14 @@ export default function Home() {
                 { label: "Total amount", value: "SEK 2000.00", highlightLabel: true },
               ]}
             />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">DataItem</span>
+          <div className="flex flex-wrap gap-6 rounded bg-white p-4">
+            <DataItem label="Amount" value="11k" />
+            <DataItem label="Amount" />
+            <DataItem label="Sold" value="500" />
           </div>
         </section>
         <section className="flex flex-col">
