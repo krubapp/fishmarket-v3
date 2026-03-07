@@ -10,6 +10,7 @@ import { Badge } from "@/components/Badge";
 import { ColorBlock } from "@/components/ColorBlock";
 import { ImageBlock } from "@/components/ImageBlock";
 import { MediaDropzone } from "@/components/MediaDropzone";
+import { ProductListing } from "@/components/ProductListing";
 import { SearchBar } from "@/components/SearchBar";
 import { Tabs, TabsBox } from "@/components/Tabs";
 import type { TabItem, TabsBoxItem } from "@/components/Tabs";
@@ -130,6 +131,30 @@ export default function Home() {
             <ImageBlock size="medium" />
             <ImageBlock size="medium" onAdd={() => {}} />
             <ImageBlock size="large" onAction={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ProductListing</span>
+          <div className="flex flex-wrap items-start gap-6">
+            <ProductListing
+              imageSrc="https://placehold.co/218x218/e3eae1/8b9189?text=Product"
+              title="Slayer 10 pack 3 Inch"
+              price="SEK 1,299"
+              originalPrice="SEK 1,299"
+              sellerName="LimeStonesoftbaits"
+              badge="NEW DROP"
+              conditionLabel="Condition:"
+              conditionValue="New"
+            />
+            <ProductListing
+              imageSrc="https://placehold.co/218x218/e3eae1/8b9189?text=Product"
+              title="Slayer 10 pack 3 Inch"
+              price="SEK 1,299"
+              sellerName="LimeStonesoftbaits"
+              badge="NEW DROP"
+              conditionValue="New"
+              contentPosition="right"
+            />
           </div>
         </section>
         <section className="flex flex-col">

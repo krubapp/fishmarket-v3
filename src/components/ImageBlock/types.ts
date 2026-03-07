@@ -33,6 +33,8 @@ export type ImageBlockProps = {
   onAdd?: () => void;
   /** When size is "large": optional action (e.g. like) shown as 40×40 button top-right. */
   onAction?: () => void;
+  /** When false, border radius is 0 (square). Default true. */
+  rounded?: boolean;
   /** Optional class for the root element. */
   className?: string;
 };

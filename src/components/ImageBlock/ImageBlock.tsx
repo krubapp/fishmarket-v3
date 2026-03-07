@@ -14,10 +14,11 @@ export function ImageBlock({
   size = "medium",
   onAdd,
   onAction,
+  rounded = true,
   className = "",
 }: ImageBlockProps) {
   const { width, height } = IMAGE_BLOCK_DIMENSIONS[size];
-  const radius = IMAGE_BLOCK_RADIUS[size];
+  const radius = rounded ? IMAGE_BLOCK_RADIUS[size] : 0;
   const isLarge = size === "large";
   const hasImage = Boolean(src);
   const showAddIcon = !hasImage && onAdd;

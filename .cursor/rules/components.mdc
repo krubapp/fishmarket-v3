@@ -296,6 +296,7 @@ Image block with three sizes: **small** 48×48 (4px radius), **medium** 148×196
 | `size` | `ImageBlockSize` | No | `"small"` \| `"medium"` \| `"large"` (default `"medium"`) |
 | `onAdd` | `() => void` | No | When no src: click shows add icon; triggers on click |
 | `onAction` | `() => void` | No | When size is large: action button top-right (e.g. like) |
+| `rounded` | `boolean` | No | When false, no border radius (square). Default `true` |
 | `className` | `string` | No | Root class |
 
 **Exports**: `ImageBlock`, `ImageBlockProps`, `ImageBlockSize`, `IMAGE_BLOCK_DIMENSIONS`, `IMAGE_BLOCK_RADIUS`.
@@ -309,6 +310,51 @@ import { ImageBlock } from "@/components/ImageBlock";
 <ImageBlock size="small" onAdd={() => openPicker()} />
 <ImageBlock size="medium" src={url} alt="Product" />
 <ImageBlock size="large" src={url} onAction={() => toggleLike()} />
+```
+
+---
+
+## ProductListing
+
+**Path**: `@/components/ProductListing`  
+**Figma**: Single listing (492:7977); content to right of image (568:2576).
+
+Single listing card: **ImageBlock** large (218×218), no border radius; white content panel (padding 16px, gap 24px). Use **contentPosition**: `"below"` (column, content under image, panel height 209px, seller at bottom) or `"right"` (row, image left, content right, items-stretch so panel height matches image). Content: optional badge; condition row; title; price + optional originalPrice; seller (Avatar 16 + name right).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `imageSrc` | `string` | Yes | Product image URL |
+| `imageAlt` | `string` | No | Alt for image |
+| `badge` | `string` | No | e.g. "NEW DROP" |
+| `conditionLabel` | `string` | No | e.g. "Condition:" |
+| `conditionValue` | `string` | No | e.g. "New" |
+| `title` | `string` | Yes | Product title |
+| `price` | `string` | Yes | e.g. "SEK 1,299" |
+| `originalPrice` | `string` | No | Crossed-out price |
+| `sellerAvatarSrc` | `string \| null` | No | Seller avatar URL |
+| `sellerName` | `string` | Yes | Seller display name |
+| `onLike` | `() => void` | No | Like/favorite on image |
+| `contentPosition` | `ProductListingContentPosition` | No | `"below"` \| `"right"` (default `"below"`) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `ProductListing`, `ProductListingProps`, `ProductListingContentPosition`.
+
+**Example**
+
+```tsx
+import { ProductListing } from "@/components/ProductListing";
+
+<ProductListing
+  imageSrc={product.imageUrl}
+  title="Slayer 10 pack 3 Inch"
+  price="SEK 1,299"
+  sellerName="LimeStonesoftbaits"
+  badge="NEW DROP"
+  conditionValue="New"
+/>
+<ProductListing contentPosition="right" imageSrc={...} title="..." price="..." sellerName="..." />
 ```
 
 ---
