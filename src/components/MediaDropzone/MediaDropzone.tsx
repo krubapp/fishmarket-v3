@@ -1,14 +1,16 @@
 "use client";
 
 import { Icon } from "@/components/Icon";
-import { useCallback, useId, useRef, useState } from "react";
+import { IconButton } from "@/components/IconButton";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import type { MediaDropzoneProps } from "./types";
 
 export function MediaDropzone({
   title = "Select images ",
   subtitle = "You can only add up to 10 images / videos",
-  onFilesSelect,
+  files = [],
+  onFilesChange,
   accept = "image/*,video/*",
   maxFiles = 10,
   error = false,
@@ -20,22 +22,42 @@ export function MediaDropzone({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleSelect = useCallback(
-    (files: FileList | null) => {
-      if (!files?.length || !onFilesSelect) return;
-      const list = Array.from(files).slice(0, maxFiles);
-      onFilesSelect(list);
+  const previewUrls = useMemo(
+    () => files.map((f) => URL.createObjectURL(f)),
+    [files],
+  );
+
+  useEffect(() => {
+    return () => previewUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, [previewUrls]);
+
+  useEffect(() => {
+    if (selectedIndex >= files.length) {
+      setSelectedIndex(Math.max(0, files.length - 1));
+    }
+  }, [files.length, selectedIndex]);
+
+  const hasFiles = files.length > 0;
+  const hasMultiple = files.length > 1;
+
+  const handleFilesIn = useCallback(
+    (incoming: FileList | null) => {
+      if (!incoming?.length || !onFilesChange) return;
+      const added = Array.from(incoming);
+      const merged = [...files, ...added].slice(0, maxFiles);
+      onFilesChange(merged);
     },
-    [onFilesSelect, maxFiles]
+    [onFilesChange, files, maxFiles],
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleSelect(e.target.files);
+      handleFilesIn(e.target.files);
       e.target.value = "";
     },
-    [handleSelect]
+    [handleFilesIn],
   );
 
   const handleClick = useCallback(() => {
@@ -51,7 +73,7 @@ export function MediaDropzone({
         inputRef.current?.click();
       }
     },
-    [disabled]
+    [disabled],
   );
 
   const handleDrop = useCallback(
@@ -59,9 +81,9 @@ export function MediaDropzone({
       e.preventDefault();
       setIsDragOver(false);
       if (disabled) return;
-      handleSelect(e.dataTransfer.files);
+      handleFilesIn(e.dataTransfer.files);
     },
-    [disabled, handleSelect]
+    [disabled, handleFilesIn],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -75,7 +97,21 @@ export function MediaDropzone({
     if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragOver(false);
   }, []);
 
-  const showPlaceholder = !children;
+  const handleDelete = useCallback(() => {
+    if (!onFilesChange) return;
+    const next = files.filter((_, i) => i !== selectedIndex);
+    onFilesChange(next);
+  }, [files, selectedIndex, onFilesChange]);
+
+  const handlePrev = useCallback(() => {
+    setSelectedIndex((i) => Math.max(0, i - 1));
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setSelectedIndex((i) => Math.min(files.length - 1, i + 1));
+  }, [files.length]);
+
+  const showPlaceholder = !hasFiles && !children;
   const isHover = isDragOver && !disabled;
 
   return (
@@ -104,7 +140,11 @@ export function MediaDropzone({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`flex min-h-[265px] flex-col justify-center gap-2.5 rounded px-6 py-6 outline-none transition-colors ${
+        className={`relative flex flex-col justify-center gap-2.5 overflow-hidden rounded outline-none transition-colors ${
+          hasFiles ? "h-[265px]" : "min-h-[265px]"
+        } ${
+          showPlaceholder ? "px-6 py-6" : ""
+        } ${
           disabled
             ? "cursor-not-allowed opacity-60"
             : "cursor-pointer"
@@ -118,7 +158,65 @@ export function MediaDropzone({
                 : "border border-slate-400 bg-white"
         }`}
       >
-        {showPlaceholder ? (
+        {hasFiles ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrls[selectedIndex]}
+              alt={files[selectedIndex]?.name ?? "Selected image"}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+            <div
+              className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none"
+              onClick={(e) => e.stopPropagation()}
+              aria-hidden
+            >
+              {/* Top row: delete */}
+              <div className="flex justify-end pointer-events-auto">
+                <IconButton
+                  name="delete"
+                  variant="neutrals"
+                  size="large"
+                  aria-label="Delete image"
+                  onClick={handleDelete}
+                />
+              </div>
+
+              {/* Middle row: prev / next */}
+              {hasMultiple && (
+                <div className="flex items-center justify-between pointer-events-auto">
+                  <IconButton
+                    name="chevron_left"
+                    variant="neutrals"
+                    size="large"
+                    aria-label="Previous image"
+                    onClick={handlePrev}
+                    disabled={selectedIndex === 0}
+                  />
+                  <IconButton
+                    name="chevron_right"
+                    variant="neutrals"
+                    size="large"
+                    aria-label="Next image"
+                    onClick={handleNext}
+                    disabled={selectedIndex === files.length - 1}
+                  />
+                </div>
+              )}
+
+              {/* Bottom row: counter */}
+              {hasMultiple && (
+                <div className="flex justify-center pointer-events-auto">
+                  <span className="rounded-full bg-white/90 px-3 py-1 text-[length:var(--font-size-paragraph-sm)] font-medium text-slate-900 shadow-sm">
+                    {selectedIndex + 1} / {files.length}
+                  </span>
+                </div>
+              )}
+            </div>
+          </>
+        ) : showPlaceholder ? (
           <div className="flex flex-1 flex-row items-center gap-6">
             <Icon
               name="add_photo_alternate"

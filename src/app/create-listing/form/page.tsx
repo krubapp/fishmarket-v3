@@ -90,7 +90,6 @@ export default function CreateListingFormPage() {
       currency: "SEK",
       condition: "new" as const,
       category: "",
-      acceptTerms: false,
     },
   });
 
@@ -179,7 +178,8 @@ export default function CreateListingFormPage() {
             subtitle="Add up to 10 photos of your item"
           />
           <MediaDropzone
-            onFilesSelect={(files) => {
+            files={imageFiles}
+            onFilesChange={(files) => {
               setImageFiles(files);
               setImageError(false);
             }}
@@ -319,30 +319,6 @@ export default function CreateListingFormPage() {
           groups={variantGroups}
           onGroupsChange={setVariantGroups}
         />
-
-        {/* Accept */}
-        <section className="flex items-center gap-6 border-b border-slate-200 bg-white px-6 py-12">
-          <div className="flex flex-1 flex-col">
-            <h2 className="font-medium text-text-default-headings text-paragraph-xl leading-(--line-height-h6)">
-              Accept
-            </h2>
-            <p className="text-text-default-body text-paragraph-md leading-(--line-height-paragraph-md)">
-              Secondary information and details plus more
-            </p>
-          </div>
-          <Controller
-            name="acceptTerms"
-            control={control}
-            render={({ field }) => (
-              <Switch
-                checked={field.value}
-                onChange={field.onChange}
-                size="small"
-                aria-label="Accept terms"
-              />
-            )}
-          />
-        </section>
 
         {/* Footer */}
         <section className="flex gap-6 bg-white px-6 py-12 border-b border-slate-200">

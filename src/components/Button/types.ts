@@ -33,6 +33,8 @@ export interface ButtonProps {
   trailingIcon?: MaterialSymbol;
   /** Disabled state. */
   disabled?: boolean;
+  /** Loading state — shows spinner and disables the button. */
+  loading?: boolean;
   /** Mini only: active/pressed state (blue tint). */
   active?: boolean;
   /** Click handler. */

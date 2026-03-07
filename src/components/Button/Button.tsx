@@ -77,6 +77,22 @@ function getVariantClasses(
   }
 }
 
+function Spinner({ size }: { size: number }) {
+  return (
+    <svg
+      className="shrink-0 animate-spin text-current"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
 export function Button({
   children,
   size = "medium",
@@ -84,6 +100,7 @@ export function Button({
   leadingIcon,
   trailingIcon,
   disabled = false,
+  loading = false,
   active = false,
   onClick,
   type = "button",
@@ -91,26 +108,32 @@ export function Button({
   className = "",
 }: ButtonProps) {
   const config = SIZE_CONFIG[size];
-  const variantClasses = getVariantClasses(variant, disabled, active);
+  const isDisabled = disabled || loading;
+  const variantClasses = getVariantClasses(variant, isDisabled, active);
 
   return (
     <button
       type={type}
       className={`${config.height} ${config.padding} ${config.gap} ${config.rounded} ${config.text} ${variantClasses} ${className}`}
       onClick={onClick}
-      disabled={disabled}
+      disabled={isDisabled}
       aria-pressed={active ? true : undefined}
       aria-label={ariaLabel}
+      aria-busy={loading || undefined}
     >
-      {leadingIcon && (
-        <Icon
-          name={leadingIcon}
-          size={config.iconPx}
-          className="shrink-0 text-current"
-        />
+      {loading ? (
+        <Spinner size={config.iconPx} />
+      ) : (
+        leadingIcon && (
+          <Icon
+            name={leadingIcon}
+            size={config.iconPx}
+            className="shrink-0 text-current"
+          />
+        )
       )}
       <span>{children}</span>
-      {trailingIcon && (
+      {!loading && trailingIcon && (
         <Icon
           name={trailingIcon}
           size={config.iconPx}

@@ -22,8 +22,7 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 | `shippingCost` | `number` | Optional shipping cost |
 | `currency` | `string` | Default "SEK" |
 | `condition` | `"new" \| "used" \| "refurbished"` | Product condition |
-| `category` | `string` | Category (e.g. Lures, Rods) |
-| `acceptTerms` | `boolean` | Whether seller accepted terms (default false) |
+| `category` | `string` | Category (e.g. Lures, Rods) | `boolean` | Whether seller accepted terms (default false) |
 | `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, and optional `imageUrl` |
 | `imageUrls` | `string[]` | URLs from Firebase Storage |
 | `createdAt` | `Timestamp` | Server timestamp |

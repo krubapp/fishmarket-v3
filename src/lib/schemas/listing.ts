@@ -44,7 +44,6 @@ export const listingFormSchema = z.object({
     z.literal("refurbished"),
   ]),
   category: z.string().min(1, "Category is required"),
-  acceptTerms: z.boolean().default(false),
   variants: z.array(variantGroupSchema).optional(),
 });
 

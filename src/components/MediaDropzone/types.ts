@@ -1,6 +1,8 @@
 /**
  * Media dropzone (Figma: Image zone, node 87:1090).
  * Drop/select area for images/videos with title, subtitle, and error state.
+ * When `files` is provided, renders an internal image carousel with
+ * navigation arrows, counter pill, and delete button.
  */
 
 export type MediaDropzoneProps = {
@@ -8,8 +10,10 @@ export type MediaDropzoneProps = {
   title?: string;
   /** Helper line (default "You can only add up to 10 images / videos"). */
   subtitle?: string;
-  /** Called with selected files (e.g. from click or drop). */
-  onFilesSelect?: (files: File[]) => void;
+  /** Current files. When non-empty, shows preview carousel with controls. */
+  files?: File[];
+  /** Called when files are added (drop/click) or removed (delete button). */
+  onFilesChange?: (files: File[]) => void;
   /** Accept attribute for the file input (default "image/*,video/*"). */
   accept?: string;
   /** Max number of files (default 10). */
@@ -20,6 +24,6 @@ export type MediaDropzoneProps = {
   disabled?: boolean;
   /** Optional class for the root element. */
   className?: string;
-  /** Optional content to show when media is placed (e.g. preview). */
+  /** Optional content when no `files` prop (backwards-compatible). */
   children?: React.ReactNode;
 };

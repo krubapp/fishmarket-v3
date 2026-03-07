@@ -410,6 +410,7 @@ Text button with optional leading/trailing icon. **Sizes**: mini (24px height, c
 | `leadingIcon` | `MaterialSymbol` | No | Leading icon name |
 | `trailingIcon` | `MaterialSymbol` | No | Trailing icon name |
 | `disabled` | `boolean` | No | Disabled state |
+| `loading` | `boolean` | No | Loading state — shows spinner and disables the button |
 | `active` | `boolean` | No | Mini subtle: active/pressed state (blue tint) |
 | `onClick` | `() => void` | No | Click handler |
 | `type` | `"button"` \| `"submit"` | No | Button type (default `"button"`) |
@@ -1213,10 +1214,10 @@ import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 
 ## MediaDropzone
 
-**Path**: `@/components/MediaDropzone`  
+**Path**: `@/components/MediaDropzone`
 **Figma**: Roy design system → Image zone (node 87:1090).
 
-Drop/click zone for images and videos. Default: white bg, 1px border #99A1AF, padding 24px, min-height 265px. Content: add_photo_alternate icon (42×42) + title (medium/body-lg 20px) + subtitle (medium/paragraph-sm 14px). **Hover**: bg slate-200, border slate-500. **Focus**: 2px border #101828. **Error**: bg red-100, border red-300, red text.
+Drop/click zone for images and videos. When `files` is provided and non-empty, renders an internal image carousel with overlay controls: delete button (top-right), prev/next arrows (mid-left/mid-right, shown when multiple files), and a counter pill (bottom-center, shown when multiple files). The component creates preview object URLs internally and handles cleanup. Default (no files): white bg, 1px border #99A1AF, padding 24px, min-height 265px, add_photo_alternate icon (42×42) + title + subtitle. **Hover**: bg slate-200, border slate-500. **Focus**: 2px border #101828. **Error**: bg red-100, border red-300, red text.
 
 **Props**
 
@@ -1224,13 +1225,14 @@ Drop/click zone for images and videos. Default: white bg, 1px border #99A1AF, pa
 |------|------|----------|-------------|
 | `title` | `string` | No | Main line (default "Select images ") |
 | `subtitle` | `string` | No | Helper (default "You can only add up to 10 images / videos") |
-| `onFilesSelect` | `(files: File[]) => void` | No | Called with selected/dropped files |
+| `files` | `File[]` | No | Current files. When non-empty, shows preview carousel with nav/delete controls |
+| `onFilesChange` | `(files: File[]) => void` | No | Called when files are added (drop/click, appended) or removed (delete button) |
 | `accept` | `string` | No | File input accept (default "image/*,video/*") |
 | `maxFiles` | `number` | No | Max files (default 10) |
 | `error` | `boolean` | No | Error state |
 | `disabled` | `boolean` | No | Disabled state |
 | `className` | `string` | No | Root class |
-| `children` | `React.ReactNode` | No | When set, replaces placeholder (e.g. preview) |
+| `children` | `React.ReactNode` | No | Fallback content when no `files` prop (backwards-compatible) |
 
 **Exports**: `MediaDropzone`, `MediaDropzoneProps`.
 
@@ -1239,8 +1241,11 @@ Drop/click zone for images and videos. Default: white bg, 1px border #99A1AF, pa
 ```tsx
 import { MediaDropzone } from "@/components/MediaDropzone";
 
+const [imageFiles, setImageFiles] = useState<File[]>([]);
+
 <MediaDropzone
-  onFilesSelect={(files) => setFiles(files)}
+  files={imageFiles}
+  onFilesChange={setImageFiles}
   error={hasError}
 />
 ```
@@ -1324,7 +1329,7 @@ const [open, setOpen] = useState(false);
 **Path**: `@/components/VariantList` 
 **Figma**: Nike Fishing Maning 2026 → variant table (node 443:1585).
 
-Table display of variant groups on the create-listing form. Each group is a collapsible section: group header row (name, value count, expand/collapse chevron) followed by indented value rows. Header row with select-all checkbox, "Variant - Expand all / Collapse all" toggle, Price and Available column headers. Value rows: checkbox, 48×48 image upload button, name, price input (92px), available input (92px). Groups start expanded. "Add variants" button at the bottom opens the variant drawer.
+Table display of variant groups on the create-listing form. Each group is a collapsible section: group header row (name, value count, expand/collapse chevron) followed by indented value rows. Header row with "Variant - Expand all / Collapse all" toggle, Price and Available column headers. Value rows: 48×48 image upload button, name, price input (92px), available input (92px). Groups start expanded. "Add variants" button at the bottom opens the variant drawer.
 
 **Props**
 

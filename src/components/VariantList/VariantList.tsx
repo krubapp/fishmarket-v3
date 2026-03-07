@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { Checkbox } from "@/components/Checkbox";
 import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 
@@ -12,8 +11,8 @@ import type { VariantListProps } from "./types";
  * VariantList (Figma: node 443:1585).
  *
  * Displays variant groups as collapsible sections — each group has a header
- * row (name + value count + chevron) followed by value rows with checkbox,
- * image, price, and available inputs.
+ * row (name + value count + chevron) followed by value rows with image,
+ * price, and available inputs.
  */
 export function VariantList({
   groups,
@@ -25,7 +24,6 @@ export function VariantList({
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     () => new Set(groups.map((g) => g.id)),
   );
-  const [checkedValues, setCheckedValues] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingValueId, setPendingValueId] = useState<string | null>(null);
 
@@ -34,20 +32,9 @@ export function VariantList({
     [groups],
   );
 
-  const allValueIds = useMemo(() => {
-    const ids: string[] = [];
-    for (const g of groupsWithValues) {
-      for (const v of g.values) ids.push(v.id);
-    }
-    return ids;
-  }, [groupsWithValues]);
-
   const allExpanded =
     groupsWithValues.length > 0 &&
     groupsWithValues.every((g) => expandedGroups.has(g.id));
-
-  const allChecked =
-    allValueIds.length > 0 && allValueIds.every((id) => checkedValues.has(id));
 
   const toggleExpandAll = useCallback(() => {
     if (allExpanded) {
@@ -62,23 +49,6 @@ export function VariantList({
       const next = new Set(prev);
       if (next.has(groupId)) next.delete(groupId);
       else next.add(groupId);
-      return next;
-    });
-  }, []);
-
-  const toggleCheckAll = useCallback(() => {
-    if (allChecked) {
-      setCheckedValues(new Set());
-    } else {
-      setCheckedValues(new Set(allValueIds));
-    }
-  }, [allChecked, allValueIds]);
-
-  const toggleCheckValue = useCallback((valueId: string) => {
-    setCheckedValues((prev) => {
-      const next = new Set(prev);
-      if (next.has(valueId)) next.delete(valueId);
-      else next.add(valueId);
       return next;
     });
   }, []);
@@ -143,7 +113,7 @@ export function VariantList({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="-mx-6 flex flex-col">
       <input
         ref={fileInputRef}
         type="file"
@@ -153,12 +123,7 @@ export function VariantList({
       />
 
       {/* Header row */}
-      <div className="flex h-14 items-center gap-3 rounded-t-lg bg-slate-100 px-3">
-        <Checkbox
-          checked={allChecked}
-          onChange={toggleCheckAll}
-          aria-label="Select all variants"
-        />
+      <div className="flex h-14 items-center gap-3 border-b border-t border-slate-200 bg-slate-100 px-6">
         <button
           type="button"
           onClick={toggleExpandAll}
@@ -172,7 +137,7 @@ export function VariantList({
             {allExpanded ? "Collapse all" : "Expand all"}
           </span>
         </button>
-        <span className="w-[92px] text-center font-semibold text-slate-900 text-paragraph-sm underline">
+        <span className="w-[92px] text-center font-semibold text-slate-900 text-paragraph-sm">
           Price
         </span>
         <span className="w-[92px] text-center font-semibold text-slate-900 text-paragraph-sm underline">
@@ -191,7 +156,7 @@ export function VariantList({
             <button
               type="button"
               onClick={() => toggleExpandGroup(group.id)}
-              className="flex w-full items-center gap-3 border-b border-slate-200 px-3 py-3"
+              className="flex w-full items-center gap-3 border-b border-slate-200 px-6 py-2"
             >
               <div className="flex min-w-0 flex-1 flex-col items-start">
                 <span className="font-semibold text-slate-900 text-paragraph-sm">
@@ -214,19 +179,12 @@ export function VariantList({
             {isExpanded &&
               group.values.map((value) => {
                 const imageSrc = getImageSrc(value);
-                const isChecked = checkedValues.has(value.id);
 
                 return (
                   <div
                     key={value.id}
-                    className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 py-2 pr-3 pl-6"
+                    className="flex items-center gap-5 border-b border-slate-200 px-6 py-2"
                   >
-                    <Checkbox
-                      checked={isChecked}
-                      onChange={() => toggleCheckValue(value.id)}
-                      aria-label={`Select ${value.name}`}
-                    />
-
                     <button
                       type="button"
                       onClick={() => handleImageClick(value.id)}
@@ -285,12 +243,11 @@ export function VariantList({
       })}
 
       {/* Add variants button */}
-      <div className="pt-4">
+      <div className="p-6">
         <Button
           variant="subtle"
           type="button"
           onClick={onOpenDrawer}
-          leadingIcon="add"
         >
           Add variants
         </Button>

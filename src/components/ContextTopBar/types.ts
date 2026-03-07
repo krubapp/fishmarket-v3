@@ -10,4 +10,5 @@ export type ContextTopBarProps = {
   onFilter?: () => void;
   onSearch?: () => void;
   className?: string;
+  hidePadding?: boolean
 };

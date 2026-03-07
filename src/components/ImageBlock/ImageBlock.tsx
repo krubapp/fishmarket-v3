@@ -28,11 +28,16 @@ export function ImageBlock({
     width,
     height,
     borderRadius: radius,
+    backgroundImage:
+      "linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%)",
+    backgroundSize: "20px 20px",
+    backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+    backgroundColor: "#f3f4f6",
   };
 
   const root = (
     <div
-      className={`relative flex shrink-0 flex-col items-center justify-center overflow-hidden bg-grey-200 ${className}`}
+      className={`relative flex shrink-0 flex-col items-center justify-center overflow-hidden ${className}`}
       style={style}
       role={showAddIcon ? "button" : undefined}
       tabIndex={showAddIcon ? 0 : undefined}

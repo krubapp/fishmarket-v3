@@ -12,8 +12,6 @@ export default function CreateListingPage() {
   const router = useRouter();
   return (
     <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col bg-white pb-[120px]">
-      <ContextTopBar backLabel="Section" title="Advance listing" />
-
       {/* Decorative masonry grid of empty image placeholders */}
       <div className="flex-1 overflow-hidden">
         <div className="flex justify-center gap-4">

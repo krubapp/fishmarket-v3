@@ -35,6 +35,7 @@ export type ImageBlockProps = {
   onAction?: () => void;
   /** When false, border radius is 0 (square). Default true. */
   rounded?: boolean;
+
   /** Optional class for the root element. */
   className?: string;
 };

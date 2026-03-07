@@ -25,7 +25,7 @@ export function DrawerTopBar({
     >
       <div className="flex shrink-0">
         <IconButton
-          name="arrow_back"
+          name="chevron_left"
           size="large"
           variant="subtle"
           aria-label={backAriaLabel}
