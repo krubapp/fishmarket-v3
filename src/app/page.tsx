@@ -8,7 +8,10 @@ import { RootTopBar } from "@/components/RootTopBar";
 import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
 import { ColorBlock } from "@/components/ColorBlock";
+import { IconButton } from "@/components/IconButton";
 import { ImageBlock } from "@/components/ImageBlock";
+import { ImageButton } from "@/components/ImageButton";
+import { Link } from "@/components/Link";
 import { CostBreakdown } from "@/components/CostBreakdown";
 import { MediaDropzone } from "@/components/MediaDropzone";
 import { TrackInventoryCard } from "@/components/TrackInventoryCard";
@@ -126,6 +129,30 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">IconButton</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <IconButton name="favorite" aria-label="Like" onClick={() => {}} />
+            <IconButton name="favorite" variant="subtle" aria-label="Like" />
+            <IconButton name="favorite" variant="outline" aria-label="Like" />
+            <IconButton name="favorite" variant="transparent" aria-label="Like" />
+            <IconButton name="favorite" variant="neutrals" aria-label="Like" />
+            <IconButton name="favorite" size="large" aria-label="Like" />
+            <IconButton name="delete" variant="default" tone="error" aria-label="Delete" />
+            <IconButton name="delete" variant="subtle" tone="error" aria-label="Delete" />
+            <IconButton name="add" aria-label="Add" disabled />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Link</span>
+          <div className="flex flex-wrap items-center gap-4 rounded bg-white p-4">
+            <Link href="#">Sign Up</Link>
+            <Link onClick={() => {}}>Sign Up</Link>
+            <Link size="small">Sign Up</Link>
+            <Link showIcon={false}>Learn more</Link>
+            <Link disabled>Sign Up</Link>
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ImageBlock</span>
           <div className="flex flex-wrap items-end gap-6">
             <ImageBlock size="small" />
@@ -133,6 +160,25 @@ export default function Home() {
             <ImageBlock size="medium" />
             <ImageBlock size="medium" onAdd={() => {}} />
             <ImageBlock size="large" onAction={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ImageButton</span>
+          <div className="flex flex-wrap items-end gap-6">
+            <ImageButton
+              src="https://placehold.co/100x100/e3eae1/8b9189?text=1"
+              alt="Option 1"
+              onClick={() => {}}
+            />
+            <ImageButton
+              src="https://placehold.co/100x100/e3eae1/8b9189?text=2"
+              alt="Option 2"
+              selected
+            />
+            <ImageButton
+              src="https://placehold.co/100x100/e3eae1/8b9189?text=3"
+              alt="Option 3"
+            />
           </div>
         </section>
         <section className="flex flex-col">

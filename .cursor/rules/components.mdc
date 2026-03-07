@@ -280,6 +280,107 @@ import { ColorBlock } from "@/components/ColorBlock";
 
 ---
 
+## IconButton
+
+**Path**: `@/components/IconButton`  
+**Figma**: icon-buttons -small (561:1274), icon-buttons -large (65:270), icon-buttons-error small (599:3723), icon-buttons-error large (184:1356).
+
+Circular icon-only button. **Size**: small 32×32 or large 40×40; icon 20px. **Variant**: default (filled), subtle (light bg), outline (border), transparent (no bg), neutrals (white bg). **Tone**: default (slate) or error (red). **States**: hover, focus (2px ring), disabled (grey-200 bg, grey-700 icon).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `name` | `MaterialSymbol` | Yes | Icon name |
+| `size` | `IconButtonSize` | No | `"small"` \| `"large"` (default `"small"`) |
+| `variant` | `IconButtonVariant` | No | `"default"` \| `"subtle"` \| `"outline"` \| `"transparent"` \| `"neutrals"` |
+| `tone` | `IconButtonTone` | No | `"default"` \| `"error"` |
+| `disabled` | `boolean` | No | Disabled state |
+| `onClick` | `() => void` | No | Click handler |
+| `aria-label` | `string` | Yes | Accessible label (required for icon-only) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `IconButton`, `IconButtonProps`, `IconButtonSize`, `IconButtonTone`, `IconButtonVariant`.
+
+**Example**
+
+```tsx
+import { IconButton } from "@/components/IconButton";
+
+<IconButton name="favorite" aria-label="Like" onClick={() => {}} />
+<IconButton name="delete" size="large" variant="outline" tone="error" aria-label="Delete" />
+<IconButton name="add" variant="subtle" size="large" aria-label="Add" disabled />
+```
+
+---
+
+## Link
+
+**Path**: `@/components/Link`  
+**Figma**: Roy design system → Link (node 32:3837).
+
+Text link with optional trailing chevron_right (16px). Row: label + icon, gap 12px, padding 4px. **Size**: small (medium/paragraph-sm 14px) or medium (medium/body-md 16px). **Color**: slate-900, hover slate-950, focus 2px bottom border slate-900, disabled grey-700. Renders as `<a>` when `href` is set, otherwise `<button>` with `onClick`.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `React.ReactNode` | Yes | Link label (e.g. "Sign Up") |
+| `href` | `string` | No | When set, renders as `<a href="...">` |
+| `onClick` | `() => void` | No | When no href, click handler |
+| `size` | `LinkSize` | No | `"small"` \| `"medium"` (default `"medium"`) |
+| `showIcon` | `boolean` | No | Show trailing chevron (default `true`) |
+| `disabled` | `boolean` | No | Disabled state |
+| `className` | `string` | No | Root class |
+| `target` | `string` | No | Anchor target (when href set) |
+| `rel` | `string` | No | Anchor rel (when href set) |
+
+**Exports**: `Link`, `LinkProps`, `LinkSize`.
+
+**Example**
+
+```tsx
+import { Link } from "@/components/Link";
+
+<Link href="/signup">Sign Up</Link>
+<Link onClick={() => openModal()}>Sign Up</Link>
+<Link size="small" showIcon={false}>Learn more</Link>
+<Link disabled>Sign Up</Link>
+```
+
+---
+
+## ImageButton
+
+**Path**: `@/components/ImageButton`  
+**Figma**: Roy design system → image-buttons (node 535:1122).
+
+Clickable image button: 100×100, 4px radius, image object-cover. **States**: default (image only), hover (semi-transparent grey overlay rgba(203,212,201,0.78)), selected (1px border #101828). Focus: 2px ring slate-900, ring-offset 2.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `src` | `string` | Yes | Image URL |
+| `alt` | `string` | Yes | Alt text |
+| `selected` | `boolean` | No | Selected state (1px border) |
+| `onClick` | `() => void` | No | Click handler |
+| `aria-label` | `string` | No | Overrides alt for label (default: alt) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `ImageButton`, `ImageButtonProps`.
+
+**Example**
+
+```tsx
+import { ImageButton } from "@/components/ImageButton";
+
+<ImageButton src={thumbUrl} alt="Product" onClick={() => {}} />
+<ImageButton src={thumbUrl} alt="Product" selected />
+```
+
+---
+
 ## ImageBlock
 
 **Path**: `@/components/ImageBlock`  
