@@ -1,0 +1,26 @@
+---
+description: Fishmarket v3 project stack and conventions
+alwaysApply: true
+---
+
+# Fishmarket v3 – Project
+
+## Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **React**: 19
+- **Styling**: Tailwind CSS v4 (`@import "tailwindcss"`, `@theme inline` in globals.css)
+- **Icons**: Material Symbols via `material-symbols` npm package; use the `Icon` component from `@/components/Icon` with the `MaterialSymbol` type for icon names
+- **Language**: TypeScript
+
+## Conventions
+
+- Use the App Router: `src/app/` for routes, layouts, and global styles
+- Use path alias `@/` for imports under `src/`
+- Prefer the shared `Icon` component for Material Symbols; icon names match [fonts.google.com/icons](https://fonts.google.com/icons) (e.g. `home`, `settings`, `favorite`)
+- CSS variables: `--background` and `--foreground` for theming; dark mode via `prefers-color-scheme`
+- Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`
+
+## Rules and skills
+
+- **Keep rules and skills in sync**: Whenever the codebase changes in ways that affect how we work (new patterns, conventions, stack, or tooling), update the relevant Cursor rules (`.cursor/rules/*.mdc`) and skills so they stay accurate and useful. Do this as part of the same change when applicable.
