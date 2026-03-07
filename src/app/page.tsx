@@ -5,12 +5,15 @@ import { BottomNav } from "@/components/BottomNav";
 import type { BottomNavItemId } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { RootTopBar } from "@/components/RootTopBar";
+import { Accordion, AccordionItem } from "@/components/Accordion";
 import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
+import { Banner } from "@/components/Banner";
 import { BorderLine } from "@/components/BorderLine";
 import { Button } from "@/components/Button";
 import { Checkbox } from "@/components/Checkbox";
 import { ColorBlock } from "@/components/ColorBlock";
+import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { ImageBlock } from "@/components/ImageBlock";
 import { ImageButton } from "@/components/ImageButton";
@@ -24,9 +27,15 @@ import { MediaDropzone } from "@/components/MediaDropzone";
 import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { ProductListing } from "@/components/ProductListing";
 import { ProgressBar } from "@/components/ProgressBar";
+import { Radio } from "@/components/Radio";
+import { Rating } from "@/components/Rating";
 import { SearchBar } from "@/components/SearchBar";
 import { SectionLine } from "@/components/SectionLine";
+import { Switch } from "@/components/Switch";
+import { Input } from "@/components/Input";
 import { Tabs, TabsBox } from "@/components/Tabs";
+import { Textarea } from "@/components/Textarea";
+import { Tooltip } from "@/components/Tooltip";
 import type { TabItem, TabsBoxItem } from "@/components/Tabs";
 import { VariantOptionButton } from "@/components/VariantOptionButton";
 import type { SearchBarResult } from "@/components/SearchBar";
@@ -60,6 +69,14 @@ export default function Home() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerWithTopBarOpen, setDrawerWithTopBarOpen] = useState(false);
   const [dropdownPeriod, setDropdownPeriod] = useState("6m");
+  const [switchOn, setSwitchOn] = useState(false);
+  const [textareaValue, setTextareaValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [preActionValue, setPreActionValue] = useState("");
+  const [postActionValue, setPostActionValue] = useState("Item one");
+  const [postActionChecked, setPostActionChecked] = useState(false);
+  const [radioOption, setRadioOption] = useState("a");
+  const [ratingValue, setRatingValue] = useState(0);
   const searchResults = useMemo(
     () => (searchQuery.trim() ? SAMPLE_SEARCH_RESULTS : []),
     [searchQuery]
@@ -241,6 +258,143 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Radio</span>
+          <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
+            <div className="flex flex-col gap-2">
+              <Radio
+                name="showcase"
+                value="a"
+                checked={radioOption === "a"}
+                onChange={() => setRadioOption("a")}
+                label="Option A"
+              />
+              <Radio
+                name="showcase"
+                value="b"
+                checked={radioOption === "b"}
+                onChange={() => setRadioOption("b")}
+                label="Option B"
+              />
+            </div>
+            <Radio name="standalone" value="x" aria-label="Unchecked" onChange={() => {}} />
+            <Radio name="standalone" value="y" checked aria-label="Checked" onChange={() => {}} />
+            <Radio name="size" value="large" size="large" label="Large" checked onChange={() => {}} />
+            <Radio name="d" value="d" disabled label="Disabled" />
+            <Radio name="e" value="e" checked error label="Error" onChange={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Switch</span>
+          <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
+            <Switch aria-label="Off" onChange={() => {}} />
+            <Switch checked aria-label="On" onChange={() => {}} />
+            <Switch label="Notifications" checked={switchOn} onChange={setSwitchOn} />
+            <Switch label="Checked" checked onChange={() => {}} />
+            <Switch size="small" label="Small" onChange={() => {}} />
+            <Switch defaultChecked disabled label="Disabled" />
+            <Switch checked error label="Error" onChange={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Textarea</span>
+          <div className="flex flex-col gap-4 rounded bg-white p-4">
+            <Textarea
+              placeholder="Describe your product..."
+              value={textareaValue}
+              onChange={(e) => setTextareaValue(e.target.value)}
+              aria-label="Description"
+            />
+            <Textarea
+              label="Subject"
+              helperText="Choose a unique username for your account."
+              placeholder="Cordarro"
+              aria-label="Subject"
+            />
+            <Textarea placeholder="Rest (empty)" aria-label="Rest" />
+            <Textarea placeholder="Disabled" disabled aria-label="Disabled" />
+            <Textarea placeholder="Error" error value="Invalid input" aria-label="Error" />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Input</span>
+          <div className="flex flex-col gap-4 rounded bg-white p-4">
+            <Input
+              placeholder="Name"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              aria-label="Name"
+            />
+            <Input
+              label="Subject"
+              helperText="Choose a unique username for your account."
+              placeholder="Cordarro"
+              aria-label="Subject"
+            />
+            <Input placeholder="Rest (empty)" aria-label="Rest" />
+            <Input type="email" placeholder="Email" aria-label="Email" />
+            <Input placeholder="Disabled" disabled aria-label="Disabled" />
+            <Input placeholder="Error" error value="Invalid" aria-label="Error" />
+            <Input
+              placeholder="Label"
+              value={preActionValue}
+              onChange={(e) => setPreActionValue(e.target.value)}
+              trailingIcon="add"
+              onTrailingClick={() => setPreActionValue("")}
+              trailingAriaLabel="Add"
+              aria-label="New item"
+            />
+            <Input
+              placeholder="Label"
+              value={postActionValue}
+              onChange={(e) => setPostActionValue(e.target.value)}
+              leadingCheckbox
+              checkboxChecked={postActionChecked}
+              onCheckboxChange={setPostActionChecked}
+              trailingIcon="close"
+              onTrailingClick={() => setPostActionValue("")}
+              trailingAriaLabel="Clear"
+              checkboxAriaLabel="Done"
+              aria-label="Item"
+            />
+            <Input
+              placeholder="Error"
+              error
+              value="Invalid"
+              trailingIcon="add"
+              trailingAriaLabel="Add"
+              aria-label="Error"
+            />
+            <Input
+              placeholder="Disabled"
+              disabled
+              value="Disabled"
+              leadingCheckbox
+              checkboxChecked
+              trailingIcon="close"
+              trailingAriaLabel="Clear"
+              checkboxAriaLabel="Done"
+              aria-label="Disabled"
+            />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Tooltip</span>
+          <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
+            <Tooltip
+              title="Add your product"
+              description="Tap here in Inventory to list an item you want to sell."
+              action={<Button size="small">Sign Up</Button>}
+            >
+              <Button size="small">Info</Button>
+            </Tooltip>
+            <Tooltip title="Short tip" arrowPlacement="center">
+              <span className="cursor-default rounded border border-slate-300 px-2 py-1 text-slate-900" tabIndex={0}>
+                Hover or focus
+              </span>
+            </Tooltip>
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">IconButton</span>
           <div className="flex flex-wrap items-center gap-4">
             <IconButton name="favorite" aria-label="Like" onClick={() => {}} />
@@ -326,6 +480,16 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Rating</span>
+          <div className="flex flex-wrap items-center gap-6 rounded bg-white p-4">
+            <Rating value={0} />
+            <Rating value={1} />
+            <Rating value={3} />
+            <Rating value={5} />
+            <Rating value={ratingValue} onChange={setRatingValue} />
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ProgressBar</span>
           <div className="w-full max-w-md space-y-4 rounded bg-white p-4">
             <ProgressBar value={0} aria-label="Progress 0%" />
@@ -396,6 +560,37 @@ export default function Home() {
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">MediaDropzone</span>
           <MediaDropzone onFilesSelect={() => {}} />
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Banner</span>
+          <div className="w-full max-w-md">
+            <Banner
+              title="To continue, add your shipping information."
+              description="Required before creating your first listing. Used as the sender address on shipping labels."
+              icon={<Icon name="back_hand" fill={1} size={42} />}
+            />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Accordion</span>
+          <div className="w-full max-w-md space-y-2">
+            <AccordionItem title="Description" defaultOpen>
+              <p className="font-medium text-grey-900 text-[length:var(--font-size-paragraph-md)] leading-[1.5]">
+                Heading
+              </p>
+              <p className="text-grey-800 text-[length:var(--font-size-paragraph-sm)] leading-[1.43]">
+                Built for anglers who want reliable performance in changing conditions, this set of ten mini perch-style
+                soft plastics delivers lifelike movement and proven fish-triggering detail. Each lure is hand-poured in
+                small batches to ensure consistent quality, supple action in the water, and durable construction that
+                holds up fish after fish.
+              </p>
+            </AccordionItem>
+            <AccordionItem title="Ratings" headerRight={<Rating value={0} />}>
+              <p className="text-grey-800 text-[length:var(--font-size-paragraph-sm)] leading-[1.43]">
+                No reviews yet. Be the first to add a review.
+              </p>
+            </AccordionItem>
+          </div>
         </section>
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Badge</span>

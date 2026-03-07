@@ -183,6 +183,97 @@ import { SectionLine } from "@/components/SectionLine";
 
 ---
 
+## Accordion
+
+**Path**: `@/components/Accordion`  
+**Figma**: Roy design system → accordion-basic (553:4285), accordion-ratings (553:1921).
+
+Expandable panel(s). **AccordionItem**: trigger row (title + optional **headerRight** + chevron) + collapsible content. Padding 24px, 24px gap between trigger and content; trigger row 12px gap. **Title**: semi/body-lg (20px), slate-900 (hover slate-950, disabled grey-700). **headerRight**: optional node between title and chevron (e.g. ratings, badge, button); click does not toggle. Chevron: expand_more / expand_less in 40×40 area, transparent. **States**: default, hover, focus, disabled (bg grey-200). Content (when open): optional heading + body or any ReactNode.
+
+**AccordionItem props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | Yes | Trigger label |
+| `headerRight` | `React.ReactNode` | No | Content in header between title and chevron (e.g. ratings, button) |
+| `children` | `React.ReactNode` | Yes | Content when expanded |
+| `open` | `boolean` | No | Controlled open |
+| `onOpenChange` | `(open: boolean) => void` | No | When open changes |
+| `defaultOpen` | `boolean` | No | Initial open (uncontrolled) |
+| `disabled` | `boolean` | No | Disabled state |
+| `className` | `string` | No | Root class |
+
+**Accordion props** (wrapper with multiple items)
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `Array<{ title: string; headerRight?: React.ReactNode; content: React.ReactNode }>` | Yes | Items to render |
+| `allowMultiple` | `boolean` | No | Allow multiple open (default false) |
+| `value` | `number[]` | No | Controlled open indices |
+| `onValueChange` | `(value: number[]) => void` | No | When open set changes |
+| `className` | `string` | No | Root class |
+
+**Exports**: `Accordion`, `AccordionItem`, `AccordionProps`, `AccordionItemProps`.
+
+**Example**
+
+```tsx
+import { Accordion, AccordionItem } from "@/components/Accordion";
+
+<AccordionItem title="Description" defaultOpen>
+  <p className="font-medium text-grey-900 ...">Heading</p>
+  <p className="text-grey-800 ...">Body text...</p>
+</AccordionItem>
+
+<AccordionItem title="Ratings" headerRight={<Badge variant="default">0 reviews</Badge>} defaultOpen>
+  ...
+</AccordionItem>
+
+<Accordion
+  items={[
+    { title: "Description", content: <p>Content here.</p> },
+    { title: "Ratings", headerRight: <span className="text-grey-500 text-sm">0 reviews</span>, content: <p>...</p> },
+  ]}
+  allowMultiple={false}
+/>
+```
+
+---
+
+## Banner
+
+**Path**: `@/components/Banner`  
+**Figma**: Roy design system → Banner (node 82:1625).
+
+Callout block with optional icon, title, and description. **Layout**: column, center-aligned, 16px gap, 24px padding, yellow-100 (warning) background, 8px border-radius. **Title**: semi/body-lg (20px, 1.4), grey-950. **Description**: medium/body-md (16px, 1.5), grey-900. **Icon**: optional, rendered in 42×42 area above title.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | Yes | Main heading |
+| `description` | `string` | No | Supporting text |
+| `icon` | `React.ReactNode` | No | Optional icon/image above title (42×42 area) |
+| `className` | `string` | No | Root wrapper class |
+
+**Exports**: `Banner`, `BannerProps`.
+
+**Example**
+
+```tsx
+import { Banner } from "@/components/Banner";
+import { Icon } from "@/components/Icon";
+
+<Banner
+  title="To continue, add your shipping information."
+  description="Required before creating your first listing. Used as the sender address on shipping labels."
+  icon={<Icon name="info" size={42} />}
+/>
+<Banner title="Update required" description="Please refresh to get the latest version." />
+```
+
+---
+
 ## Badge
 
 **Path**: `@/components/Badge`  
@@ -408,6 +499,179 @@ import { Checkbox } from "@/components/Checkbox";
 
 ---
 
+## Radio
+
+**Path**: `@/components/Radio`  
+**Figma**: Roy design system → radio button (24:2142), Radio list-items (26:2494).
+
+Circle with optional inner dot when checked. **Sizes**: default 24×24 (inner dot 12px), large 32×32 (inner dot 16px). **States**: default (slate-100 bg, slate-900 border), hover (slate-200, slate-950), focus (ring), disabled (slate-200 border, grey-700 dot when checked), error (red-100 bg, red-600 border and dot). Optional **label** (26:2494): row, gap 4px (large) / 8px (default); typography medium/body-md (default size) or medium/body-lg (large size); label colors: default slate-900, hover slate-950, disabled grey-700, error red-700. Use same `name` and controlled `value` + `onChange` for groups.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `string` | Yes | Value for this option (group by `name`) |
+| `checked` | `boolean` | No | Whether this option is selected (controlled) |
+| `name` | `string` | No | Input name – same for all options in group |
+| `onChange` | `(e: React.ChangeEvent<HTMLInputElement>) => void` | No | Called when selection changes |
+| `disabled` | `boolean` | No | Disabled state |
+| `error` | `boolean` | No | Error state (red border/bg/dot) |
+| `label` | `React.ReactNode` | No | Label next to radio (gap 4px large / 8px default, medium/body-md or body-lg per size) |
+| `size` | `"default" \| "large"` | No | default 24×24, large 32×32 |
+| `id` | `string` | No | Input id for form/label association |
+| `aria-label` | `string` | No | Accessible name (when no `label`) |
+| `className` | `string` | No | Root label class |
+
+**Exports**: `Radio`, `RadioProps`.
+
+**Example**
+
+```tsx
+import { Radio } from "@/components/Radio";
+
+// Group: same name, parent holds selected value
+const [selected, setSelected] = useState("a");
+<Radio name="choice" value="a" checked={selected === "a"} onChange={() => setSelected("a")} label="Option A" />
+<Radio name="choice" value="b" checked={selected === "b"} onChange={() => setSelected("b")} label="Option B" />
+
+<Radio name="size" value="default" label="Default size" checked onChange={() => {}} />
+<Radio name="size" value="large" size="large" label="Large" onChange={() => {}} />
+<Radio value="x" disabled label="Disabled" />
+<Radio value="x" checked error label="Error" onChange={() => {}} />
+```
+
+---
+
+## Switch
+
+**Path**: `@/components/Switch`  
+**Figma**: Roy design system → switch (node 88:2375).
+
+Pill track with sliding thumb. **Sizes**: Small (42×24px, 18px thumb), Medium (56×34px, 28px thumb). **States**: default (slate-100 track, white thumb, slate-200 border), hover (slate-200 track, slate-950 border; thumb slate-900 when off), active/on (slate-900 track, slate-100 thumb), disabled (grey-200 track, grey-700 thumb), error (red-200 track, red-700 thumb). Optional label: row, 12px gap, medium/paragraph-md. Supports controlled (`checked` + `onChange`) or uncontrolled (`defaultChecked`).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `checked` | `boolean` | No | Controlled checked state |
+| `onChange` | `(checked: boolean) => void` | No | Called when checked changes |
+| `defaultChecked` | `boolean` | No | Initial checked when uncontrolled |
+| `disabled` | `boolean` | No | Disabled state |
+| `error` | `boolean` | No | Error state (red track/thumb) |
+| `size` | `SwitchSize` | No | `"small"` \| `"medium"` (default `"medium"`) |
+| `label` | `React.ReactNode` | No | Label next to switch |
+| `id` | `string` | No | Input id for form/label association |
+| `name` | `string` | No | Input name for forms |
+| `aria-label` | `string` | No | Accessible name (when no `label`) |
+| `className` | `string` | No | Root label class |
+
+**Exports**: `Switch`, `SwitchProps`, `SwitchSize`.
+
+**Example**
+
+```tsx
+import { Switch } from "@/components/Switch";
+
+<Switch label="Enable notifications" onChange={(c) => setOn(c)} />
+<Switch checked={on} onChange={setOn} size="small" />
+<Switch defaultChecked disabled label="Disabled" />
+<Switch checked error label="Error" />
+```
+
+---
+
+## Textarea
+
+**Path**: `@/components/Textarea`
+**Figma**: Roy design system → text-area-items (88:1813), input-text-box (88:1893) for label + helper.
+
+Multi-line text field. Optional **label** (above, bold/paragraph-sm grey-950) and **helperText** (below, medium/paragraph-sm grey-800); 12px gap between label, textarea, and helper. **States**: rest (white bg, slate-400 border, placeholder slate-400), active/focus (slate-900 border), filled (slate-200 bg when has value), disabled (grey-200 bg, slate-200 border, grey-700 text), error (red-100 bg, red-600 border, red-700 text). Padding 16px 12px, border-radius 8px, min-height 160px; typography body/body-md (16px, 1.5). Supports controlled (`value` + `onChange`) or uncontrolled (`defaultValue`).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `string` | No | Controlled value |
+| `defaultValue` | `string` | No | Default when uncontrolled |
+| `onChange` | `(e: React.ChangeEvent<HTMLTextAreaElement>) => void` | No | Called when value changes |
+| `placeholder` | `string` | No | Placeholder (slate-400) |
+| `label` | `string` | No | Label above (bold/paragraph-sm, grey-950) |
+| `helperText` | `string` | No | Helper text below (medium/paragraph-sm, grey-800) |
+| `disabled` | `boolean` | No | Disabled state |
+| `error` | `boolean` | No | Error state |
+| `rows` | `number` | No | Visible rows (default 6) |
+| `id` | `string` | No | For form/label association |
+| `name` | `string` | No | Name for forms |
+| `aria-label` | `string` | No | Accessible label (when no `label`) |
+| `className` | `string` | No | Root wrapper class |
+| `onFocus` / `onBlur` | `React.FocusEventHandler<HTMLTextAreaElement>` | No | Focus handlers |
+
+**Exports**: `Textarea`, `TextareaProps`.
+
+**Example**
+
+```tsx
+import { Textarea } from "@/components/Textarea";
+
+<Textarea placeholder="Describe your product..." value={desc} onChange={(e) => setDesc(e.target.value)} />
+<Textarea label="Subject" helperText="Choose a unique username for your account." placeholder="Cordarro" />
+<Textarea placeholder="Notes" rows={4} />
+<Textarea disabled placeholder="Disabled" />
+<Textarea error placeholder="Error" value="Invalid" />
+```
+
+---
+
+## Input
+
+**Path**: `@/components/Input`
+**Figma**: Roy design system → input (82:882), input-checkbox-actions (322:4894), input-feild (82:1173).
+
+Single-line text field. Optional **label** (above, bold/paragraph-sm grey-950) and **helperText** (below, medium/paragraph-sm grey-800); 12px gap. Optional leading checkbox and/or trailing icon button (16px gap, 40×40). **States**: rest, hover, active/focus, filled, disabled, error. Padding 12px horizontal, 8px vertical, height 40px, border-radius 8px, body/body-md. Trailing button: default (error tone when `error` and no checkbox); transparent when `leadingCheckbox`. Supports controlled or uncontrolled.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `string` | No | Controlled value |
+| `defaultValue` | `string` | No | Default when uncontrolled |
+| `onChange` | `(e: React.ChangeEvent<HTMLInputElement>) => void` | No | Called when value changes |
+| `placeholder` | `string` | No | Placeholder (grey-500) |
+| `label` | `string` | No | Label above (bold/paragraph-sm, grey-950) |
+| `helperText` | `string` | No | Helper text below (medium/paragraph-sm, grey-800) |
+| `type` | `string` | No | Input type (default `"text"`) |
+| `disabled` | `boolean` | No | Disabled state |
+| `error` | `boolean` | No | Error state |
+| `leadingCheckbox` | `boolean` | No | Show checkbox before input (post-action layout) |
+| `checkboxChecked` | `boolean` | No | Checkbox checked (when leadingCheckbox) |
+| `onCheckboxChange` | `(checked: boolean) => void` | No | Checkbox toggle (when leadingCheckbox) |
+| `checkboxAriaLabel` | `string` | No | Checkbox accessible name (when leadingCheckbox) |
+| `trailingIcon` | `MaterialSymbol` | No | Trailing button icon (e.g. "add", "close") |
+| `onTrailingClick` | `() => void` | No | Trailing button click |
+| `trailingAriaLabel` | `string` | No | Trailing button accessible name (required when trailingIcon set) |
+| `id` / `name` | `string` | No | Form attributes |
+| `aria-label` | `string` | No | Accessible label (when no `label`) |
+| `className` | `string` | No | Root wrapper class |
+| `onFocus` / `onBlur` | `React.FocusEventHandler<HTMLInputElement>` | No | Focus handlers |
+
+**Exports**: `Input`, `InputProps`.
+
+**Example**
+
+```tsx
+import { Input } from "@/components/Input";
+
+<Input placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+<Input label="Subject" helperText="Choose a unique username for your account." placeholder="Cordarro" />
+<Input type="email" placeholder="Email" />
+<Input trailingIcon="add" onTrailingClick={() => addItem()} trailingAriaLabel="Add" aria-label="New item" />
+<Input leadingCheckbox checkboxChecked={done} onCheckboxChange={setDone} trailingIcon="close" onTrailingClick={() => remove()} trailingAriaLabel="Remove" checkboxAriaLabel="Done" aria-label="Item" />
+<Input disabled placeholder="Disabled" />
+<Input error placeholder="Error" value="Invalid" />
+```
+
+---
+
 ## DataItem
 
 **Path**: `@/components/DataItem`  
@@ -556,6 +820,44 @@ import { Dropdown } from "@/components/Dropdown";
   onSelect={(id) => setPeriod(id)}
 />
 <Dropdown variant="toggle" items={[...]} onSelect={(id) => {}} aria-label="Options" />
+```
+
+---
+
+## Tooltip
+
+**Path**: `@/components/Tooltip`  
+**Figma**: Roy design system → Tooltip (106:2544).
+
+Floating panel below trigger on hover/focus. **Panel**: white bg, 12px radius, shadow (0px 0px 27px rgba(0,0,0,0.25)); 24px padding; arrow on top (rotated square). **Content**: title (medium/body-xl grey-950), optional description (medium/body-md grey-900) 4px below; optional action node 24px below. **Arrow**: default = 24px from panel left, center = centered. Opens after optional openDelay, closes after closeDelay when pointer leaves.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `React.ReactNode` | Yes | Trigger (hover/focus shows tooltip) |
+| `title` | `string` | Yes | Title text (medium/body-xl, grey-950) |
+| `description` | `string` | No | Description (medium/body-md, grey-900), 4px below title |
+| `action` | `React.ReactNode` | No | Optional action (e.g. button), 24px below content |
+| `arrowPlacement` | `"default"` \| `"center"` | No | Arrow left-aligned (24px) or centered |
+| `openDelay` | `number` | No | Ms before showing (default 200) |
+| `closeDelay` | `number` | No | Ms before hiding after leave (default 100) |
+| `className` | `string` | No | Trigger wrapper class |
+
+**Exports**: `Tooltip`, `TooltipProps`.
+
+**Example**
+
+```tsx
+import { Tooltip } from "@/components/Tooltip";
+import { Button } from "@/components/Button";
+
+<Tooltip title="Add your product" description="Tap here in Inventory to list an item you want to sell." action={<Button size="small">Sign Up</Button>}>
+  <Button size="small">Info</Button>
+</Tooltip>
+<Tooltip title="Short tip" arrowPlacement="center">
+  <span tabIndex={0}>Hover me</span>
+</Tooltip>
 ```
 
 ---
@@ -767,6 +1069,39 @@ import { ProductListing } from "@/components/ProductListing";
   conditionValue="New"
 />
 <ProductListing contentPosition="right" imageSrc={...} title="..." price="..." sellerName="..." />
+```
+
+---
+
+## Rating
+
+**Path**: `@/components/Rating`  
+**Figma**: Roy design system → ratings (node 552:482).
+
+Row of 5 stars (24×24 by default). **Filled** stars slate-900, **empty** stars grey-300. **Value** 0–5 (integer). Optional **onChange** for interactive rating (click a star to set value). Gap 2px between stars.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `value` | `number` | Yes | Current value 0–5 (number of filled stars) |
+| `max` | `number` | No | Max stars (default 5) |
+| `onChange` | `(value: number) => void` | No | When user selects a star (omit for read-only) |
+| `size` | `number` | No | Star size in px (default 24) |
+| `disabled` | `boolean` | No | Disabled when interactive (default false) |
+| `className` | `string` | No | Root wrapper class |
+
+**Exports**: `Rating`, `RatingProps`.
+
+**Example**
+
+```tsx
+import { Rating } from "@/components/Rating";
+
+<Rating value={0} />
+<Rating value={3} />
+<Rating value={5} />
+<Rating value={rating} onChange={setRating} />
 ```
 
 ---
