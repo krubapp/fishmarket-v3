@@ -280,4 +280,106 @@ import { ColorBlock } from "@/components/ColorBlock";
 
 ---
 
+## ImageBlock
+
+**Path**: `@/components/ImageBlock`  
+**Figma**: Roy design system → Images (node 157:828).
+
+Image block with three sizes: **small** 48×48 (4px radius), **medium** 148×196 (12px radius), **large** 218×218 (12px radius). **Empty**: grey placeholder when no `src`. **Empty-action**: when `onAdd` is set and no `src`, shows add-photo icon (24×24) centered; clickable. **Image-filled**: when `src` is set, shows image; for **large** only, optional `onAction` shows a 40×40 action button (e.g. like) top-right (24px inset), white bg.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `src` | `string \| null` | No | Image URL; omit for empty/empty-action |
+| `alt` | `string` | No | Alt text for image |
+| `size` | `ImageBlockSize` | No | `"small"` \| `"medium"` \| `"large"` (default `"medium"`) |
+| `onAdd` | `() => void` | No | When no src: click shows add icon; triggers on click |
+| `onAction` | `() => void` | No | When size is large: action button top-right (e.g. like) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `ImageBlock`, `ImageBlockProps`, `ImageBlockSize`, `IMAGE_BLOCK_DIMENSIONS`, `IMAGE_BLOCK_RADIUS`.
+
+**Example**
+
+```tsx
+import { ImageBlock } from "@/components/ImageBlock";
+
+<ImageBlock size="small" />
+<ImageBlock size="small" onAdd={() => openPicker()} />
+<ImageBlock size="medium" src={url} alt="Product" />
+<ImageBlock size="large" src={url} onAction={() => toggleLike()} />
+```
+
+---
+
+## MediaDropzone
+
+**Path**: `@/components/MediaDropzone`  
+**Figma**: Roy design system → Image zone (node 87:1090).
+
+Drop/click zone for images and videos. Default: white bg, 1px border #99A1AF, padding 24px, min-height 265px. Content: add_photo_alternate icon (42×42) + title (medium/body-lg 20px) + subtitle (medium/paragraph-sm 14px). **Hover**: bg slate-200, border slate-500. **Focus**: 2px border #101828. **Error**: bg red-100, border red-300, red text.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | No | Main line (default "Select images ") |
+| `subtitle` | `string` | No | Helper (default "You can only add up to 10 images / videos") |
+| `onFilesSelect` | `(files: File[]) => void` | No | Called with selected/dropped files |
+| `accept` | `string` | No | File input accept (default "image/*,video/*") |
+| `maxFiles` | `number` | No | Max files (default 10) |
+| `error` | `boolean` | No | Error state |
+| `disabled` | `boolean` | No | Disabled state |
+| `className` | `string` | No | Root class |
+| `children` | `React.ReactNode` | No | When set, replaces placeholder (e.g. preview) |
+
+**Exports**: `MediaDropzone`, `MediaDropzoneProps`.
+
+**Example**
+
+```tsx
+import { MediaDropzone } from "@/components/MediaDropzone";
+
+<MediaDropzone
+  onFilesSelect={(files) => setFiles(files)}
+  error={hasError}
+/>
+```
+
+---
+
+## Avatar
+
+**Path**: `@/components/Avatar`
+**Figma**: avator (44:71); with label below 568:2325, with label right avator-ds-16 (93:2208).
+
+Circular avatar: image when `src` is set, otherwise placeholder (person icon on grey-200). Sizes: 16, 24, 32, 48, 56, 80. With **label**: use `labelPosition`: `"below"` (column, 8px gap, centered, medium/paragraph-sm #121412) or `"right"` (row, 8px gap, items-center).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `src` | `string \| null` | No | Image URL; omit for placeholder |
+| `alt` | `string` | No | Alt text for image |
+| `size` | `AvatarSize` | No | `16` \| `24` \| `32` \| `48` \| `56` \| `80` (default `32`) |
+| `label` | `string` | No | Label next to avatar (position by `labelPosition`) |
+| `labelPosition` | `AvatarLabelPosition` | No | `"below"` \| `"right"` (default `"below"`) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `Avatar`, `AvatarProps`, `AvatarLabelPosition`, `AvatarSize`.
+
+**Example**
+
+```tsx
+import { Avatar } from "@/components/Avatar";
+
+<Avatar size={32} />
+<Avatar src={user.avatarUrl} alt={user.name} size={48} />
+<Avatar size={80} label="LimeStones.." />
+<Avatar size={32} label="TheLifeoftoy" labelPosition="right" />
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

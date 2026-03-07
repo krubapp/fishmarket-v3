@@ -5,8 +5,11 @@ import { BottomNav } from "@/components/BottomNav";
 import type { BottomNavItemId } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { RootTopBar } from "@/components/RootTopBar";
+import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
 import { ColorBlock } from "@/components/ColorBlock";
+import { ImageBlock } from "@/components/ImageBlock";
+import { MediaDropzone } from "@/components/MediaDropzone";
 import { SearchBar } from "@/components/SearchBar";
 import { Tabs, TabsBox } from "@/components/Tabs";
 import type { TabItem, TabsBoxItem } from "@/components/Tabs";
@@ -98,6 +101,19 @@ export default function Home() {
           />
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Avatar</span>
+          <div className="flex flex-wrap items-end gap-6">
+            <Avatar size={16} />
+            <Avatar size={24} />
+            <Avatar size={32} />
+            <Avatar size={48} />
+            <Avatar size={56} />
+            <Avatar size={80} />
+            <Avatar size={80} label="LimeStones.." />
+            <Avatar size={32} label="TheLifeoftoy" labelPosition="right" />
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ColorBlock</span>
           <div className="flex flex-wrap items-end gap-4">
             <ColorBlock />
@@ -105,6 +121,20 @@ export default function Home() {
             <ColorBlock color="green" label="Green" selected />
             <ColorBlock color="blue" label="Blue" />
           </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ImageBlock</span>
+          <div className="flex flex-wrap items-end gap-6">
+            <ImageBlock size="small" />
+            <ImageBlock size="small" onAdd={() => {}} />
+            <ImageBlock size="medium" />
+            <ImageBlock size="medium" onAdd={() => {}} />
+            <ImageBlock size="large" onAction={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">MediaDropzone</span>
+          <MediaDropzone onFilesSelect={() => {}} />
         </section>
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Badge</span>

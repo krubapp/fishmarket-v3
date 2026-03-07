@@ -1,0 +1,84 @@
+"use client";
+
+import { Icon } from "@/components/Icon";
+
+import {
+  IMAGE_BLOCK_DIMENSIONS,
+  IMAGE_BLOCK_RADIUS,
+  type ImageBlockProps,
+} from "./types";
+
+export function ImageBlock({
+  src,
+  alt = "",
+  size = "medium",
+  onAdd,
+  onAction,
+  className = "",
+}: ImageBlockProps) {
+  const { width, height } = IMAGE_BLOCK_DIMENSIONS[size];
+  const radius = IMAGE_BLOCK_RADIUS[size];
+  const isLarge = size === "large";
+  const hasImage = Boolean(src);
+  const showAddIcon = !hasImage && onAdd;
+  const showActionButton = isLarge && onAction;
+
+  const style: React.CSSProperties = {
+    width,
+    height,
+    borderRadius: radius,
+  };
+
+  const root = (
+    <div
+      className={`relative flex shrink-0 flex-col items-center justify-center overflow-hidden bg-grey-200 ${className}`}
+      style={style}
+      role={showAddIcon ? "button" : undefined}
+      tabIndex={showAddIcon ? 0 : undefined}
+      onClick={showAddIcon ? onAdd : undefined}
+      onKeyDown={
+        showAddIcon
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onAdd?.();
+              }
+            }
+          : undefined
+      }
+      aria-label={showAddIcon ? "Add image" : hasImage ? alt || "Image" : undefined}
+    >
+      {hasImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src!}
+          alt={alt}
+          className="h-full w-full object-cover"
+        />
+      ) : showAddIcon ? (
+        <Icon
+          name={size === "small" ? "photo" : "add_photo_alternate"}
+          size={24}
+          className="text-grey-500"
+          fill={0}
+        />
+      ) : null}
+
+      {showActionButton && (
+        <button
+          type="button"
+          className="absolute right-6 top-6 flex h-10 w-10 items-center justify-center rounded-full bg-white text-grey-950 shadow-sm transition-opacity hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-1"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAction?.();
+          }}
+          aria-label="Like"
+        >
+          <Icon name="favorite" size={20} fill={0} />
+        </button>
+      )}
+    </div>
+  );
+
+  return root;
+}
