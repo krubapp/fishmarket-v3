@@ -300,7 +300,7 @@ export function VariantDrawer({
       })}
 
       {/* Separator */}
-      {groups.length > 0 && <SectionLine className="-mx-6" />}
+      {groups.length > 0 && <SectionLine />}
 
       {/* New group creation form */}
       <div className="-mx-6 flex flex-col gap-6 border-b border-slate-200 px-6 py-6">
