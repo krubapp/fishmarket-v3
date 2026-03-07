@@ -6,7 +6,10 @@ import { BottomNav } from "@/components/BottomNav";
 import type { BottomNavItemId } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { RootTopBar } from "@/components/RootTopBar";
+import { Badge } from "@/components/Badge";
 import { SearchBar } from "@/components/SearchBar";
+import { Tabs, TabsBox } from "@/components/Tabs";
+import type { TabItem, TabsBoxItem } from "@/components/Tabs";
 import type { SearchBarResult } from "@/components/SearchBar";
 
 const SAMPLE_SEARCH_RESULTS: SearchBarResult[] = [
@@ -17,8 +20,23 @@ const SAMPLE_SEARCH_RESULTS: SearchBarResult[] = [
   { id: "5", title: "Cobra Tube 6\" Emerald Green", sellerName: "LimeStoneSoft..." },
 ];
 
+const SAMPLE_TABS: TabItem[] = [
+  { id: "all", label: "All" },
+  { id: "lures", label: "Lures", icon: "account_circle" },
+  { id: "tackle", label: "Tackle" },
+  { id: "disabled", label: "Disabled", disabled: true },
+];
+
+const SAMPLE_TABS_BOX: TabsBoxItem[] = [
+  { id: "orders", label: "Order", icon: "receipt_long", badge: "10" },
+  { id: "ship", label: "Ship", icon: "local_shipping" },
+  { id: "history", label: "History", icon: "history" },
+];
+
 export default function Home() {
   const [activeItem, setActiveItem] = useState<BottomNavItemId>("home");
+  const [activeTabId, setActiveTabId] = useState("all");
+  const [activeTabsBoxId, setActiveTabsBoxId] = useState("orders");
   const [searchQuery, setSearchQuery] = useState("");
   const searchResults = useMemo(
     () => (searchQuery.trim() ? SAMPLE_SEARCH_RESULTS : []),
@@ -52,6 +70,24 @@ export default function Home() {
         />
       </div>
       <main className="flex min-h-0 flex-1 w-full max-w-3xl flex-col items-center justify-between self-center py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <Tabs
+          tabs={SAMPLE_TABS}
+          value={activeTabId}
+          onValueChange={setActiveTabId}
+          className="w-full border-b border-slate-200"
+        />
+        <TabsBox
+          tabs={SAMPLE_TABS_BOX}
+          value={activeTabsBoxId}
+          onValueChange={setActiveTabsBoxId}
+          className="w-full border-y border-slate-200"
+        />
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="default">Default</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="error">Error</Badge>
+          <Badge variant="success">Success</Badge>
+        </div>
         <Image
           className="dark:invert"
           src="/next.svg"

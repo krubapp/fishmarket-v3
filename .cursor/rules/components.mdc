@@ -157,4 +157,97 @@ import { SearchBar } from "@/components/SearchBar";
 
 ---
 
+## Badge
+
+**Path**: `@/components/Badge`  
+**Figma**: Roy design system → Badge (node 452:32).
+
+Inline label pill with four variants. Border-radius 4px, height 20px, padding 12px horizontal. Text: medium/paragraph-sm (14px, line-height 1.43).
+
+**Variants** (Figma Types): `default` (slate), `warning` (yellow), `error` (red), `success` (green).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `React.ReactNode` | Yes | Badge label |
+| `variant` | `BadgeVariant` | No | `"default"` \| `"warning"` \| `"error"` \| `"success"` (default: `"default"`) |
+| `className` | `string` | No | Applied to the root `<span>` |
+
+**Exports**: `Badge`, `BadgeProps`, `BadgeVariant`.
+
+**Example**
+
+```tsx
+import { Badge } from "@/components/Badge";
+
+<Badge variant="default">Label</Badge>
+<Badge variant="warning">Warning</Badge>
+<Badge variant="error">Error</Badge>
+<Badge variant="success">Success</Badge>
+```
+
+---
+
+## Tabs
+
+**Path**: `@/components/Tabs`  
+**Figma**: Roy design system → Tabs (node 144:1012).
+
+Horizontal tab list. Each tab: label + optional icon (24px), padding 8px 16px, gap 4px between label row and 2px underline. **Rest**: text grey-500, no underline. **Active**: text slate-900, 2px underline. **Hover**: text slate-950. **Disabled**: text grey-700, 2px slate-200 underline. Label: semi/body-md (16px).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `tabs` | `TabItem[]` | Yes | `{ id, label, icon?, disabled? }` per tab |
+| `value` | `string` | Yes | Currently selected tab id |
+| `onValueChange` | `(id: string) => void` | Yes | Called when a tab is selected |
+| `className` | `string` | No | Applied to the root wrapper |
+
+**Exports**: `Tabs`, `TabsProps`, `TabItem`.
+
+**Example**
+
+```tsx
+import { Tabs } from "@/components/Tabs";
+
+<Tabs
+  tabs={[
+    { id: "a", label: "Tab A" },
+    { id: "b", label: "Tab B", icon: "account_circle" },
+    { id: "c", label: "Tab C", disabled: true },
+  ]}
+  value={activeId}
+  onValueChange={setActiveId}
+/>
+```
+
+### TabsBox (box variant)
+
+**Figma**: Tab-Variant-box (node 608:1926). Same folder: `@/components/Tabs`.
+
+Vertical box per tab: icon (34×34) above label (medium/body-md 16px), optional warning Badge below. Right border (1px slate-200) between boxes; active: bg-slate-100. Width 95px per tab.
+
+**Props**: `tabs: TabsBoxItem[]`, `value`, `onValueChange`, `className?`. **TabsBoxItem**: `id`, `label`, `icon` (required), `badge?: string`, `disabled?`.
+
+**Exports**: `TabsBox`, `TabsBoxItem`, `TabsBoxProps`.
+
+**Example**
+
+```tsx
+import { TabsBox } from "@/components/Tabs";
+
+<TabsBox
+  tabs={[
+    { id: "orders", label: "Order", icon: "receipt_long", badge: "10" },
+    { id: "ship", label: "Ship", icon: "local_shipping" },
+  ]}
+  value={activeId}
+  onValueChange={setActiveId}
+/>
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.
