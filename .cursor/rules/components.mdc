@@ -250,4 +250,34 @@ import { TabsBox } from "@/components/Tabs";
 
 ---
 
+## ColorBlock
+
+**Path**: `@/components/ColorBlock`  
+**Figma**: Roy design system → color-blocks (509:2598), color filters (512:3142).
+
+24×24 color swatch with optional label below. When `label` is set: column layout, 8px gap, 8px padding, label = medium/paragraph-sm (14px, #1E201E). **Selected**: 2px inner border #101828, 2px radius. **Colors**: white, red, green (default), black, silver, yellow, blue.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `color` | `ColorBlockColor` | No | `"white"` \| `"red"` \| `"green"` \| `"black"` \| `"silver"` \| `"yellow"` \| `"blue"` (default `"green"`) |
+| `label` | `string` | No | When set, show label below block (color filters style) |
+| `selected` | `boolean` | No | Show selection ring (default false) |
+| `className` | `string` | No | Applied to the root wrapper |
+
+**Exports**: `ColorBlock`, `ColorBlockColor`, `ColorBlockProps`.
+
+**Example**
+
+```tsx
+import { ColorBlock } from "@/components/ColorBlock";
+
+<ColorBlock color="green" />
+<ColorBlock color="red" label="Red" selected />
+<ColorBlock label="Green" />
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.
