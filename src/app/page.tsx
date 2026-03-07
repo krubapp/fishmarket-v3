@@ -44,62 +44,86 @@ export default function Home() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-100 font-sans dark:bg-zinc-500">
+    <div className="flex min-h-screen flex-col bg-gray-100 font-sans dark:bg-zinc-500 px-1">
       <div className="flex w-full max-w-3xl flex-col self-center">
-        <RootTopBar
-          title="TheLifeoftoy"
-          avatarSrc={null}
-          onAddProduct={() => {}}
-          onFeed={() => {}}
-          onSearch={() => {}}
-        />
-        <ContextTopBar
-          backLabel="Section"
-          title="Perch"
-          onBack={() => {}}
-          onFilter={() => {}}
-          onSearch={() => {}}
-        />
-        <SearchBar
-          value={searchQuery}
-          placeholder="Search"
-          onValueChange={setSearchQuery}
-          onCancel={() => setSearchQuery("")}
-          results={searchResults}
-          onResultSelect={(r) => setSearchQuery(r.title)}
-        />
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">RootTopBar</span>
+          <RootTopBar
+            title="TheLifeoftoy"
+            avatarSrc={null}
+            onAddProduct={() => {}}
+            onFeed={() => {}}
+            onSearch={() => {}}
+          />
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ContextTopBar</span>
+          <ContextTopBar
+            backLabel="Section"
+            title="Perch"
+            onBack={() => {}}
+            onFilter={() => {}}
+            onSearch={() => {}}
+          />
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">SearchBar</span>
+          <SearchBar
+            value={searchQuery}
+            placeholder="Search"
+            onValueChange={setSearchQuery}
+            onCancel={() => setSearchQuery("")}
+            results={searchResults}
+            onResultSelect={(r) => setSearchQuery(r.title)}
+          />
+        </section>
       </div>
-      <main className="flex min-h-0 flex-1 w-full max-w-3xl flex-col gap-8 self-center px-6 py-8 sm:px-8">
-        <Tabs
-          tabs={SAMPLE_TABS}
-          value={activeTabId}
-          onValueChange={setActiveTabId}
-          className="w-full border-b border-slate-200"
-        />
-        <TabsBox
-          tabs={SAMPLE_TABS_BOX}
-          value={activeTabsBoxId}
-          onValueChange={setActiveTabsBoxId}
-          className="w-full border-y border-slate-200"
-        />
-        <div className="flex flex-wrap items-end gap-4">
-          <ColorBlock />
-          <ColorBlock color="red" label="Red" />
-          <ColorBlock color="green" label="Green" selected />
-          <ColorBlock color="blue" label="Blue" />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="default">Default</Badge>
-          <Badge variant="warning">Warning</Badge>
-          <Badge variant="error">Error</Badge>
-          <Badge variant="success">Success</Badge>
-        </div>
+      <main className="flex min-h-0 flex-1 w-full max-w-3xl flex-col gap-8 self-center">
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Tabs</span>
+          <Tabs
+            tabs={SAMPLE_TABS}
+            value={activeTabId}
+            onValueChange={setActiveTabId}
+            className="w-full border-b border-slate-200"
+          />
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">TabsBox</span>
+          <TabsBox
+            tabs={SAMPLE_TABS_BOX}
+            value={activeTabsBoxId}
+            onValueChange={setActiveTabsBoxId}
+            className="w-full border-y border-slate-200"
+          />
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ColorBlock</span>
+          <div className="flex flex-wrap items-end gap-4">
+            <ColorBlock />
+            <ColorBlock color="red" label="Red" />
+            <ColorBlock color="green" label="Green" selected />
+            <ColorBlock color="blue" label="Blue" />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Badge</span>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="default">Default</Badge>
+            <Badge variant="warning">Warning</Badge>
+            <Badge variant="error">Error</Badge>
+            <Badge variant="success">Success</Badge>
+          </div>
+        </section>
       </main>
       <div className="flex w-full max-w-3xl flex-col self-center">
-        <BottomNav
-          activeItem={activeItem}
-          onItemChange={setActiveItem}
-        />
+        <section className="flex flex-col">
+          <span className="text-center font-medium text-white text-[length:var(--font-size-paragraph-md)]">BottomNav</span>
+          <BottomNav
+            activeItem={activeItem}
+            onItemChange={setActiveItem}
+          />
+        </section>
       </div>
     </div>
   );

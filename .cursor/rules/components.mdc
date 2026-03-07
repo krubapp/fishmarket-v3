@@ -10,7 +10,7 @@ alwaysApply: true
 - **Location**: `src/components/<ComponentName>/` with related files (e.g. `ComponentName.tsx`, `types.ts`, `index.ts`).
 - **Import**: Prefer the barrel: `import { ComponentName } from "@/components/ComponentName";`
 - **Source**: Primitives are implemented from Figma (Roy design system); keep design tokens in `src/app/theme/`.
-- **Showcase**: After creating a new primitive, add it to `src/app/page.tsx` so it appears on the home page for review.
+- **Showcase**: After creating a new primitive, add it to `src/app/page.tsx` with a **label above it** (e.g. `<span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ComponentName</span>` in a `<section>`). Keep a label above every component on the page.
 
 ---
 
