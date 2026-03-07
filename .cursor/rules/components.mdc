@@ -359,6 +359,81 @@ import { ProductListing } from "@/components/ProductListing";
 
 ---
 
+## CostBreakdown
+
+**Path**: `@/components/CostBreakdown`  
+**Figma**: Roy design system → Frame 369 / 358 (node 596:1479).
+
+Checkout cost summary: list of label/value rows with top border. White bg, border-top 1px #E2E8F0, padding 10px 24px, gap 20px. Each row: label and value (medium/body-md 16px), label left and value right (justify-between, gap 16). Default label/value color #8B9189; set **highlightLabel** on a row for label #121412 (e.g. "Total amount").
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `rows` | `CostBreakdownRow[]` | Yes | Each: `label`, `value`, optional `highlightLabel` |
+| `className` | `string` | No | Root class |
+
+**Exports**: `CostBreakdown`, `CostBreakdownProps`, `CostBreakdownRow`.
+
+**Example**
+
+```tsx
+import { CostBreakdown } from "@/components/CostBreakdown";
+
+<CostBreakdown
+  rows={[
+    { label: "Subtotal (1)", value: "SEK 2000.00" },
+    { label: "Shipping Fee", value: "150 SEK" },
+    { label: "Total amount", value: "SEK 2000.00", highlightLabel: true },
+  ]}
+/>
+```
+
+---
+
+## TrackInventoryCard
+
+**Path**: `@/components/TrackInventoryCard`  
+**Figma**: Roy design system → Track Inventory card (node 77:1368).
+
+Card for tracking product inventory: header (title, subtitle, optional action link with chevron) and content (inventory rows with progress bars). **Empty** (`items` = []): one row “Empty” / “--” with empty progress bar. **Single** (one item): one row with large progress bar (full width). **Multiple** (2+ items): 2-column grid, each item has small progress bar (183px). Card: white, border-bottom 1px #E2E8F0, padding 48px 24px, gap 24px, max-width 440px. Title medium 24px #121412; subtitle body 16px #1E201E; action link medium 16px #101828 + chevron_right 16px. Row: name + detail (semi paragraph-sm), progress bar 16px (track slate-100, fill slate-900).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | `string` | No | Card title (default "Track Inventory") |
+| `subtitle` | `string` | No | Subtitle (default "Monitor stock in one place") |
+| `actionLabel` | `string` | No | Action link label (e.g. "Sign Up"); omit to hide |
+| `onAction` | `() => void` | No | When action link is clicked |
+| `items` | `TrackInventoryItem[]` | Yes | Each: `name`, `detail`, `progress` (0–1). Empty = empty state |
+| `className` | `string` | No | Root class |
+
+**Exports**: `TrackInventoryCard`, `TrackInventoryCardProps`, `TrackInventoryItem`.
+
+**Example**
+
+```tsx
+import { TrackInventoryCard } from "@/components/TrackInventoryCard";
+
+<TrackInventoryCard actionLabel="Sign Up" onAction={() => {}} items={[]} />
+<TrackInventoryCard
+  actionLabel="Sign Up"
+  onAction={() => {}}
+  items={[{ name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.58 }]}
+/>
+<TrackInventoryCard
+  actionLabel="Sign Up"
+  onAction={() => {}}
+  items={[
+    { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.74 },
+    { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.58 },
+  ]}
+/>
+```
+
+---
+
 ## MediaDropzone
 
 **Path**: `@/components/MediaDropzone`  

@@ -9,7 +9,9 @@ import { Avatar } from "@/components/Avatar";
 import { Badge } from "@/components/Badge";
 import { ColorBlock } from "@/components/ColorBlock";
 import { ImageBlock } from "@/components/ImageBlock";
+import { CostBreakdown } from "@/components/CostBreakdown";
 import { MediaDropzone } from "@/components/MediaDropzone";
+import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { ProductListing } from "@/components/ProductListing";
 import { SearchBar } from "@/components/SearchBar";
 import { Tabs, TabsBox } from "@/components/Tabs";
@@ -154,6 +156,57 @@ export default function Home() {
               badge="NEW DROP"
               conditionValue="New"
               contentPosition="right"
+            />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">CostBreakdown</span>
+          <div className="w-full max-w-sm rounded bg-white">
+            <CostBreakdown
+              rows={[
+                { label: "Subtotal (1)", value: "SEK 2000.00" },
+                { label: "Shipping Fee", value: "150 SEK" },
+                { label: "Total amount", value: "SEK 2000.00", highlightLabel: true },
+              ]}
+            />
+          </div>
+        </section>
+        <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">TrackInventoryCard</span>
+          <div className="flex flex-wrap items-start gap-6">
+            <TrackInventoryCard
+              actionLabel="Sign Up"
+              onAction={() => {}}
+              items={[]}
+            />
+            <TrackInventoryCard
+              actionLabel="Sign Up"
+              onAction={() => {}}
+              items={[
+                {
+                  name: "Wobble Grub",
+                  detail: "100 sold / 500 amount",
+                  progress: 0.58,
+                },
+              ]}
+            />
+            <TrackInventoryCard
+              actionLabel="Sign Up"
+              onAction={() => {}}
+              items={[
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.74 },
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.58 },
+              ]}
+            />
+            <TrackInventoryCard
+              actionLabel="Sign Up"
+              onAction={() => {}}
+              items={[
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.5 },
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.8 },
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.2 },
+                { name: "Wobble Grub", detail: "100 sold / 500 amount", progress: 0.9 },
+              ]}
             />
           </div>
         </section>
