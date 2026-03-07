@@ -1,9 +1,16 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { BottomNav } from "@/components/BottomNav";
+import type { BottomNavItemId } from "@/components/BottomNav";
 
 export default function Home() {
+  const [activeItem, setActiveItem] = useState<BottomNavItemId>("home");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex min-h-screen flex-col bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex min-h-0 flex-1 w-full max-w-3xl flex-col items-center justify-between self-center py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert"
           src="/next.svg"
@@ -60,6 +67,12 @@ export default function Home() {
           </a>
         </div>
       </main>
+      <div className="flex w-full max-w-3xl flex-col self-center bg-white dark:bg-black">
+        <BottomNav
+          activeItem={activeItem}
+          onItemChange={setActiveItem}
+        />
+      </div>
     </div>
   );
 }

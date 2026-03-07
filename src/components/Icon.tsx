@@ -55,7 +55,7 @@ export function Icon({
       style={variableStyles}
       aria-hidden
     >
-      {name.replace(/_/g, " ")}
+      {name}
     </span>
   );
 }
