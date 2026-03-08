@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^5.2.2",
     "firebase": "^12.10.0",
     "firebase-admin": "^13.7.0",
+    "framer-motion": "^12.35.1",
     "material-symbols": "^0.40.2",
     "next": "16.1.6",
     "react": "19.2.3",

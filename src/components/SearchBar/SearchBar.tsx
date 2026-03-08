@@ -2,6 +2,7 @@
 
 import { Icon } from "@/components/Icon";
 import { useCallback, useId, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import type { SearchBarProps, SearchBarResult } from "./types";
 
@@ -169,14 +170,23 @@ export function SearchBar({
         )}
       </form>
 
-      {showResults && (
-        <div id="search-results-panel" className="w-full">
-          <SearchResultsPanel
-            results={results}
-            onResultSelect={onResultSelect}
-          />
-        </div>
-      )}
+      <AnimatePresence>
+        {showResults && results && (
+          <motion.div
+            id="search-results-panel"
+            className="w-full"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: [0.33, 1, 0.68, 1] }}
+          >
+            <SearchResultsPanel
+              results={results}
+              onResultSelect={onResultSelect}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

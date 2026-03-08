@@ -82,13 +82,13 @@ export function Checkbox({
         className={getBoxClasses(checked, disabled, error)}
         style={{ width: BOX_SIZE, height: BOX_SIZE }}
       >
-        {checked && (
-          <Icon
-            name="check"
-            size={20}
-            className={getCheckIconClass(checked, disabled, error)}
-          />
-        )}
+        <Icon
+          name="check"
+          size={20}
+          className={`transition-transform duration-(--duration-fast) ease-(--ease-spring) ${
+            checked ? "scale-100" : "scale-0"
+          } ${getCheckIconClass(checked, disabled, error)}`}
+        />
       </span>
       {label != null && (
         <span className={getLabelClasses(disabled, error)}>{label}</span>

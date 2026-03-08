@@ -166,18 +166,25 @@ export function VariantList({
                   {valueCount} {valueCount === 1 ? "value" : "values"}
                 </span>
               </div>
-              <Icon
-                name={
-                  isExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"
-                }
-                size={20}
-                className="text-grey-500"
-              />
+              <span
+                className="inline-flex transition-transform duration-(--duration-normal) ease-(--ease-out)"
+                style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+              >
+                <Icon
+                  name="keyboard_arrow_down"
+                  size={20}
+                  className="text-grey-500"
+                />
+              </span>
             </button>
 
             {/* Value rows */}
-            {isExpanded &&
-              group.values.map((value) => {
+            <div
+              className="grid transition-[grid-template-rows] duration-(--duration-normal) ease-(--ease-out)"
+              style={{ gridTemplateRows: isExpanded ? "1fr" : "0fr" }}
+            >
+              <div className="overflow-hidden">
+              {group.values.map((value) => {
                 const imageSrc = getImageSrc(value);
 
                 return (
@@ -238,6 +245,8 @@ export function VariantList({
                   </div>
                 );
               })}
+              </div>
+            </div>
           </div>
         );
       })}

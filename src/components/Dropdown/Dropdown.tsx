@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 
@@ -31,9 +32,9 @@ function ItemRow({
       type="button"
       disabled={item.disabled}
       onClick={() => !item.disabled && onSelect(item.id)}
-      className={`flex w-full items-center gap-2 px-2 py-2 text-left font-medium text-[length:var(--font-size-paragraph-sm)] leading-[1.43] transition-colors
+      className={`flex w-full items-center gap-2 px-2 py-2 text-left font-medium text-[length:var(--font-size-paragraph-sm)] leading-[1.43] transition-[color,background-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.98]
         focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-inset
-        disabled:cursor-not-allowed
+        disabled:cursor-not-allowed disabled:active:scale-100
         ${item.disabled
           ? "bg-grey-200 text-grey-700"
           : selected
@@ -102,10 +103,10 @@ export function Dropdown({
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-label={ariaLabel ?? displayLabel}
-          className="flex w-full min-w-[120px] items-center gap-1 rounded-[4px] bg-slate-100 px-2 py-2 font-medium text-slate-900 text-[length:var(--font-size-paragraph-sm)] leading-[1.43] transition-colors hover:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-inset"
+          className="flex w-full min-w-[120px] items-center gap-1 rounded-[4px] bg-slate-100 px-2 py-2 font-medium text-slate-900 text-[length:var(--font-size-paragraph-sm)] leading-[1.43] transition-[color,background-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97] hover:bg-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-inset"
         >
           <span className="min-w-0 flex-1 truncate text-left">{displayLabel}</span>
-          <Icon name="expand_more" size={16} className="shrink-0 text-current" />
+          <Icon name="keyboard_arrow_down" size={16} className="shrink-0 text-current" />
         </button>
       ) : (
         <IconButton
@@ -117,31 +118,37 @@ export function Dropdown({
         />
       )}
 
-      {open && (
-        <div
-          className="absolute z-50 mt-1 overflow-hidden rounded-[4px] border border-slate-200 bg-white py-0"
-          style={{
-            boxShadow: PANEL_SHADOW,
-            ...(variant === "default" ? { left: 0, right: 0, minWidth: "100%" } : { right: 0, minWidth: 132 }),
-          }}
-          role="listbox"
-          aria-label="Options"
-        >
-          {items.map((item, index) => (
-            <ItemRow
-              key={item.id}
-              item={item}
-              isFirst={index === 0}
-              isLast={index === items.length - 1}
-              selected={value != null && value === item.id}
-              onSelect={(id) => {
-                onSelect?.(id);
-                setOpen(false);
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="absolute z-50 mt-1 overflow-hidden rounded-[4px] border border-slate-200 bg-white py-0"
+            style={{
+              boxShadow: PANEL_SHADOW,
+              ...(variant === "default" ? { left: 0, right: 0, minWidth: "100%" } : { right: 0, minWidth: 132 }),
+            }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: [0.33, 1, 0.68, 1] }}
+            role="listbox"
+            aria-label="Options"
+          >
+            {items.map((item, index) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                isFirst={index === 0}
+                isLast={index === items.length - 1}
+                selected={value != null && value === item.id}
+                onSelect={(id) => {
+                  onSelect?.(id);
+                  setOpen(false);
+                }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

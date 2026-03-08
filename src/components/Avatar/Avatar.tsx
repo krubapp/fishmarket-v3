@@ -30,7 +30,7 @@ function AvatarCircle({
         <span className="flex h-full w-full items-center justify-center">
           <Icon
             name="person"
-            size={Math.round(size * 0.6)}
+            size={Math.round((size ?? 32) * 0.6)}
             className="text-grey-500"
             fill={0}
           />

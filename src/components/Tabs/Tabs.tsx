@@ -24,7 +24,7 @@ function TabButton({
       aria-disabled={isDisabled}
       disabled={isDisabled}
       onClick={onSelect}
-      className={`flex flex-col items-center justify-center gap-1 px-4 py-2 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+      className={`flex flex-col items-center justify-center gap-1 px-4 py-2 outline-none transition-[color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.95] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
         isDisabled
           ? "cursor-not-allowed text-grey-700"
           : isActive
@@ -46,9 +46,9 @@ function TabButton({
           />
         )}
       </span>
-      {/* Underline (Rectangle 1): 2px, only when active or disabled (Figma shows disabled with slate-200 bar) */}
+      {/* Underline: 2px bar with color transition */}
       <span
-        className={`h-0.5 w-full rounded-full ${
+        className={`h-0.5 w-full rounded-full transition-[background-color] duration-(--duration-fast) ease-(--ease-out) ${
           isDisabled
             ? "bg-slate-200"
             : isActive

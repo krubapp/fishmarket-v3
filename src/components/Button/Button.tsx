@@ -56,7 +56,7 @@ function getVariantClasses(
   active: boolean
 ): string {
   const base =
-    "inline-flex items-center justify-center transition-colors focus:outline-none disabled:pointer-events-none";
+    "inline-flex items-center justify-center transition-[color,background-color,border-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97] focus:outline-none disabled:pointer-events-none disabled:active:scale-100";
   if (disabled) {
     return `${base} border-2 border-transparent bg-grey-200 text-grey-700`;
   }

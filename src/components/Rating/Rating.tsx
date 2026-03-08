@@ -29,7 +29,7 @@ export function Rating({
         const star = (
           <span
             key={i}
-            className={`shrink-0 text-slate-900 ${filled ? "" : "text-grey-300"}`}
+            className={`shrink-0 transition-transform duration-(--duration-fast) ease-(--ease-spring) text-slate-900 ${filled ? "scale-110" : "scale-100 text-grey-300"}`}
             style={{ fontSize: size }}
           >
             <Icon name="star" size={size} fill={filled ? 1 : 0} />
@@ -41,7 +41,7 @@ export function Rating({
               key={i}
               type="button"
               onClick={() => onChange(starValue)}
-              className="cursor-pointer border-0 bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-0 disabled:cursor-not-allowed"
+              className="cursor-pointer border-0 bg-transparent p-0 outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.85] focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-0 disabled:cursor-not-allowed"
               aria-label={`${starValue} star${starValue === 1 ? "" : "s"}`}
             >
               {star}

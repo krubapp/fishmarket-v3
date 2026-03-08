@@ -19,7 +19,7 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
         variant === "subtle" ? "bg-slate-100" : "bg-transparent"
       }`}
       aria-label={label}

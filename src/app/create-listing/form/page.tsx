@@ -25,6 +25,7 @@ import {
 } from "@/lib/schemas/listing";
 import { createListing, updateListing } from "@/lib/firestore";
 import { uploadListingImages, uploadVariantImage } from "@/lib/storage";
+import { ROUTES } from "@/lib/routes";
 
 const conditionItems = LISTING_CONDITIONS.map((id) => ({
   id,
@@ -152,7 +153,7 @@ export default function CreateListingFormPage() {
           : {}),
       });
 
-      router.push("/create-listing");
+      router.push(ROUTES.createListing + "?created=true");
     } catch (err) {
       console.error("Failed to create listing:", err);
       setIsSubmitting(false);
@@ -334,10 +335,10 @@ export default function CreateListingFormPage() {
           <Button
             size="large"
             type="submit"
-            disabled={isSubmitting}
+            loading={isSubmitting}
             className="flex-1"
           >
-            {isSubmitting ? "Creating..." : "Create listing"}
+            Create listing
           </Button>
         </section>
       </form>

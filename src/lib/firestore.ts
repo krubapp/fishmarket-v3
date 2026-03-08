@@ -4,6 +4,9 @@ import {
   addDoc,
   updateDoc,
   doc,
+  getDocs,
+  query,
+  orderBy,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -35,4 +38,13 @@ export async function updateListing(
   data: Partial<CreateListingInput>
 ): Promise<void> {
   await updateDoc(doc(db, LISTINGS_COLLECTION, listingId), data);
+}
+
+export async function getListings(): Promise<Listing[]> {
+  const q = query(
+    collection(db, LISTINGS_COLLECTION),
+    orderBy("createdAt", "desc")
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
 }

@@ -1359,4 +1359,76 @@ import { VariantList } from "@/components/VariantList";
 
 ---
 
+## ListingItem
+
+**Path**: `@/components/ListingItem`
+**Figma**: Roy design system → Listings-list (node 161:1830).
+
+Row item for listing lists: 48×48 image (ImageBlock small), title + subtitle, trailing chevron_right icon. Renders as a `<button>` for clickability. Padding 16px, gap 16px, bg white.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `imageSrc` | `string \| null` | No | Product image URL; omit for placeholder |
+| `title` | `string` | Yes | Product title (semi/paragraph-lg, text-default-headings) |
+| `subtitle` | `string` | No | Subtitle (e.g. "3 Variants") (medium/paragraph-sm, text-default-caption) |
+| `onClick` | `() => void` | No | Click handler for the entire row |
+| `className` | `string` | No | Root class |
+
+**Exports**: `ListingItem`, `ListingItemProps`.
+
+**Example**
+
+```tsx
+import { ListingItem } from "@/components/ListingItem";
+
+<ListingItem
+  imageSrc={listing.imageUrls?.[0]}
+  title="Baitfish Minnow"
+  subtitle="3 Variants"
+  onClick={() => router.push(`/listings/${listing.id}`)}
+/>
+<ListingItem title="River2Sea V-Joint" />
+```
+
+---
+
+## Snackbar
+
+**Path**: `@/components/Snackbar`
+
+Brief toast notification. Fixed at bottom of viewport (above BottomNav), centered. Dark pill (slate-900 bg, white text, rounded-full). Optional leading icon. Auto-dismisses after configurable duration. Entry/exit via Framer Motion slide-up + fade. Renders in a portal on `document.body`.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `open` | `boolean` | Yes | When true, snackbar is visible |
+| `onClose` | `() => void` | Yes | Called when snackbar should close (auto-dismiss or manual) |
+| `message` | `string` | Yes | Text to display |
+| `icon` | `MaterialSymbol` | No | Optional leading icon (e.g. `"check_circle"`) |
+| `duration` | `number` | No | Auto-dismiss delay in ms (default 4000). Set 0 to disable. |
+| `className` | `string` | No | Applied to the fixed positioning wrapper |
+
+**Exports**: `Snackbar`, `SnackbarProps`.
+
+**Example**
+
+```tsx
+import { Snackbar } from "@/components/Snackbar";
+
+const [open, setOpen] = useState(false);
+
+<Snackbar
+  open={open}
+  onClose={() => setOpen(false)}
+  message="Listing created successfully"
+  icon="check_circle"
+/>
+<Snackbar open={open} onClose={() => setOpen(false)} message="Something went wrong" duration={6000} />
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

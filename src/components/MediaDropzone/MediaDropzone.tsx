@@ -140,7 +140,7 @@ export function MediaDropzone({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`relative flex flex-col justify-center gap-2.5 overflow-hidden rounded outline-none transition-colors ${
+        className={`relative flex flex-col justify-center gap-2.5 overflow-hidden rounded outline-none transition-[color,background-color,border-color,transform] duration-(--duration-press) ease-(--ease-out) active:scale-[0.99] ${
           hasFiles ? "h-[265px]" : "min-h-[265px]"
         } ${
           showPlaceholder ? "px-6 py-6" : ""

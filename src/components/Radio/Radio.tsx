@@ -82,12 +82,12 @@ export function Radio({
         className={getRingClasses(!!checked, disabled, error)}
         style={{ width: outer, height: outer }}
       >
-        {checked && (
-          <span
-            className={`rounded-full shrink-0 ${getDotClasses(disabled, error)}`}
-            style={{ width: dot, height: dot }}
-          />
-        )}
+        <span
+          className={`rounded-full shrink-0 transition-transform duration-(--duration-fast) ease-(--ease-spring) ${
+            checked ? "scale-100" : "scale-0"
+          } ${getDotClasses(disabled, error)}`}
+          style={{ width: dot, height: dot }}
+        />
       </span>
       {label != null && (
         <span className={getLabelClasses(size, disabled, error)}>{label}</span>

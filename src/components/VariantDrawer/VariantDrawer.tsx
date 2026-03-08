@@ -213,19 +213,26 @@ export function VariantDrawer({
                   className="flex shrink-0 items-center justify-center"
                   aria-label={isExpanded ? "Collapse" : "Expand"}
                 >
-                  <Icon
-                    name={
-                      isExpanded ? "keyboard_arrow_down" : "chevron_right"
-                    }
-                    size={24}
-                    className="text-slate-900"
-                  />
+                  <span
+                    className="inline-flex transition-transform duration-(--duration-normal) ease-(--ease-out)"
+                    style={{ transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)" }}
+                  >
+                    <Icon
+                      name="chevron_right"
+                      size={24}
+                      className="text-slate-900"
+                    />
+                  </span>
                 </button>
               </div>
             </div>
 
             {/* Expanded: value editing */}
-            {isExpanded && (
+            <div
+              className="grid transition-[grid-template-rows] duration-(--duration-normal) ease-(--ease-out)"
+              style={{ gridTemplateRows: isExpanded ? "1fr" : "0fr" }}
+            >
+              <div className="overflow-hidden">
               <div className="flex flex-col gap-6 border-b border-slate-200 px-6 py-6">
                 {/* Existing values */}
                 {group.values.map((value) => (
@@ -294,7 +301,8 @@ export function VariantDrawer({
                   Add
                 </Button>
               </div>
-            )}
+              </div>
+            </div>
           </div>
         );
       })}

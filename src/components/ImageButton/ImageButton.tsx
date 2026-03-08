@@ -16,7 +16,7 @@ export function ImageButton({
   return (
     <button
       type="button"
-      className={`group relative inline-block shrink-0 overflow-hidden rounded-[4px] transition-colors focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 ${
+      className={`group relative inline-block shrink-0 overflow-hidden rounded-[4px] transition-[color,background-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.95] focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2 ${
         selected ? "ring-1 ring-slate-900" : ""
       } ${className}`}
       style={{ width: SIZE, height: SIZE }}

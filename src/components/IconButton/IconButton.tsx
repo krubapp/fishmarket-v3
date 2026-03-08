@@ -18,7 +18,7 @@ function getButtonClasses(
   disabled: boolean
 ): string {
   const base =
-    "inline-flex shrink-0 items-center justify-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:pointer-events-none";
+    "inline-flex shrink-0 items-center justify-center rounded-full transition-[color,background-color,border-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:pointer-events-none disabled:active:scale-100";
   if (disabled) {
     return `${base} bg-grey-200 text-grey-700 focus:ring-grey-500`;
   }

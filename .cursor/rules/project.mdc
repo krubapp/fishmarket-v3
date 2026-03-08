@@ -11,6 +11,7 @@ alwaysApply: true
 - **React**: 19
 - **Styling**: Tailwind CSS v4 (`@import "tailwindcss"`, `@theme inline` in globals.css)
 - **Icons**: Material Symbols via `material-symbols` npm package; use the `Icon` component from `@/components/Icon` with the `MaterialSymbol` type for icon names
+- **Animations**: Framer Motion (`AnimatePresence` + `motion`) for entry/exit; CSS/Tailwind for micro-interactions. See `.cursor/rules/animations.mdc`.
 - **Language**: TypeScript
 
 ## Conventions
@@ -19,7 +20,7 @@ alwaysApply: true
 - Use path alias `@/` for imports under `src/`
 - Prefer the shared `Icon` component for Material Symbols; icon names match [fonts.google.com/icons](https://fonts.google.com/icons) (e.g. `home`, `settings`, `favorite`)
 - CSS variables: `--background` and `--foreground` for theming; dark mode via `prefers-color-scheme`
-- Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`
+- Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing), `animations.css` (duration/easing tokens + keyframes). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`. Animations: `var(--duration-press)`, `var(--ease-spring)`, etc. See `.cursor/rules/animations.mdc`
 - **Lib**: Shared utilities and SDK singletons live in `src/lib/`. Key modules:
   - `firebase.ts` — Firebase client SDK singleton (uses `NEXT_PUBLIC_*` env vars, safe for client and server)
   - `firebase-admin.ts` — Firebase Admin SDK singleton (server-only, uses `FIREBASE_ADMIN_*` env vars)

@@ -38,6 +38,7 @@ import { Textarea } from "@/components/Textarea";
 import { Tooltip } from "@/components/Tooltip";
 import type { TabItem, TabsBoxItem } from "@/components/Tabs";
 import { VariantOptionButton } from "@/components/VariantOptionButton";
+import { ListingItem } from "@/components/ListingItem";
 import type { SearchBarResult } from "@/components/SearchBar";
 
 const SAMPLE_SEARCH_RESULTS: SearchBarResult[] = [
@@ -456,6 +457,14 @@ export default function Home() {
           </div>
         </section>
         <section className="flex flex-col">
+          <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ListingItem</span>
+          <div className="flex w-full max-w-md flex-col rounded bg-white">
+            <ListingItem title="Baitfish Minnow" subtitle="3 Variants" onClick={() => {}} />
+            <ListingItem title="River2Sea V-Joint" subtitle="5 Variants" onClick={() => {}} />
+            <ListingItem title="Jackall Riser Bait" onClick={() => {}} />
+          </div>
+        </section>
+        <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ProductListing</span>
           <div className="flex flex-wrap items-start gap-6">
             <ProductListing
@@ -559,7 +568,7 @@ export default function Home() {
         </section>
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">MediaDropzone</span>
-          <MediaDropzone onFilesSelect={() => {}} />
+          <MediaDropzone onFilesChange={() => {}} />
         </section>
         <section className="flex flex-col">
           <span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">Banner</span>

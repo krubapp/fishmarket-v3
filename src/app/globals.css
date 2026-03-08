@@ -4,6 +4,7 @@
 @import "./theme/borders.css";
 @import "./theme/mapped.css";
 @import "./theme/responsive.css";
+@import "./theme/animations.css";
 
 :root {
   --background: #f3f4f6;

@@ -39,7 +39,7 @@ export function BottomNav({
           <NextLink
             key={id}
             href={href}
-            className="flex flex-1 flex-col items-center justify-center gap-1 border-none bg-transparent p-0 text-left no-underline outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+            className="flex flex-1 flex-col items-center justify-center gap-1 border-none bg-transparent p-0 text-left no-underline outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             onClick={() => onItemChange?.(id)}
             aria-current={isActive ? "page" : undefined}
             aria-label={label}

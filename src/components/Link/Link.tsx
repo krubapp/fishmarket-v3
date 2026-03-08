@@ -12,7 +12,7 @@ const sizeClass: Record<LinkSize, string> = {
 };
 
 const contentClass =
-  "inline-flex items-center justify-center gap-3 p-1 text-slate-900 transition-colors hover:text-slate-950 border-b-2 border-transparent focus:outline-none focus:border-slate-900 disabled:pointer-events-none disabled:text-grey-700";
+  "inline-flex items-center justify-center gap-3 p-1 text-slate-900 transition-[color,border-color,transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97] hover:text-slate-950 border-b-2 border-transparent focus:outline-none focus:border-slate-900 disabled:pointer-events-none disabled:text-grey-700 disabled:active:scale-100";
 
 export function Link({
   children,

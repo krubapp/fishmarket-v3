@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { IconButton } from "@/components/IconButton";
 
 import type { DrawerProps } from "./types";
@@ -19,17 +20,6 @@ export function Drawer({
   "aria-label": ariaLabel,
   className = "",
 }: DrawerProps) {
-  const [entered, setEntered] = useState(false);
-
-  useEffect(() => {
-    if (!open) {
-      setEntered(false);
-      return;
-    }
-    const id = requestAnimationFrame(() => setEntered(true));
-    return () => cancelAnimationFrame(id);
-  }, [open]);
-
   useEffect(() => {
     if (!open) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -39,56 +29,66 @@ export function Drawer({
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [open, onClose]);
 
-  if (!open || typeof document === "undefined") return null;
+  if (typeof document === "undefined") return null;
 
-  const panelStyle = {
-    width: Math.min(width, typeof window !== "undefined" ? window.innerWidth : width),
-    maxWidth: "100vw",
-  };
-
-  const translate = side === "right" ? "translateX(100%)" : "translateX(-100%)";
-  const translateEnd = "translateX(0)";
-
-  const content = (
-    <div
-      className="fixed inset-0 z-50 flex"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title ?? ariaLabel}
-    >
-      <div
-        className="absolute inset-0 bg-black/50 transition-opacity duration-200"
-        aria-hidden
-        onClick={closeOnBackdropClick ? onClose : undefined}
-      />
-      <div
-        className={`absolute top-0 bottom-0 flex flex-col bg-white shadow-lg transition-transform duration-200 ease-out ${
-          side === "right" ? "right-0 border-l border-slate-200" : "left-0 border-r border-slate-200"
-        } ${className}`}
-        style={{
-          ...panelStyle,
-          transform: entered ? translateEnd : translate,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {title != null && (
-          <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 px-6 py-4">
-            <h2 className="min-w-0 truncate font-medium text-slate-900 text-[length:var(--font-size-paragraph-lg)] leading-[var(--line-height-paragraph-lg)]">
-              {title}
-            </h2>
-            <IconButton
-              name="close"
-              size="small"
-              variant="transparent"
-              aria-label="Close"
-              onClick={onClose}
-            />
-          </div>
-        )}
-        <div className="min-h-0 flex-1 overflow-auto px-6 py-4">{children}</div>
-      </div>
-    </div>
+  const panelWidth = Math.min(
+    width,
+    typeof window !== "undefined" ? window.innerWidth : width
   );
+  const slideX = side === "right" ? "100%" : "-100%";
 
-  return createPortal(content, document.body);
+  return createPortal(
+    <AnimatePresence>
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex"
+          role="dialog"
+          aria-modal="true"
+          aria-label={title ?? ariaLabel}
+        >
+          <motion.div
+            className="absolute inset-0 bg-black/50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            aria-hidden
+            onClick={closeOnBackdropClick ? onClose : undefined}
+          />
+          <motion.div
+            className={`absolute top-0 bottom-0 flex flex-col bg-white shadow-lg ${
+              side === "right"
+                ? "right-0 border-l border-slate-200"
+                : "left-0 border-r border-slate-200"
+            } ${className}`}
+            style={{ width: panelWidth, maxWidth: "100vw" }}
+            initial={{ x: slideX }}
+            animate={{ x: 0 }}
+            exit={{ x: slideX }}
+            transition={{ type: "tween", duration: 0.2, ease: [0.33, 1, 0.68, 1] }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {title != null && (
+              <div className="flex shrink-0 items-center justify-between gap-4 border-b border-slate-200 px-6 py-4">
+                <h2 className="min-w-0 truncate font-medium text-slate-900 text-[length:var(--font-size-paragraph-lg)] leading-[var(--line-height-paragraph-lg)]">
+                  {title}
+                </h2>
+                <IconButton
+                  name="close"
+                  size="small"
+                  variant="transparent"
+                  aria-label="Close"
+                  onClick={onClose}
+                />
+              </div>
+            )}
+            <div className="min-h-0 flex-1 overflow-auto px-6 py-4">
+              {children}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  );
 }

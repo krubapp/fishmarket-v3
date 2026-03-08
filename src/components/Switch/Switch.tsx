@@ -42,7 +42,7 @@ function getTrackClasses(
 }
 
 function getThumbClasses(checked: boolean, disabled: boolean, error: boolean, size: "small" | "medium"): string {
-  const transition = "transition-transform duration-200 ease-out";
+  const transition = "transition-transform duration-(--duration-normal) ease-(--ease-spring)";
   const translate = checked ? SIZE[size].thumbTranslate : "translate-x-0";
   const base =
     "inline-block rounded-full pointer-events-none " +

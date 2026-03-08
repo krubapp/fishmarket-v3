@@ -56,15 +56,24 @@ export function AccordionItem({
             {headerRight}
           </span>
         )}
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center text-current">
-          <Icon name={open ? "expand_less" : "expand_more"} size={24} />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center text-current transition-transform duration-(--duration-normal) ease-(--ease-out)"
+          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+        >
+          <Icon name="keyboard_arrow_down" size={24} />
         </span>
       </button>
-      {open && (
-        <div className={panelClasses} role="region" aria-label={title}>
-          {children}
+      <div
+        className="grid transition-[grid-template-rows] duration-(--duration-normal) ease-(--ease-out)"
+        style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
+        role="region"
+        aria-label={title}
+      >
+        <div className="overflow-hidden">
+          <div className={panelClasses}>
+            {children}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

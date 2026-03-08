@@ -17,7 +17,7 @@ function ActionButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
       aria-label={label}
     >
       <Icon
@@ -49,7 +49,7 @@ export function ContextTopBar({
           <button
             type="button"
             onClick={onBack}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             aria-label={`Back to ${backLabel}`}
           >
             <Icon

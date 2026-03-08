@@ -27,7 +27,7 @@ function TabsBoxButton({
       aria-disabled={isDisabled}
       disabled={isDisabled}
       onClick={onSelect}
-      className={`relative flex w-[95px] flex-col items-center gap-2 py-2 outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+      className={`relative flex w-[95px] flex-col items-center gap-2 py-2 outline-none transition-[color,background-color,transform] duration-(--duration-fast) ease-(--ease-out) active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
         !isLast ? "border-r border-slate-200" : ""
       } ${
         isDisabled
