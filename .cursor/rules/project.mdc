@@ -29,6 +29,7 @@ alwaysApply: true
   - `routes.ts` — Centralized `ROUTES` constant (all app paths in one place). Always import from here instead of hardcoding path strings. See `.cursor/rules/routes.mdc`.
   - `schemas/` — Zod schemas (e.g. `listing.ts`). See `.cursor/rules/forms.mdc` and `data.mdc`.
 - **Components**: Components live in `src/components/<ComponentName>/`. See `.cursor/rules/components.mdc` for documented components (API, usage, Figma source).
+- **Responsive UI**: All UI must be responsive for both mobile and desktop. Use theme breakpoints and layout tokens (`responsive.css`, `var(--spacing-layout-*)`) so layouts, typography, and spacing adapt across viewport sizes. Test key flows at narrow (mobile) and wide (desktop) viewports.
 - **Comments**: Comment only where it adds value — e.g. above a function, util, or non-obvious/complex logic. Avoid over-commenting; prefer clear names and structure over inline noise.
 
 ## Rules and skills
