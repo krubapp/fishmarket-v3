@@ -6,12 +6,28 @@ type CategoryRow = {
   fishType: string;
   label: string;
   image: string;
+  position: { left: string; top: string; width: string; height: string };
 };
 
 const CATEGORIES: CategoryRow[] = [
-  { fishType: "Perch", label: "Perch Lures", image: "/images/Perch.png" },
-  { fishType: "Pike", label: "Pike Lures", image: "/images/Pike.png" },
-  { fishType: "Zanders", label: "Zanders Lures", image: "/images/Zanders.png" },
+  {
+    fishType: "Perch",
+    label: "Perch Lures",
+    image: "/images/Perch.png",
+    position: { left: "29%", top: "-23%", width: "94%", height: "167%" },
+  },
+  {
+    fishType: "Pike",
+    label: "Pike Lures",
+    image: "/images/Pike.png",
+    position: { left: "27%", top: "-56%", width: "135%", height: "241%" },
+  },
+  {
+    fishType: "Zanders",
+    label: "Zanders Lures",
+    image: "/images/Zanders.png",
+    position: { left: "38%", top: "-39%", width: "100%", height: "178%" },
+  },
 ];
 
 export type CategoriesSectionProps = {
@@ -34,23 +50,24 @@ export function CategoriesSection({
           <button
             key={cat.fishType}
             onClick={() => onCategoryClick?.(cat.fishType)}
-            className="relative flex h-[108px] w-full items-center overflow-hidden px-6 py-[42px] text-left transition-[transform,opacity] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.99] disabled:active:scale-100"
+            className="relative flex h-[108px] w-full items-center overflow-clip border-0 bg-white px-6 py-[42px] text-left outline-none transition-[transform,opacity] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.99] disabled:active:scale-100"
           >
             <div className="pointer-events-none absolute inset-0" aria-hidden>
-              <div className="absolute inset-0 z-10 bg-gradient-to-r from-[rgba(255,255,255,0)] to-[rgba(10,10,10,0.3)]" />
+              <div className="absolute inset-0 z-1 bg-linear-to-r from-[rgba(255,255,255,0)] to-[rgba(10,10,10,0.3)]" />
               <div className="absolute inset-0 overflow-hidden">
                 <Image
                   src={cat.image}
                   alt=""
                   width={800}
                   height={400}
-                  className="absolute right-0 top-1/2 h-[170%] w-auto max-w-none -translate-y-1/2 object-cover"
+                  className="absolute max-w-none object-cover"
+                  style={cat.position}
                   priority
                 />
               </div>
             </div>
 
-            <div className="relative z-10 flex flex-1 flex-col gap-2 items-start justify-center">
+            <div className="relative z-2 flex h-[108px] flex-1 flex-col items-start justify-center gap-2">
               <p className="font-semibold text-[20px] leading-normal text-[#1e1e1e]">
                 {cat.label}
               </p>

@@ -74,7 +74,7 @@ function RecommendedCard({ listing }: { listing: Listing }) {
       <div className="flex items-start gap-2">
         <Avatar size={16} />
         <span className="flex-1 truncate font-medium text-[14px] leading-normal text-[#3c3c3c]">
-          {listing.sellerId ?? "Seller"}
+          Seller
         </span>
       </div>
     </div>

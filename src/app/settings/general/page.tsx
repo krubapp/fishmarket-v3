@@ -7,6 +7,7 @@ import { Switch } from "@/components/Switch";
 import { Snackbar } from "@/components/Snackbar";
 import { useAuth } from "@/hooks/useAuth";
 import { getUserProfile, updateUserProfile } from "@/lib/firestore";
+import { ROUTES } from "@/lib/routes";
 
 export default function SettingsGeneralPage() {
   const { user } = useAuth();
@@ -57,7 +58,7 @@ export default function SettingsGeneralPage() {
       <ContextTopBar
         backLabel="Settings"
         title="General"
-        onBack={() => router.back()}
+        onBack={() => router.push(ROUTES.settings)}
       />
 
       <div className="mx-auto flex w-full max-w-[440px] flex-col">

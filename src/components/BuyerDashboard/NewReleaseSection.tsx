@@ -72,13 +72,13 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
     <div className="w-full shrink-0 snap-center">
       <div className="flex flex-col">
         {/* Blurred background image */}
-        <div className="relative h-[170px] w-full overflow-hidden rounded-t-[4px]">
+        <div className="relative h-[170px] w-full overflow-hidden rounded-t-[4px] bg-slate-100">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={imageUrl}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover blur-[10px]"
+              className="absolute inset-0 h-full w-full scale-[1.2] object-cover"
             />
           ) : (
             <div className="absolute inset-0 bg-slate-200" />
@@ -102,7 +102,7 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
             <div className="flex items-center gap-2">
               <Avatar size={16} />
               <span className="truncate text-[14px] font-normal text-[#1e1e1e]">
-                {listing.sellerId ?? "Seller"}
+                Seller
               </span>
             </div>
           </div>

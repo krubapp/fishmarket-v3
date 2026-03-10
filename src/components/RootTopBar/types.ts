@@ -9,5 +9,7 @@ export type RootTopBarProps = {
   onAddProduct?: () => void;
   onFeed?: () => void;
   onSearch?: () => void;
+  /** When true, the Feed button shows an active/highlighted state. */
+  feedActive?: boolean;
   className?: string;
 };

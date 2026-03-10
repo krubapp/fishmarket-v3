@@ -18,14 +18,20 @@ Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
 | `uid` | `string` | Firebase Auth UID (same as doc ID) |
 | `email` | `string` | User's email address |
 | `displayName` | `string` | Optional display name |
-| `avatarUrl` | `string \| null` | Optional profile image URL |
+| `username` | `string` | Optional unique handle (shown as @username) |
+| `location` | `string` | Optional (e.g. "Stockholm Sweden") |
+| `bio` | `string` | Optional, max 500 chars |
+| `avatarUrl` | `string \| null` | Optional profile image URL (Firebase Storage `users/{uid}/avatar.ext`) |
 | `isSeller` | `boolean` | Whether the user is a seller (default false). Sellers appear in Top Brands and Brand Suggestions on the buyer dashboard. |
 | `createdAt` | `Timestamp` | Server timestamp |
 
 **Helpers**:
 
 - `createUserProfile(uid, email, displayName?, isSeller?)` — `src/lib/firestore.ts` — creates user doc with `setDoc` (uses uid as doc ID)
+- `getUserProfile(uid)` — `src/lib/firestore.ts` — get user doc by uid
+- `updateUserProfile(uid, data)` — `src/lib/firestore.ts` — partial update on `users/{uid}`
 - `getSellers(limitCount?)` — `src/lib/firestore.ts` — query users where `isSeller == true`
+- `uploadAvatar(file, uid)` — `src/lib/storage.ts` — uploads to `users/{uid}/avatar.{ext}`, returns download URL
 
 ### `listings` collection
 
@@ -53,10 +59,62 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 
 - `createListing(data)` — `src/lib/firestore.ts` — adds doc to `listings`, returns doc id
 - `updateListing(listingId, data)` — `src/lib/firestore.ts` — partial update
+- `getListing(id)` — `src/lib/firestore.ts` — fetches a single listing by ID
+- `getListings()` — `src/lib/firestore.ts` — fetches all listings ordered by `createdAt` desc
+- `getUserListings(uid)` — `src/lib/firestore.ts` — fetches listings for a seller, ordered by `createdAt` desc
 - `uploadListingImages(files, listingId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/`, returns download URLs
 - `uploadVariantImage(file, listingId, valueId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/variants/{valueId}.{ext}`, returns download URL
 - `getNewReleases(limitCount?)` — `src/lib/firestore.ts` — newest listings ordered by `createdAt` desc
 - `getListingsByFishType(fishType, limitCount?)` — `src/lib/firestore.ts` — listings filtered by fish type
+
+### `orders` collection
+
+Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created when a buyer purchases a listing.
+
+**Document shape** (matches `Order` type):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `orderNumber` | `number` | Sequential display number (e.g. 1001) |
+| `sellerId` | `string` | Seller's Firebase Auth UID |
+| `buyerId` | `string` | Buyer's Firebase Auth UID |
+| `buyerName` | `string` | Buyer display name (denormalized) |
+| `buyerEmail` | `string` | Optional buyer email (for contact info in order details) |
+| `listingId` | `string` | Reference to the purchased listing |
+| `listingTitle` | `string` | Denormalized listing title |
+| `quantity` | `number` | Number of items purchased |
+| `unitPrice` | `number` | Price per item |
+| `totalAmount` | `number` | Total order amount |
+| `currency` | `string` | Default "SEK" |
+| `status` | `OrderStatus` | One of: `pending`, `confirmed`, `shipped`, `delivered`, `needs_fulfillment`, `return_requested`, `returned`, `cancelled` |
+| `trackingNumber` | `string` | Optional tracking number |
+| `carrier` | `string` | Optional carrier name (e.g. "Postnord") |
+| `shippingAddress` | `string` | Optional buyer shipping address |
+| `createdAt` | `Timestamp` | Server timestamp |
+| `updatedAt` | `Timestamp` | Server timestamp |
+
+**Status → Badge mapping** (in `ORDER_STATUS_BADGE_VARIANT`):
+- `pending`, `confirmed`, `cancelled` → **default** badge
+- `shipped`, `delivered` → **success** badge
+- `needs_fulfillment` → **warning** badge
+- `return_requested`, `returned` → **error** badge
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `createOrder(data)` — adds doc to `orders`, returns doc id
+- `getSellerOrders(sellerId, limitCount?)` — query orders for a seller, ordered by `createdAt` desc
+- `updateOrder(orderId, data)` — partial update (e.g. status change, adds `updatedAt`)
+- `getOrdersByStatus(sellerId, status)` — filter orders by status
+
+**API routes**:
+
+- `GET /api/seller/analytics?sellerId=...` — server-side aggregation via Firebase Admin SDK. Returns `SellerAnalytics`: `earningBalance`, `lifetimeEarning`, `lastPayout`, `nextPayout`, `currency`, `totalOrders`, `shippedOrders`, `pendingOrders`.
+
+**React Query hooks** (in `src/hooks/`):
+
+- `useSellerAnalytics(sellerId)` — fetches from the analytics API route
+- `useSellerOrders(sellerId)` — fetches orders via Firestore client
+- `useSellerInventory(sellerId)` — derives inventory from `getUserListings`
 
 ### User profile (for Firebase Auth / Firestore)
 

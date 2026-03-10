@@ -16,16 +16,21 @@ import {
 
 import { firebaseApp } from "./firebase";
 import type { Listing } from "./schemas/listing";
+import type { Order, OrderStatus } from "./schemas/order";
 
 const db = getFirestore(firebaseApp);
 
 export const LISTINGS_COLLECTION = "listings";
 export const USERS_COLLECTION = "users";
+export const ORDERS_COLLECTION = "orders";
 
 export type UserProfile = {
   uid: string;
   email: string;
   displayName?: string;
+  username?: string;
+  location?: string;
+  bio?: string;
   avatarUrl?: string | null;
   isSeller?: boolean;
   createdAt?: { seconds: number; nanoseconds: number };
@@ -138,4 +143,57 @@ export async function getListingsByFishType(
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
+}
+
+// ─── Orders ────────────────────────────────────────────────────────────
+
+export type CreateOrderInput = Omit<Order, "id" | "createdAt" | "updatedAt">;
+
+export async function createOrder(data: CreateOrderInput): Promise<string> {
+  const docRef = await addDoc(collection(db, ORDERS_COLLECTION), {
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function getSellerOrders(
+  sellerId: string,
+  limitCount = 50,
+): Promise<Order[]> {
+  const q = query(
+    collection(db, ORDERS_COLLECTION),
+    where("sellerId", "==", sellerId),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
+}
+
+export async function updateOrder(
+  orderId: string,
+  data: Partial<CreateOrderInput>,
+): Promise<void> {
+  await updateDoc(doc(db, ORDERS_COLLECTION, orderId), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function getOrdersByStatus(
+  sellerId: string,
+  status: OrderStatus,
+  limitCount = 50,
+): Promise<Order[]> {
+  const q = query(
+    collection(db, ORDERS_COLLECTION),
+    where("sellerId", "==", sellerId),
+    where("status", "==", status),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
 }

@@ -61,6 +61,7 @@ Horizontal bar: avatar + title on the left; Add product, Feed, and Search icon b
 | `onAddProduct` | `() => void` | No | Called when Add product is pressed |
 | `onFeed` | `() => void` | No | Called when Feed is pressed |
 | `onSearch` | `() => void` | No | Called when Search is pressed |
+| `feedActive` | `boolean` | No | When true, the Feed button shows an active/highlighted state (default false) |
 | `className` | `string` | No | Applied to the root `<header>` |
 
 **Exports**: `RootTopBar`, `RootTopBarProps`.

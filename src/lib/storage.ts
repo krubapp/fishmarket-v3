@@ -21,6 +21,15 @@ export async function uploadListingImages(
   return urls;
 }
 
+/** Upload a user avatar image. Overwrites any previous avatar. */
+export async function uploadAvatar(file: File, uid: string): Promise<string> {
+  const ext = file.name.split(".").pop() || "jpg";
+  const path = `users/${uid}/avatar.${ext}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}
+
 /** Upload a single variant value image. Returns the download URL. */
 export async function uploadVariantImage(
   file: File,

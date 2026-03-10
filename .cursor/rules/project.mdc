@@ -25,7 +25,7 @@ alwaysApply: true
   - `firebase.ts` — Firebase client SDK singleton (uses `NEXT_PUBLIC_*` env vars, safe for client and server)
   - `firebase-admin.ts` — Firebase Admin SDK singleton (server-only, uses `FIREBASE_ADMIN_*` env vars)
   - `firestore.ts` — Firestore helpers (`createListing`, `updateListing`)
-  - `storage.ts` — Firebase Storage helpers (`uploadListingImages`, `uploadVariantImage`)
+  - `storage.ts` — Firebase Storage helpers (`uploadListingImages`, `uploadVariantImage`, `uploadAvatar`)
   - `routes.ts` — Centralized `ROUTES` constant (all app paths in one place). Always import from here instead of hardcoding path strings. See `.cursor/rules/routes.mdc`.
   - `schemas/` — Zod schemas (e.g. `listing.ts`). See `.cursor/rules/forms.mdc` and `data.mdc`.
 - **Components**: Components live in `src/components/<ComponentName>/`. See `.cursor/rules/components.mdc` for documented components (API, usage, Figma source).

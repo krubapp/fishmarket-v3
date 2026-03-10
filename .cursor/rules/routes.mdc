@@ -43,4 +43,7 @@ Protected routes require authentication. Unauthenticated users are redirected to
 | `map` | `/map` | — | No | Map (placeholder) |
 | `profile` | `/profile` | `src/app/profile/page.tsx` | No | Profile (Figma node `772:2307`). Avatar, display name, Edit, username, location, "Add some information" CTA, QR + follower link, section TabsBox (Order, Favorites, Comments, Settings), content Tabs (My videos, Tagged, etc.), empty video state. Edit opens ProfileEditDrawer (Figma `772:2424`). |
 | `showcase` | `/showcase` | `src/app/showcase/page.tsx` | No | Component showcase (design system demo). All primitives displayed with labels for visual testing. |
+| `settings` | `/settings` | `src/app/settings/page.tsx` | Yes | Settings index. Navigation hub linking to Account and General sub-pages. |
 | `settingsGeneral` | `/settings/general` | `src/app/settings/general/page.tsx` | Yes | General settings. Seller mode toggle (`isSeller`). The "Become a lure seller" promo CTA on the buyer dashboard links here. |
+| `settingsAccount` | `/settings/account` | `src/app/settings/account/page.tsx` | Yes | Account settings. Edit profile: display name, username, location, bio, avatar image. Persists to Firestore `users/{uid}`. |
+| `searchListings` | `/search` | — | No | Search listings (placeholder). Linked from the seller top bar search icon. |

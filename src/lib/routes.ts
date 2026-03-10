@@ -13,7 +13,10 @@ export const ROUTES = {
   map: "/map",
   profile: "/profile",
   showcase: "/showcase",
+  settings: "/settings",
   settingsGeneral: "/settings/general",
+  settingsAccount: "/settings/account",
+  searchListings: "/search",
 } as const;
 
 export type RoutePath =

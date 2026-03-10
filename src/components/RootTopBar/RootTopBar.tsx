@@ -9,18 +9,20 @@ function ActionButton({
   label,
   onClick,
   variant = "neutral",
+  active = false,
 }: {
   icon: "add" | "subscriptions" | "search";
   label: string;
   onClick?: () => void;
   variant?: "neutral" | "subtle";
+  active?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
-        variant === "subtle" ? "bg-slate-100" : "bg-transparent"
+      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none outline-none transition-[transform,background-color] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+        active ? "bg-slate-900" : variant === "subtle" ? "bg-slate-100" : "bg-transparent"
       }`}
       aria-label={label}
     >
@@ -28,7 +30,7 @@ function ActionButton({
         name={icon}
         size={20}
         fill={1}
-        className="text-[var(--color-text-default-headings)]"
+        className={active ? "text-white" : "text-text-default-headings"}
       />
     </button>
   );
@@ -40,6 +42,7 @@ export function RootTopBar({
   onAddProduct,
   onFeed,
   onSearch,
+  feedActive = false,
   className = "",
 }: RootTopBarProps) {
   return (
@@ -88,6 +91,7 @@ export function RootTopBar({
           label="Feed"
           onClick={onFeed}
           variant="subtle"
+          active={feedActive}
         />
         <ActionButton
           icon="search"

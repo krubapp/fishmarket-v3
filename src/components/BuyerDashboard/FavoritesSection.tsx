@@ -73,7 +73,7 @@ function FavoriteCard({ listing }: { listing: Listing }) {
         <div className="flex items-center gap-2">
           <Avatar size={16} />
           <span className="truncate font-medium text-[14px] leading-[20px] text-[#121412]">
-            {listing.sellerId ?? "Seller"}
+            Seller
           </span>
         </div>
       </div>
