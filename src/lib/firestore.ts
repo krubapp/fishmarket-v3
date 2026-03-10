@@ -15,7 +15,9 @@ import {
   increment,
   serverTimestamp,
   startAfter,
+  documentId,
   type DocumentSnapshot,
+  type QueryConstraint,
 } from "firebase/firestore";
 
 import { firebaseApp } from "./firebase";
@@ -185,6 +187,69 @@ export async function getListingsByFishType(
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
+}
+
+// ─── Search / filter ────────────────────────────────────────────────────
+
+export type ListingFilters = {
+  category?: string;
+  fishType?: string;
+  condition?: string;
+  sellerId?: string;
+  searchQuery?: string;
+  minPrice?: number;
+  maxPrice?: number;
+};
+
+export async function searchListings(
+  filters: ListingFilters,
+): Promise<Listing[]> {
+  const constraints: QueryConstraint[] = [];
+
+  if (filters.category) constraints.push(where("category", "==", filters.category));
+  if (filters.fishType) constraints.push(where("fishType", "==", filters.fishType));
+  if (filters.condition) constraints.push(where("condition", "==", filters.condition));
+  if (filters.sellerId) constraints.push(where("sellerId", "==", filters.sellerId));
+
+  constraints.push(orderBy("createdAt", "desc"));
+
+  const q = query(collection(db, LISTINGS_COLLECTION), ...constraints);
+  const snap = await getDocs(q);
+  let results = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
+
+  if (filters.searchQuery) {
+    const lower = filters.searchQuery.toLowerCase();
+    results = results.filter((l) => l.title.toLowerCase().includes(lower));
+  }
+  if (filters.minPrice != null) {
+    results = results.filter((l) => l.price >= filters.minPrice!);
+  }
+  if (filters.maxPrice != null) {
+    results = results.filter((l) => l.price <= filters.maxPrice!);
+  }
+
+  return results;
+}
+
+/** Batch-fetch user profiles by UID (groups of 10 for Firestore `in` limit). */
+export async function getUserProfiles(
+  uids: string[],
+): Promise<Map<string, UserProfile>> {
+  const map = new Map<string, UserProfile>();
+  const unique = [...new Set(uids)];
+  if (unique.length === 0) return map;
+
+  for (let i = 0; i < unique.length; i += 10) {
+    const batch = unique.slice(i, i + 10);
+    const q = query(
+      collection(db, USERS_COLLECTION),
+      where(documentId(), "in", batch),
+    );
+    const snap = await getDocs(q);
+    snap.docs.forEach((d) => map.set(d.id, d.data() as UserProfile));
+  }
+
+  return map;
 }
 
 // ─── Orders ────────────────────────────────────────────────────────────

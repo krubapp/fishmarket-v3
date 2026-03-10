@@ -75,6 +75,8 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 - `uploadVariantImage(file, listingId, valueId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/variants/{valueId}.{ext}`, returns download URL
 - `getNewReleases(limitCount?)` — `src/lib/firestore.ts` — newest listings ordered by `createdAt` desc
 - `getListingsByFishType(fishType, limitCount?)` — `src/lib/firestore.ts` — listings filtered by fish type
+- `searchListings(filters)` — `src/lib/firestore.ts` — search/filter listings. Accepts `ListingFilters`: `category`, `fishType`, `condition`, `sellerId` (Firestore `where`), plus `searchQuery`, `minPrice`, `maxPrice` (client-side). Returns `Listing[]`
+- `getUserProfiles(uids)` — `src/lib/firestore.ts` — batch-fetch user profiles by UID array (groups of 10 for Firestore `in` limit). Returns `Map<string, UserProfile>`
 
 ### `orders` collection
 

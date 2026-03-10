@@ -83,7 +83,11 @@ export default function HomePage() {
         <div className="mx-auto flex w-full max-w-[440px] flex-col gap-6">
           <TopBrandsSection sellers={sellers} />
           <NewReleaseSection listings={newReleases} />
-          <CategoriesSection />
+          <CategoriesSection
+            onCategoryClick={(fishType) =>
+              router.push(`${ROUTES.searchListings}?fishType=${fishType}`)
+            }
+          />
 
           <div className="flex flex-col gap-[54px] px-6">
             <FavoritesSection listings={favoriteListings} />
