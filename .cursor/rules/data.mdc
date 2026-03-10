@@ -34,3 +34,17 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 - `updateListing(listingId, data)` — `src/lib/firestore.ts` — partial update
 - `uploadListingImages(files, listingId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/`, returns download URLs
 - `uploadVariantImage(file, listingId, valueId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/variants/{valueId}.{ext}`, returns download URL
+
+### User profile (for Firebase Auth / Firestore)
+
+Profile fields used on the profile page and Edit Bio form are defined in **`src/lib/schemas/profile.ts`**. When tying to Firebase, store per user (e.g. `users/{uid}` or `profiles/{uid}`):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `displayName` | `string` | Display name |
+| `username` | `string` | Unique handle (shown as @username) |
+| `location` | `string` | Optional (e.g. "Stockholm Sweden") |
+| `bio` | `string` | Optional, max 500 chars |
+| `avatarUrl` | `string \| null` | Optional profile image URL (e.g. Storage) |
+| `followerCount` | `number` | Optional; can be computed from a subcollection |
+| `createdAt` / `updatedAt` | `Timestamp` | Optional server timestamps |

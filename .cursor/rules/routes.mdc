@@ -29,4 +29,4 @@ When adding a new route, add its path to `ROUTES` first, then reference the key 
 | `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
 | `createListingForm` | `/create-listing/form` | `src/app/create-listing/form/page.tsx` | Advance listing form (Figma node `417:1722`). react-hook-form + zod. MediaDropzone, title, description, price, condition, category, variants (via VariantDrawer + VariantList). Submits to Firestore and Storage (including variant images). |
 | `map` | `/map` | — | Map (placeholder) |
-| `profile` | `/profile` | — | Profile (placeholder) |
+| `profile` | `/profile` | `src/app/profile/page.tsx` | Profile (Figma node `772:2307`). Avatar, display name, Edit, username, location, “Add some information” CTA, QR + follower link, section TabsBox (Order, Favorites, Comments, Settings), content Tabs (My videos, Tagged, etc.), empty video state. Edit opens ProfileEditDrawer (Figma `772:2424`). |

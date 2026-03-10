@@ -10,6 +10,7 @@ alwaysApply: true
 - **Location**: `src/components/<ComponentName>/` with related files (e.g. `ComponentName.tsx`, `types.ts`, `index.ts`).
 - **Import**: Prefer the barrel: `import { ComponentName } from "@/components/ComponentName";`
 - **Source**: Primitives are implemented from Figma (Roy design system); keep design tokens in `src/app/theme/`.
+- **Responsive**: All components and screens must work on both mobile and desktop; use responsive layout and typography (see project rule **Responsive UI**).
 - **Showcase**: After creating a new primitive, add it to `src/app/page.tsx` with a **label above it** (e.g. `<span className="mb-1 font-medium text-white text-[length:var(--font-size-paragraph-md)]">ComponentName</span>` in a `<section>`). Keep a label above every component on the page.
 
 ---
@@ -778,6 +779,39 @@ import { DrawerTopBar } from "@/components/DrawerTopBar";
   />
   <div className="px-6 py-4">…</div>
 </Drawer>
+```
+
+---
+
+## ProfileEditDrawer
+
+**Path**: `@/components/ProfileEditDrawer`  
+**Figma**: Nike Fishing Maning 2026 → Edit Bio (node 772:2424).
+
+Drawer for editing profile/bio: title "Edit Bio", form fields (display name, username, location, bio), Save button at bottom. Uses `Drawer` (width 440px), `Input`, `Textarea`, `Button`. Form validated with `profileFormSchema` from `@/lib/schemas/profile`.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `open` | `boolean` | Yes | Whether the drawer is open |
+| `onClose` | `() => void` | Yes | Called when the drawer should close |
+| `profile` | `Profile` | Yes | Current profile (from `@/lib/schemas/profile`) |
+| `onSave` | `(updates: Partial<Profile>) => void` | Yes | Called when user saves; pass partial profile updates |
+
+**Exports**: `ProfileEditDrawer`, `ProfileEditDrawerProps`.
+
+**Example**
+
+```tsx
+import { ProfileEditDrawer } from "@/components/ProfileEditDrawer";
+
+<ProfileEditDrawer
+  open={editOpen}
+  onClose={() => setEditOpen(false)}
+  profile={profile}
+  onSave={(updates) => setProfile((p) => ({ ...p, ...updates }))}
+/>
 ```
 
 ---
