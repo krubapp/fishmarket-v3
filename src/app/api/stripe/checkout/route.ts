@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase-admin";
-import { stripe } from "@/lib/stripe";
+import { getAdminApp } from "@/lib/firebase-admin";
+import { getStripe } from "@/lib/stripe";
 
-const db = getFirestore(adminApp);
+export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const db = getFirestore(getAdminApp());
+  const stripe = getStripe();
   try {
     const { listingId, buyerId, variantValueId, quantity = 1 } = await request.json();
 

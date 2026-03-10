@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase-admin";
-import { stripe } from "@/lib/stripe";
+import { getAdminApp } from "@/lib/firebase-admin";
+import { getStripe } from "@/lib/stripe";
 import type Stripe from "stripe";
 
-const db = getFirestore(adminApp);
+export const dynamic = "force-dynamic";
+
+function getDb() {
+  return getFirestore(getAdminApp());
+}
 
 export async function POST(request: Request) {
   const body = await request.text();
@@ -17,6 +21,7 @@ export async function POST(request: Request) {
     );
   }
 
+  const stripe = getStripe();
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(
@@ -94,6 +99,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const totalAmount = unitPrice * quantity + shippingCost;
 
   // Fetch buyer info for denormalized fields
+  const db = getDb();
   const buyerDoc = await db.collection("users").doc(buyerId).get();
   const buyerData = buyerDoc.exists ? buyerDoc.data()! : {};
 
@@ -145,6 +151,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 }
 
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
+  const db = getDb();
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntent.id)
@@ -161,6 +168,7 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
 }
 
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
+  const db = getDb();
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntent.id)
@@ -190,6 +198,7 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 async function handleAccountUpdated(account: Stripe.Account) {
   if (!account.charges_enabled || !account.details_submitted) return;
 
+  const db = getDb();
   const usersSnap = await db
     .collection("users")
     .where("stripeAccountId", "==", account.id)
@@ -208,6 +217,7 @@ async function deductStock(
   variantValueId: string,
   quantity: number,
 ) {
+  const db = getDb();
   const listingRef = db.collection("listings").doc(listingId);
 
   await db.runTransaction(async (tx) => {
@@ -245,6 +255,7 @@ async function restoreStock(
   variantValueId: string,
   quantity: number,
 ) {
+  const db = getDb();
   const listingRef = db.collection("listings").doc(listingId);
 
   await db.runTransaction(async (tx) => {

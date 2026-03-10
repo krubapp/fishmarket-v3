@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase-admin";
+import { getAdminApp } from "@/lib/firebase-admin";
+
+export const dynamic = "force-dynamic";
 
 export type SellerAnalytics = {
   earningBalance: number;
@@ -27,7 +29,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const db = getFirestore(adminApp);
+    const db = getFirestore(getAdminApp());
     const ordersSnap = await db
       .collection("orders")
       .where("sellerId", "==", sellerId)

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
-import { adminApp } from "@/lib/firebase-admin";
-import { stripe } from "@/lib/stripe";
+import { getAdminApp } from "@/lib/firebase-admin";
+import { getStripe } from "@/lib/stripe";
 
-const db = getFirestore(adminApp);
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,6 +16,8 @@ export async function GET(request: Request) {
     );
   }
 
+  const db = getFirestore(getAdminApp());
+  const stripe = getStripe();
   try {
     const userDoc = await db.collection("users").doc(uid).get();
     if (!userDoc.exists) {
