@@ -1465,4 +1465,36 @@ const [open, setOpen] = useState(false);
 
 ---
 
+## ListingForm
+
+**Path**: `@/components/ListingForm`
+
+Shared form component used by both the create and edit listing pages. Renders the full listing form: product images, item details (title, category, condition, description, specs), pricing, and variants. Handles image uploads, variant image uploads, and submission to Firestore.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `mode` | `ListingFormMode` | Yes | `"create"` \| `"edit"` |
+| `initialData` | `Listing` | No | Existing listing data to pre-populate in edit mode |
+
+**Behavior by mode**:
+- **create**: Empty form, calls `createListing` on submit, redirects to `/create-listing?created=true`.
+- **edit**: Pre-populated from `initialData`, shows existing images with remove buttons, calls `updateListing` on submit, redirects to `/create-listing?updated=true`. Top bar title shows "Edit listing", submit button shows "Save changes".
+
+**Image handling in edit mode**: Existing image URLs are tracked separately from new `File[]` uploads. On submit, only new files are uploaded and merged with remaining existing URLs.
+
+**Exports**: `ListingForm`, `ListingFormProps`, `ListingFormMode`.
+
+**Example**
+
+```tsx
+import { ListingForm } from "@/components/ListingForm";
+
+<ListingForm mode="create" />
+<ListingForm mode="edit" initialData={listing} />
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

@@ -9,7 +9,8 @@ import { BottomNav } from "@/components/BottomNav";
 import { SectionLine } from "@/components/SectionLine";
 import { ListingItem } from "@/components/ListingItem";
 import { Snackbar } from "@/components/Snackbar";
-import { getListings } from "@/lib/firestore";
+import { getUserListings } from "@/lib/firestore";
+import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/lib/routes";
 import type { Listing } from "@/lib/schemas/listing";
 
@@ -21,18 +22,25 @@ function getVariantCount(listing: Listing): number {
 export default function CreateListingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
   const [listings, setListings] = useState<Listing[]>([]);
   const [showSnackbar, setShowSnackbar] = useState(false);
 
   useEffect(() => {
-    getListings().then(setListings).catch(console.error);
-  }, []);
+    if (!user) return;
+    getUserListings(user.uid).then(setListings).catch(console.error);
+  }, [user]);
+
+  const snackbarMessage =
+    searchParams.get("created") === "true"
+      ? "Listing created successfully"
+      : searchParams.get("updated") === "true"
+        ? "Listing updated successfully"
+        : null;
 
   useEffect(() => {
-    if (searchParams.get("created") === "true") {
-      setShowSnackbar(true);
-    }
-  }, [searchParams]);
+    if (snackbarMessage) setShowSnackbar(true);
+  }, [snackbarMessage]);
 
   const handleSnackbarClose = useCallback(() => {
     setShowSnackbar(false);
@@ -65,7 +73,7 @@ export default function CreateListingPage() {
         </div>
       )}
 
-      <div className="flex flex-col items-start gap-6 px-6 py-10">
+      <div className="flex flex-col items-start gap-6 px-6 py-10" >
         <div className="flex flex-col gap-1">
           <h2 className="font-medium text-text-default-headings text-paragraph-xl leading-(--line-height-h6)">
             Create a new product inventory
@@ -95,6 +103,7 @@ export default function CreateListingPage() {
                       ? `${variantCount} Variant${variantCount !== 1 ? "s" : ""}`
                       : undefined
                   }
+                  onClick={() => router.push(ROUTES.editListing(listing.id!))}
                 />
               );
             })}
@@ -107,7 +116,7 @@ export default function CreateListingPage() {
       <Snackbar
         open={showSnackbar}
         onClose={handleSnackbarClose}
-        message="Listing created successfully"
+        message={snackbarMessage ?? ""}
         icon="check_circle"
       />
     </div>

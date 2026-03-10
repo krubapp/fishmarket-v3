@@ -7,6 +7,23 @@ alwaysApply: true
 
 ## Firestore
 
+### `users` collection
+
+Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
+
+**Document shape** (matches `UserProfile` type in `src/lib/firestore.ts`):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `uid` | `string` | Firebase Auth UID (same as doc ID) |
+| `email` | `string` | User's email address |
+| `displayName` | `string` | Optional display name |
+| `createdAt` | `Timestamp` | Server timestamp |
+
+**Helpers**:
+
+- `createUserProfile(uid, email, displayName?)` — `src/lib/firestore.ts` — creates user doc with `setDoc` (uses uid as doc ID)
+
 ### `listings` collection
 
 Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
@@ -26,7 +43,7 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 | `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, and optional `imageUrl` |
 | `imageUrls` | `string[]` | URLs from Firebase Storage |
 | `createdAt` | `Timestamp` | Server timestamp |
-| `sellerId` | `string` | Optional; for future auth |
+| `sellerId` | `string` | Firebase Auth UID of the listing creator |
 
 **Helpers** (in `src/lib/`):
 

@@ -14,19 +14,31 @@ All route paths are defined in **`src/lib/routes.ts`** as the `ROUTES` object. A
 ```ts
 import { ROUTES } from "@/lib/routes";
 
-router.push(ROUTES.createListing);   // "/create-listing"
-<Link href={ROUTES.home}>Home</Link> // "/"
+router.push(ROUTES.createListing);        // "/create-listing"
+router.push(ROUTES.editListing("abc123")); // "/create-listing/abc123/edit"
+<Link href={ROUTES.home}>Home</Link>      // "/"
 ```
 
 When adding a new route, add its path to `ROUTES` first, then reference the key everywhere.
 
+## Route protection
+
+Protected routes require authentication. Unauthenticated users are redirected to `/login`.
+
+- **`AuthProvider`** (`src/contexts/AuthContext.tsx`) wraps the app in the root layout, providing `{ user, loading }` via context.
+- **`useAuth`** (`src/hooks/useAuth.ts`) is a re-export of `useAuthContext` — use it in any client component.
+- **`ProtectedRoute`** (`src/components/ProtectedRoute/`) is a wrapper component that checks auth and redirects to `/login` if not authenticated. Shows a loading spinner while auth state resolves.
+- To protect a route group, add a `layout.tsx` that wraps children with `<ProtectedRoute>` (see `src/app/create-listing/layout.tsx`).
+
 ## Route table
 
-| Key | Path | File | Description |
-|-----|------|------|-------------|
-| `home` | `/` | `src/app/page.tsx` | Component showcase (design system demo) |
-| `shop` | `/shop` | — | Shop (placeholder) |
-| `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
-| `createListingForm` | `/create-listing/form` | `src/app/create-listing/form/page.tsx` | Advance listing form (Figma node `417:1722`). react-hook-form + zod. MediaDropzone, title, description, price, condition, category, variants (via VariantDrawer + VariantList). Submits to Firestore and Storage (including variant images). |
-| `map` | `/map` | — | Map (placeholder) |
-| `profile` | `/profile` | `src/app/profile/page.tsx` | Profile (Figma node `772:2307`). Avatar, display name, Edit, username, location, “Add some information” CTA, QR + follower link, section TabsBox (Order, Favorites, Comments, Settings), content Tabs (My videos, Tagged, etc.), empty video state. Edit opens ProfileEditDrawer (Figma `772:2424`). |
+| Key | Path | File | Protected | Description |
+|-----|------|------|-----------|-------------|
+| `home` | `/` | `src/app/page.tsx` | No | Component showcase (design system demo) |
+| `login` | `/login` | `src/app/login/page.tsx` | No | Email/password sign-in and sign-up. Redirects to `/create-listing` on success. |
+| `shop` | `/shop` | — | No | Shop (placeholder) |
+| `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Yes | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
+| `createListingForm` | `/create-listing/form` | `src/app/create-listing/form/page.tsx` | Yes | Advance listing form (Figma node `417:1722`). Uses shared `ListingForm` component in create mode. |
+| `editListing(id)` | `/create-listing/[id]/edit` | `src/app/create-listing/[id]/edit/page.tsx` | Yes | Edit listing form. Fetches listing by ID, verifies ownership, renders `ListingForm` in edit mode with pre-populated data. Redirects to dashboard with `?updated=true` on success. |
+| `map` | `/map` | — | No | Map (placeholder) |
+| `profile` | `/profile` | `src/app/profile/page.tsx` | No | Profile (Figma node `772:2307`). Avatar, display name, Edit, username, location, "Add some information" CTA, QR + follower link, section TabsBox (Order, Favorites, Comments, Settings), content Tabs (My videos, Tagged, etc.), empty video state. Edit opens ProfileEditDrawer (Figma `772:2424`). |
