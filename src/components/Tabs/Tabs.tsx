@@ -33,7 +33,7 @@ function TabButton({
       }`}
     >
       {/* Label + optional icon (Frame 1/2) */}
-      <span className="flex items-center gap-2">
+      <span className="flex shrink-0 items-center gap-2 whitespace-nowrap">
         <span className="font-semibold leading-[1.5] text-[length:var(--font-size-paragraph-md)]">
           {tab.label}
         </span>

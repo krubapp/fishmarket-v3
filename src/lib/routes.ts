@@ -15,6 +15,8 @@ export const ROUTES = {
   editListing: (id: string) => `/create-listing/${id}/edit` as const,
   map: "/map",
   profile: "/profile",
+  profileByUsername: (username: string) =>
+    `/profile/${encodeURIComponent(username)}` as const,
   showcase: "/showcase",
   settings: "/settings",
   settingsGeneral: "/settings/general",
@@ -26,7 +28,11 @@ export const ROUTES = {
 } as const;
 
 export type RoutePath =
-  | (typeof ROUTES)[Exclude<keyof typeof ROUTES, "editListing" | "listingDetail" | "postDetail">]
+  | (typeof ROUTES)[Exclude<
+      keyof typeof ROUTES,
+      "editListing" | "listingDetail" | "postDetail" | "profileByUsername"
+    >]
   | ReturnType<typeof ROUTES.editListing>
   | ReturnType<typeof ROUTES.listingDetail>
-  | ReturnType<typeof ROUTES.postDetail>;
+  | ReturnType<typeof ROUTES.postDetail>
+  | ReturnType<typeof ROUTES.profileByUsername>;

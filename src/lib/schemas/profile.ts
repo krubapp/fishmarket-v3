@@ -4,6 +4,12 @@ import { z } from "zod";
  * User profile schema for Firebase (e.g. users/{uid} or profiles/{uid}).
  * Tied to the profile page: display name, username, location, bio, avatar, follower count.
  */
+const optionalUrl = z
+  .string()
+  .optional()
+  .transform((v) => v?.trim() || undefined)
+  .refine((v) => !v || z.string().url().safeParse(v).success, "Enter a valid URL");
+
 export const profileSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
   username: z
@@ -13,6 +19,9 @@ export const profileSchema = z.object({
   location: z.string().optional(),
   bio: z.string().max(500).optional(),
   avatarUrl: z.string().url().optional().nullable(),
+  tiktokUrl: optionalUrl,
+  youtubeUrl: optionalUrl,
+  instagramUrl: optionalUrl,
   isSeller: z.boolean().default(false),
   followerCount: z.number().int().min(0).default(0),
   createdAt: z.unknown().optional(),
@@ -27,6 +36,9 @@ export const profileFormSchema = profileSchema.pick({
   username: true,
   location: true,
   bio: true,
+  tiktokUrl: true,
+  youtubeUrl: true,
+  instagramUrl: true,
 });
 
 export type ProfileForm = z.infer<typeof profileFormSchema>;

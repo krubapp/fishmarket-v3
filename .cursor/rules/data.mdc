@@ -22,6 +22,10 @@ Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
 | `location` | `string` | Optional (e.g. "Stockholm Sweden") |
 | `bio` | `string` | Optional, max 500 chars |
 | `avatarUrl` | `string \| null` | Optional profile image URL (Firebase Storage `users/{uid}/avatar.ext`) |
+| `followerCount` | `number` | Optional. Displayed on profile (e.g. "300 Follower"). |
+| `tiktokUrl` | `string` | Optional. TikTok profile URL; shown as social link on profile. |
+| `youtubeUrl` | `string` | Optional. YouTube channel URL; shown as social link on profile. |
+| `instagramUrl` | `string` | Optional. Instagram profile URL; shown as social link on profile. |
 | `isSeller` | `boolean` | Whether the user is a seller (default false). Sellers appear in Top Brands and Brand Suggestions on the buyer dashboard. |
 | `stripeAccountId` | `string` | Optional. Stripe Connect account ID (sellers). Created during Stripe Connect onboarding. |
 | `stripeCustomerId` | `string` | Optional. Stripe Customer ID (buyers). Created on first purchase. |

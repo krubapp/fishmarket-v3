@@ -45,6 +45,9 @@ export default function SettingsAccountPage() {
       username: "",
       location: "",
       bio: "",
+      tiktokUrl: "",
+      youtubeUrl: "",
+      instagramUrl: "",
     },
   });
 
@@ -58,6 +61,9 @@ export default function SettingsAccountPage() {
             username: profile.username ?? "",
             location: profile.location ?? "",
             bio: profile.bio ?? "",
+            tiktokUrl: profile.tiktokUrl ?? "",
+            youtubeUrl: profile.youtubeUrl ?? "",
+            instagramUrl: profile.instagramUrl ?? "",
           });
           setCurrentAvatarUrl(profile.avatarUrl ?? null);
         }
@@ -94,6 +100,9 @@ export default function SettingsAccountPage() {
         username: data.username,
         location: data.location || undefined,
         bio: data.bio || undefined,
+        tiktokUrl: data.tiktokUrl?.trim() || undefined,
+        youtubeUrl: data.youtubeUrl?.trim() || undefined,
+        instagramUrl: data.instagramUrl?.trim() || undefined,
         avatarUrl,
       });
 
@@ -193,6 +202,24 @@ export default function SettingsAccountPage() {
                 error={Boolean(errors.bio)}
                 helperText={errors.bio?.message}
                 {...register("bio")}
+              />
+              <Input
+                label="TikTok URL"
+                placeholder="https://tiktok.com/@username"
+                type="url"
+                {...register("tiktokUrl")}
+              />
+              <Input
+                label="YouTube URL"
+                placeholder="https://youtube.com/@channel"
+                type="url"
+                {...register("youtubeUrl")}
+              />
+              <Input
+                label="Instagram URL"
+                placeholder="https://instagram.com/username"
+                type="url"
+                {...register("instagramUrl")}
               />
             </div>
 

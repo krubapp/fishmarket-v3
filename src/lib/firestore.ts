@@ -40,6 +40,10 @@ export type UserProfile = {
   location?: string;
   bio?: string;
   avatarUrl?: string | null;
+  followerCount?: number;
+  tiktokUrl?: string;
+  youtubeUrl?: string;
+  instagramUrl?: string;
   isSeller?: boolean;
   stripeAccountId?: string;
   stripeCustomerId?: string;
@@ -66,6 +70,26 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
   if (!snap.exists()) return null;
   return snap.data() as UserProfile;
+}
+
+/**
+ * Get user profile by username or by uid (document id).
+ * Tries document id first, then queries by username.
+ */
+export async function getUserProfileByUsernameOrId(
+  usernameOrId: string,
+): Promise<UserProfile | null> {
+  const byId = await getDoc(doc(db, USERS_COLLECTION, usernameOrId));
+  if (byId.exists()) return byId.data() as UserProfile;
+  const q = query(
+    collection(db, USERS_COLLECTION),
+    where("username", "==", usernameOrId),
+    limit(1),
+  );
+  const snap = await getDocs(q);
+  const first = snap.docs[0];
+  if (!first) return null;
+  return { uid: first.id, ...first.data() } as UserProfile;
 }
 
 export async function updateUserProfile(
