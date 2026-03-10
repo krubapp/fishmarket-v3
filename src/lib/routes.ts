@@ -13,6 +13,7 @@ export const ROUTES = {
   map: "/map",
   profile: "/profile",
   showcase: "/showcase",
+  settingsGeneral: "/settings/general",
 } as const;
 
 export type RoutePath =

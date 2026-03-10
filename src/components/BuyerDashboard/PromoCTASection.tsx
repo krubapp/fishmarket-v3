@@ -1,13 +1,16 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import NextLink from "next/link";
 import { Icon } from "@/components/Icon";
+import { ROUTES } from "@/lib/routes";
 
 type PromoCard = {
   id: string;
   title: string;
   subtitle: string;
   icon: string;
+  href?: string;
 };
 
 const PROMO_CARDS: PromoCard[] = [
@@ -16,6 +19,7 @@ const PROMO_CARDS: PromoCard[] = [
     title: "Become a lure seller",
     subtitle: "share your lures with the community and get real",
     icon: "currency_exchange",
+    href: ROUTES.settingsGeneral,
   },
   {
     id: "best-lures",
@@ -54,27 +58,7 @@ export function PromoCTASection({ className = "" }: PromoCTASectionProps) {
         className="flex snap-x snap-mandatory gap-6 overflow-x-auto scrollbar-none"
       >
         {PROMO_CARDS.map((card) => (
-          <button
-            key={card.id}
-            className="flex w-full shrink-0 snap-center items-center gap-[13px] bg-[#f0f0f0] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.12)] transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.98]"
-          >
-            <div className="h-[95px] w-[95px] shrink-0 rounded-[2px] bg-slate-200" />
-            <div className="flex flex-1 flex-col gap-1 items-start p-2">
-              <div className="flex items-start gap-4">
-                <span className="font-bold text-[14px] leading-normal text-[#1e1e1e] text-left">
-                  {card.title}
-                </span>
-                <Icon
-                  name="currency_exchange"
-                  size={20}
-                  className="shrink-0 text-[#1e1e1e]"
-                />
-              </div>
-              <span className="font-medium text-[14px] leading-normal text-[#3c3c3c] text-left">
-                {card.subtitle}
-              </span>
-            </div>
-          </button>
+          <PromoCardElement key={card.id} card={card} />
         ))}
       </div>
 
@@ -91,5 +75,47 @@ export function PromoCTASection({ className = "" }: PromoCTASectionProps) {
         </div>
       )}
     </section>
+  );
+}
+
+const cardClassName =
+  "flex w-full shrink-0 snap-center items-center gap-[13px] bg-[#f0f0f0] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.12)] transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.98]";
+
+function PromoCardContent({ card }: { card: PromoCard }) {
+  return (
+    <>
+      <div className="h-[95px] w-[95px] shrink-0 rounded-[2px] bg-slate-200" />
+      <div className="flex flex-1 flex-col gap-1 items-start p-2">
+        <div className="flex items-start gap-4">
+          <span className="font-bold text-[14px] leading-normal text-[#1e1e1e] text-left">
+            {card.title}
+          </span>
+          <Icon
+            name="currency_exchange"
+            size={20}
+            className="shrink-0 text-[#1e1e1e]"
+          />
+        </div>
+        <span className="font-medium text-[14px] leading-normal text-[#3c3c3c] text-left">
+          {card.subtitle}
+        </span>
+      </div>
+    </>
+  );
+}
+
+function PromoCardElement({ card }: { card: PromoCard }) {
+  if (card.href) {
+    return (
+      <NextLink href={card.href} className={cardClassName}>
+        <PromoCardContent card={card} />
+      </NextLink>
+    );
+  }
+
+  return (
+    <button className={cardClassName}>
+      <PromoCardContent card={card} />
+    </button>
   );
 }

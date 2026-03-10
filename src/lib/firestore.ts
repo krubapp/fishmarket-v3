@@ -46,6 +46,19 @@ export async function createUserProfile(
   });
 }
 
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
+  if (!snap.exists()) return null;
+  return snap.data() as UserProfile;
+}
+
+export async function updateUserProfile(
+  uid: string,
+  data: Partial<Omit<UserProfile, "uid">>,
+): Promise<void> {
+  await updateDoc(doc(db, USERS_COLLECTION, uid), data);
+}
+
 export type CreateListingInput = Omit<Listing, "id" | "createdAt">;
 
 export type CreateListingInputInitial = Omit<CreateListingInput, "imageUrls"> & {
