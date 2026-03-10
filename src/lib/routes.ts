@@ -12,6 +12,7 @@ export const ROUTES = {
   editListing: (id: string) => `/create-listing/${id}/edit` as const,
   map: "/map",
   profile: "/profile",
+  showcase: "/showcase",
 } as const;
 
 export type RoutePath =

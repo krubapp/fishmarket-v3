@@ -18,11 +18,14 @@ Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
 | `uid` | `string` | Firebase Auth UID (same as doc ID) |
 | `email` | `string` | User's email address |
 | `displayName` | `string` | Optional display name |
+| `avatarUrl` | `string \| null` | Optional profile image URL |
+| `isSeller` | `boolean` | Whether the user is a seller (default false). Sellers appear in Top Brands and Brand Suggestions on the buyer dashboard. |
 | `createdAt` | `Timestamp` | Server timestamp |
 
 **Helpers**:
 
-- `createUserProfile(uid, email, displayName?)` — `src/lib/firestore.ts` — creates user doc with `setDoc` (uses uid as doc ID)
+- `createUserProfile(uid, email, displayName?, isSeller?)` — `src/lib/firestore.ts` — creates user doc with `setDoc` (uses uid as doc ID)
+- `getSellers(limitCount?)` — `src/lib/firestore.ts` — query users where `isSeller == true`
 
 ### `listings` collection
 
@@ -39,7 +42,8 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 | `shippingCost` | `number` | Optional shipping cost |
 | `currency` | `string` | Default "SEK" |
 | `condition` | `"new" \| "used" \| "refurbished"` | Product condition |
-| `category` | `string` | Category (e.g. Lures, Rods) | `boolean` | Whether seller accepted terms (default false) |
+| `category` | `string` | Category (e.g. Lures, Rods) |
+| `fishType` | `string` | Fish type (e.g. Perch, Pike) |
 | `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, and optional `imageUrl` |
 | `imageUrls` | `string[]` | URLs from Firebase Storage |
 | `createdAt` | `Timestamp` | Server timestamp |
@@ -51,6 +55,8 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 - `updateListing(listingId, data)` — `src/lib/firestore.ts` — partial update
 - `uploadListingImages(files, listingId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/`, returns download URLs
 - `uploadVariantImage(file, listingId, valueId)` — `src/lib/storage.ts` — uploads to `listings/{listingId}/variants/{valueId}.{ext}`, returns download URL
+- `getNewReleases(limitCount?)` — `src/lib/firestore.ts` — newest listings ordered by `createdAt` desc
+- `getListingsByFishType(fishType, limitCount?)` — `src/lib/firestore.ts` — listings filtered by fish type
 
 ### User profile (for Firebase Auth / Firestore)
 
@@ -63,5 +69,6 @@ Profile fields used on the profile page and Edit Bio form are defined in **`src/
 | `location` | `string` | Optional (e.g. "Stockholm Sweden") |
 | `bio` | `string` | Optional, max 500 chars |
 | `avatarUrl` | `string \| null` | Optional profile image URL (e.g. Storage) |
+| `isSeller` | `boolean` | Whether the user is a seller (default false) |
 | `followerCount` | `number` | Optional; can be computed from a subcollection |
 | `createdAt` / `updatedAt` | `Timestamp` | Optional server timestamps |

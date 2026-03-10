@@ -13,6 +13,7 @@ export const profileSchema = z.object({
   location: z.string().optional(),
   bio: z.string().max(500).optional(),
   avatarUrl: z.string().url().optional().nullable(),
+  isSeller: z.boolean().default(false),
   followerCount: z.number().int().min(0).default(0),
   createdAt: z.unknown().optional(),
   updatedAt: z.unknown().optional(),
@@ -38,6 +39,7 @@ export function getDefaultProfile(): Profile {
     location: undefined,
     bio: undefined,
     avatarUrl: null,
+    isSeller: false,
     followerCount: 0,
   };
 }

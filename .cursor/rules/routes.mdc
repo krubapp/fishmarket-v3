@@ -34,7 +34,7 @@ Protected routes require authentication. Unauthenticated users are redirected to
 
 | Key | Path | File | Protected | Description |
 |-----|------|------|-----------|-------------|
-| `home` | `/` | `src/app/page.tsx` | No | Component showcase (design system demo) |
+| `home` | `/` | `src/app/page.tsx` | No | Buyer dashboard homepage (Figma node `798:6035`). Top Brands, New Releases, Fish Type categories, Favorites, Promo CTAs, Brand Suggestions, Because You Like. |
 | `login` | `/login` | `src/app/login/page.tsx` | No | Email/password sign-in and sign-up. Redirects to `/create-listing` on success. |
 | `shop` | `/shop` | — | No | Shop (placeholder) |
 | `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Yes | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
@@ -42,3 +42,4 @@ Protected routes require authentication. Unauthenticated users are redirected to
 | `editListing(id)` | `/create-listing/[id]/edit` | `src/app/create-listing/[id]/edit/page.tsx` | Yes | Edit listing form. Fetches listing by ID, verifies ownership, renders `ListingForm` in edit mode with pre-populated data. Redirects to dashboard with `?updated=true` on success. |
 | `map` | `/map` | — | No | Map (placeholder) |
 | `profile` | `/profile` | `src/app/profile/page.tsx` | No | Profile (Figma node `772:2307`). Avatar, display name, Edit, username, location, "Add some information" CTA, QR + follower link, section TabsBox (Order, Favorites, Comments, Settings), content Tabs (My videos, Tagged, etc.), empty video state. Edit opens ProfileEditDrawer (Figma `772:2424`). |
+| `showcase` | `/showcase` | `src/app/showcase/page.tsx` | No | Component showcase (design system demo). All primitives displayed with labels for visual testing. |

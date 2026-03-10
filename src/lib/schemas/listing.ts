@@ -13,6 +13,15 @@ export const LISTING_CATEGORIES = [
   "Other",
 ] as const;
 
+export const FISH_TYPES = [
+  "Perch",
+  "Pike",
+  "Bass",
+  "Salmon",
+  "Trout",
+  "Other",
+] as const;
+
 export const variantValueSchema = z.object({
   id: z.string(),
   name: z.string().min(1),
@@ -44,6 +53,7 @@ export const listingFormSchema = z.object({
     z.literal("refurbished"),
   ]),
   category: z.string().min(1, "Category is required"),
+  fishType: z.string().min(1, "Fish type is required"),
   variants: z.array(variantGroupSchema).optional(),
 });
 

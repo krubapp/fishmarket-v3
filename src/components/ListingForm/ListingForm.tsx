@@ -20,6 +20,7 @@ import {
   listingFormSchema,
   LISTING_CONDITIONS,
   LISTING_CATEGORIES,
+  FISH_TYPES,
   type ListingFormData,
   type VariantGroup,
 } from "@/lib/schemas/listing";
@@ -36,6 +37,11 @@ const conditionItems = LISTING_CONDITIONS.map((id) => ({
 }));
 
 const categoryItems = LISTING_CATEGORIES.map((id) => ({
+  id,
+  label: id,
+}));
+
+const fishTypeItems = FISH_TYPES.map((id) => ({
   id,
   label: id,
 }));
@@ -103,6 +109,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
           currency: initialData.currency ?? "SEK",
           condition: initialData.condition,
           category: initialData.category,
+          fishType: initialData.fishType ?? "",
         }
       : {
           title: "",
@@ -113,6 +120,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
           currency: "SEK",
           condition: "new" as const,
           category: "",
+          fishType: "",
         },
   });
 
@@ -345,6 +353,30 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
                 </span>
               )}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <span className="font-semibold text-text-default-headings text-paragraph-md leading-(--line-height-paragraph-md)">
+              Fish type
+            </span>
+            <Controller
+              name="fishType"
+              control={control}
+              render={({ field }) => (
+                <Dropdown
+                  label="Select fish type"
+                  value={field.value}
+                  items={fishTypeItems}
+                  onSelect={field.onChange}
+                  aria-label="Select fish type"
+                />
+              )}
+            />
+            {errors.fishType && (
+              <span className="text-sm text-red-600">
+                {errors.fishType.message}
+              </span>
+            )}
           </div>
 
           <Textarea

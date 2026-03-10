@@ -10,6 +10,7 @@ import {
   query,
   where,
   orderBy,
+  limit,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -25,6 +26,8 @@ export type UserProfile = {
   uid: string;
   email: string;
   displayName?: string;
+  avatarUrl?: string | null;
+  isSeller?: boolean;
   createdAt?: { seconds: number; nanoseconds: number };
 };
 
@@ -32,11 +35,13 @@ export async function createUserProfile(
   uid: string,
   email: string,
   displayName?: string,
+  isSeller = false,
 ): Promise<void> {
   await setDoc(doc(db, USERS_COLLECTION, uid), {
     uid,
     email,
     ...(displayName ? { displayName } : {}),
+    isSeller,
     createdAt: serverTimestamp(),
   });
 }
@@ -84,6 +89,39 @@ export async function getUserListings(uid: string): Promise<Listing[]> {
     collection(db, LISTINGS_COLLECTION),
     where("sellerId", "==", uid),
     orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
+}
+
+export async function getSellers(limitCount = 20): Promise<UserProfile[]> {
+  const q = query(
+    collection(db, USERS_COLLECTION),
+    where("isSeller", "==", true),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as UserProfile);
+}
+
+export async function getNewReleases(limitCount = 10): Promise<Listing[]> {
+  const q = query(
+    collection(db, LISTINGS_COLLECTION),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
+}
+
+export async function getListingsByFishType(
+  fishType: string,
+  limitCount = 20,
+): Promise<Listing[]> {
+  const q = query(
+    collection(db, LISTINGS_COLLECTION),
+    where("fishType", "==", fishType),
+    limit(limitCount),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Listing);
