@@ -106,14 +106,12 @@ export default function SettingsAccountPage() {
         avatarUrl,
       });
 
-      setCurrentAvatarUrl(avatarUrl);
+      setCurrentAvatarUrl(avatarUrl ?? null);
       setAvatarFile(null);
-      setSnackbar({
-        open: true,
-        message: "Profile updated",
-        icon: "check_circle",
-      });
-    } catch {
+      const profileSegment = data.username?.trim() || user.uid;
+      router.push(ROUTES.profileByUsername(profileSegment));
+    } catch (err) {
+      console.error("Settings account update failed:", err);
       setSnackbar({
         open: true,
         message: "Failed to update. Please try again.",
@@ -207,18 +205,24 @@ export default function SettingsAccountPage() {
                 label="TikTok URL"
                 placeholder="https://tiktok.com/@username"
                 type="url"
+                error={Boolean(errors.tiktokUrl)}
+                helperText={errors.tiktokUrl?.message}
                 {...register("tiktokUrl")}
               />
               <Input
                 label="YouTube URL"
                 placeholder="https://youtube.com/@channel"
                 type="url"
+                error={Boolean(errors.youtubeUrl)}
+                helperText={errors.youtubeUrl?.message}
                 {...register("youtubeUrl")}
               />
               <Input
                 label="Instagram URL"
                 placeholder="https://instagram.com/username"
                 type="url"
+                error={Boolean(errors.instagramUrl)}
+                helperText={errors.instagramUrl?.message}
                 {...register("instagramUrl")}
               />
             </div>

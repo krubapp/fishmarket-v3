@@ -92,11 +92,18 @@ export async function getUserProfileByUsernameOrId(
   return { uid: first.id, ...first.data() } as UserProfile;
 }
 
+/** Remove undefined values; Firestore rejects undefined. */
+function omitUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined),
+  ) as Partial<T>;
+}
+
 export async function updateUserProfile(
   uid: string,
   data: Partial<Omit<UserProfile, "uid">>,
 ): Promise<void> {
-  await updateDoc(doc(db, USERS_COLLECTION, uid), data);
+  await updateDoc(doc(db, USERS_COLLECTION, uid), omitUndefined(data as Record<string, unknown>));
 }
 
 export type CreateListingInput = Omit<Listing, "id" | "createdAt">;

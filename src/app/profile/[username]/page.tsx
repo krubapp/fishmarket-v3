@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { BottomNav } from "@/components/BottomNav";
+import { Icon } from "@/components/Icon";
+import { IconButton } from "@/components/IconButton";
 import { Link } from "@/components/Link";
 import { Tabs } from "@/components/Tabs";
 import { TabsBox } from "@/components/Tabs";
-import { Icon } from "@/components/Icon";
 import { useAuth } from "@/hooks/useAuth";
 import {
   getUserProfileByUsernameOrId,
@@ -16,11 +20,19 @@ import {
 } from "@/lib/firestore";
 import { ROUTES } from "@/lib/routes";
 
+const QR_CODE_SIZE = 200;
+
+function getProfileUrl(usernameOrId: string): string {
+  if (typeof window === "undefined") return "";
+  const path = ROUTES.profileByUsername(usernameOrId);
+  return `${window.location.origin}${path}`;
+}
+
 const PROFILE_SECTION_TABS = [
-  { id: "order", label: "Order", icon: "receipt_long" as const },
-  { id: "favorites", label: "Favorites", icon: "favorite" as const },
-  { id: "comments", label: "Comments", icon: "chat" as const },
-  { id: "settings", label: "Settings", icon: "settings" as const },
+  { id: "order", label: "Order", icon: "receipt_long" as const, href: ROUTES.profileOrders },
+  { id: "favorites", label: "Favorites", icon: "favorite" as const, href: ROUTES.profileFavorites },
+  { id: "comments", label: "Comments", icon: "chat" as const, href: ROUTES.profileComments },
+  { id: "settings", label: "Settings", icon: "settings" as const, href: ROUTES.settings },
 ];
 
 const CONTENT_TABS = [
@@ -82,8 +94,18 @@ export default function ProfileByUsernamePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [profileSection, setProfileSection] = useState("order");
+  const pathname = usePathname();
   const [contentTab, setContentTab] = useState("my-videos");
+  const [qrPopupOpen, setQrPopupOpen] = useState(false);
+
+  useEffect(() => {
+    if (!qrPopupOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setQrPopupOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [qrPopupOpen]);
 
   useEffect(() => {
     if (!usernameParam) {
@@ -106,18 +128,12 @@ export default function ProfileByUsernamePage() {
   const hasBio = Boolean(display.bio?.trim());
   const isOwnProfile = Boolean(user && profile && user.uid === profile.uid);
 
-  function handleSectionChange(id: string) {
-    if (id === "settings") {
-      router.push(ROUTES.settings);
-      return;
-    }
-    setProfileSection(id);
-  }
+  const pagePaddingBottom = "pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]";
 
   if (authLoading || (usernameParam && profileLoading)) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[120px]">
-        <div className="flex flex-1 items-center justify-center px-6 py-12">
+      <div className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:border-x-0 ${pagePaddingBottom}`}>
+        <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
         </div>
         <BottomNav activeItem="profile" />
@@ -127,8 +143,8 @@ export default function ProfileByUsernamePage() {
 
   if (notFound || !profile) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[120px]">
-        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-12">
+      <div className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:border-x-0 ${pagePaddingBottom}`}>
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12 sm:px-6">
           <p className="text-center font-medium text-grey-700 text-[length:var(--font-size-paragraph-md)]">
             Profile not found
           </p>
@@ -146,19 +162,19 @@ export default function ProfileByUsernamePage() {
     );
   }
 
-  return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[120px]">
-      {/* Profile header — centered column (Figma 731:3430) */}
-      <section className="flex flex-col items-center px-6 py-6">
-        <div className="flex w-full max-w-[360px] flex-col items-center gap-3">
+  const profileCard = (
+    <>
+      {/* Profile header — centered on mobile, left-aligned card on desktop */}
+      <section className="flex flex-col items-center px-4 py-4 sm:px-6 sm:py-6 lg:items-start lg:border-0 lg:px-0 lg:py-0">
+        <div className="flex w-full max-w-[360px] flex-col items-center gap-3 sm:gap-4 lg:max-w-none lg:items-start">
           <Avatar
             src={display.avatarUrl}
             alt={display.displayName || "Profile"}
             size={80}
             className="shrink-0"
           />
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center justify-center gap-2">
+          <div className="flex flex-col items-center gap-1 lg:items-start">
+            <div className="flex items-center justify-center gap-2 lg:justify-start">
               <span className="font-semibold leading-[var(--line-height-paragraph-xl)] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-xl)]">
                 {display.displayName || "Display name"}
               </span>
@@ -173,7 +189,7 @@ export default function ProfileByUsernamePage() {
                 </Button>
               )}
             </div>
-            <div className="flex flex-col items-center gap-0.5 text-center">
+            <div className="flex flex-col items-center gap-0.5 text-center lg:items-start lg:text-left">
               <span className="font-bold leading-[1.43] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-sm)]">
                 @{display.username || "username"}
               </span>
@@ -186,7 +202,7 @@ export default function ProfileByUsernamePage() {
           </div>
 
           {hasBio ? (
-            <p className="w-full text-center font-medium leading-[1.5] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-md)]">
+            <p className="w-full text-center font-medium leading-[1.5] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-md)] lg:text-left">
               {display.bio}
             </p>
           ) : (
@@ -195,17 +211,22 @@ export default function ProfileByUsernamePage() {
                 size="small"
                 variant="subtle"
                 onClick={() => router.push(ROUTES.settingsAccount)}
-                className="h-9 w-full justify-center rounded-full"
+                className="h-9 w-full justify-center rounded-full lg:justify-start"
               >
                 Add some information about yourself
               </Button>
             )
           )}
 
-          <div className="flex items-center justify-center gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center text-slate-600">
+          <div className="flex items-center justify-center gap-3 lg:justify-start">
+            <button
+              type="button"
+              onClick={() => setQrPopupOpen(true)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-slate-600 transition-colors hover:text-slate-900"
+              aria-label="Show QR code"
+            >
               <Icon name="qr_code_2" size={24} />
-            </span>
+            </button>
             <Link
               onClick={() => {}}
               size="medium"
@@ -216,8 +237,7 @@ export default function ProfileByUsernamePage() {
             </Link>
           </div>
 
-          {/* Social links row (TikTok, YouTube, Instagram, Share) — Figma 718:6197 */}
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-6 lg:justify-start">
             {display.tiktokUrl && (
               <a
                 href={display.tiktokUrl}
@@ -270,39 +290,105 @@ export default function ProfileByUsernamePage() {
         </div>
       </section>
 
-      {/* Section TabsBox (Order, Favorites, Comments, Settings) — only for own profile */}
       {isOwnProfile && (
-        <section className="border-y border-slate-200 px-6 py-[10px]">
+        <section className="border-y border-slate-200 px-4 py-[10px] sm:px-6 lg:border-y-0 lg:border-t lg:px-0 lg:pt-6">
           <TabsBox
             tabs={PROFILE_SECTION_TABS}
-            value={profileSection}
-            onValueChange={handleSectionChange}
-            className="w-full justify-center"
+            value={pathname ?? ""}
+            className="w-full justify-center lg:justify-start"
           />
         </section>
       )}
+    </>
+  );
 
-      {/* Content tabs (My videos, Tagged, Repost, Favorites, Like) */}
-      <section className="border-t border-slate-200 bg-white py-3">
-        <div className="overflow-x-auto overflow-y-hidden">
-          <Tabs
-            tabs={CONTENT_TABS}
-            value={contentTab}
-            onValueChange={setContentTab}
-            className="!flex-nowrap shrink-0 px-6"
-          />
-        </div>
-      </section>
+  return (
+    <div
+      className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
+    >
+      {/* Left: profile card (desktop) / full-width (mobile) */}
+      <aside className="lg:w-[320px] lg:shrink-0 lg:rounded-xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
+        <div className="lg:sticky lg:top-6">{profileCard}</div>
+      </aside>
 
-      {/* Empty state: single video placeholder (Figma Status=empty, size=small 144×180) */}
-      <section className="flex flex-1 flex-col items-center justify-start px-6 py-8">
-        <div className="flex h-[180px] w-[144px] items-center justify-center overflow-hidden rounded-[2px] bg-slate-100">
-          <Icon name="videocam" size={40} className="text-grey-400" fill={0} />
-        </div>
-        <p className="mt-4 text-center font-medium text-grey-600 text-[length:var(--font-size-paragraph-sm)]">
-          No videos yet
-        </p>
-      </section>
+      {/* Right: content tabs + video area */}
+      <main className="flex min-w-0 flex-1 flex-col">
+        <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
+          <div className="overflow-x-auto overflow-y-hidden">
+            <Tabs
+              tabs={CONTENT_TABS}
+              value={contentTab}
+              onValueChange={setContentTab}
+              className="!flex-nowrap shrink-0 px-4 sm:px-6 lg:px-0"
+            />
+          </div>
+        </section>
+
+        <section className="flex flex-1 flex-col items-center justify-start px-4 py-6 sm:px-6 sm:py-8 lg:items-start lg:px-0 lg:pt-6">
+          <div className="flex h-[180px] w-[144px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-slate-100 lg:h-[200px] lg:w-[160px]">
+            <Icon name="videocam" size={40} className="text-grey-400" fill={0} />
+          </div>
+          <p className="mt-4 text-center font-medium text-grey-600 text-[length:var(--font-size-paragraph-sm)] lg:text-left">
+            No videos yet
+          </p>
+        </section>
+      </main>
+
+      {/* QR code popup — portal so it renders on top */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {qrPopupOpen && usernameParam && (
+              <div
+                className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Profile QR code"
+              >
+                <motion.div
+                  className="absolute inset-0 bg-black/50"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  aria-hidden
+                  onClick={() => setQrPopupOpen(false)}
+                />
+                <motion.div
+                  className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-[min(100vw-2rem,320px)] flex-col items-center gap-3 overflow-auto rounded-2xl bg-white p-4 shadow-lg sm:gap-4 sm:p-6"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: [0.33, 1, 0.68, 1] }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <IconButton
+                    name="close"
+                    size="small"
+                    variant="transparent"
+                    className="absolute right-2 top-2 sm:right-3 sm:top-3"
+                    aria-label="Close"
+                    onClick={() => setQrPopupOpen(false)}
+                  />
+                  <p className="font-semibold text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-lg)]">
+                    Scan to view profile
+                  </p>
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=${QR_CODE_SIZE}x${QR_CODE_SIZE}&data=${encodeURIComponent(getProfileUrl(usernameParam))}`}
+                    alt="QR code to profile"
+                    width={QR_CODE_SIZE}
+                    height={QR_CODE_SIZE}
+                    className="h-auto max-h-[min(50dvh,200px)] w-auto max-w-full rounded-lg border border-slate-200"
+                  />
+                  <p className="max-w-full truncate text-center font-medium text-grey-600 text-[length:var(--font-size-paragraph-sm)]">
+                    {getProfileUrl(usernameParam)}
+                  </p>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
 
       <BottomNav activeItem="profile" />
     </div>

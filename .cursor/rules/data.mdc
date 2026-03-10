@@ -7,6 +7,8 @@ alwaysApply: true
 
 ## Firestore
 
+**Partial updates and `undefined`**: Firestore's `updateDoc()` does not accept `undefined` as a field value (it throws). The client uses an internal helper `omitUndefined()` in `src/lib/firestore.ts` to strip any keys with `undefined` before calling `updateDoc`. Callers of `updateUserProfile` (and any other update helpers that use it) can safely pass partial objects with optional fields set to `undefined`; only defined fields are written. To remove a field, use Firestore's `deleteField()` or omit the key.
+
 ### `users` collection
 
 Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
@@ -36,7 +38,7 @@ Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
 
 - `createUserProfile(uid, email, displayName?, isSeller?)` — `src/lib/firestore.ts` — creates user doc with `setDoc` (uses uid as doc ID)
 - `getUserProfile(uid)` — `src/lib/firestore.ts` — get user doc by uid
-- `updateUserProfile(uid, data)` — `src/lib/firestore.ts` — partial update on `users/{uid}`
+- `updateUserProfile(uid, data)` — `src/lib/firestore.ts` — partial update on `users/{uid}`; strips `undefined` via `omitUndefined` before writing
 - `getSellers(limitCount?)` — `src/lib/firestore.ts` — query users where `isSeller == true`
 - `uploadAvatar(file, uid)` — `src/lib/storage.ts` — uploads to `users/{uid}/avatar.{ext}`, returns download URL
 

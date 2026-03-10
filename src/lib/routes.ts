@@ -17,6 +17,9 @@ export const ROUTES = {
   profile: "/profile",
   profileByUsername: (username: string) =>
     `/profile/${encodeURIComponent(username)}` as const,
+  profileOrders: "/profile/orders",
+  profileFavorites: "/profile/favorites",
+  profileComments: "/profile/comments",
   showcase: "/showcase",
   settings: "/settings",
   settingsGeneral: "/settings/general",

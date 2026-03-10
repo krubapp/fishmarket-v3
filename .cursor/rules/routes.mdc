@@ -48,6 +48,9 @@ Protected routes require authentication. Unauthenticated users are redirected to
 | `map` | `/map` | — | No | Map (placeholder, not in BottomNav) |
 | `profile` | `/profile` | `src/app/profile/page.tsx` | No | Redirect: when authenticated redirects to `/profile/[username-or-uid]`; when not, shows "Sign in to view your profile" + Sign in button. |
 | `profileByUsername(username)` | `/profile/[username]` | `src/app/profile/[username]/page.tsx` | No | Dynamic profile by username or uid. Resolves user via `getUserProfileByUsernameOrId`. Own profile: Edit, "Add some information" CTA, section TabsBox (Order, Favorites, Comments, Settings). Other users: read-only header + content Tabs (My videos, Tagged, etc.). 404 when not found. |
+| `profileOrders` | `/profile/orders` | `src/app/profile/orders/page.tsx` | No | Profile orders (placeholder). Linked from profile section tabs. |
+| `profileFavorites` | `/profile/favorites` | `src/app/profile/favorites/page.tsx` | No | Profile favorites (placeholder). Linked from profile section tabs. |
+| `profileComments` | `/profile/comments` | `src/app/profile/comments/page.tsx` | No | Profile comments (placeholder). Linked from profile section tabs. |
 | `showcase` | `/showcase` | `src/app/showcase/page.tsx` | No | Component showcase (design system demo). All primitives displayed with labels for visual testing. |
 | `settings` | `/settings` | `src/app/settings/page.tsx` | Yes | Settings index. Navigation hub linking to Account and General sub-pages. |
 | `settingsGeneral` | `/settings/general` | `src/app/settings/general/page.tsx` | Yes | General settings. Seller mode toggle (`isSeller`). The "Become a lure seller" promo CTA on the buyer dashboard links here. |
