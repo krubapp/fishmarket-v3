@@ -7,22 +7,30 @@ import {
   doc,
   getDoc,
   getDocs,
+  deleteDoc,
   query,
   where,
   orderBy,
   limit,
+  increment,
   serverTimestamp,
+  startAfter,
+  type DocumentSnapshot,
 } from "firebase/firestore";
 
 import { firebaseApp } from "./firebase";
 import type { Listing } from "./schemas/listing";
 import type { Order, OrderStatus } from "./schemas/order";
+import type { Post, CreatePostInput } from "./schemas/post";
 
 const db = getFirestore(firebaseApp);
 
 export const LISTINGS_COLLECTION = "listings";
 export const USERS_COLLECTION = "users";
 export const ORDERS_COLLECTION = "orders";
+export const POSTS_COLLECTION = "posts";
+export const POST_LIKES_COLLECTION = "post_likes";
+export const POST_SAVES_COLLECTION = "post_saves";
 
 export type UserProfile = {
   uid: string;
@@ -199,4 +207,119 @@ export async function getOrdersByStatus(
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
+}
+
+// ─── Posts ─────────────────────────────────────────────────────────────
+
+export async function createPost(data: CreatePostInput): Promise<string> {
+  const docRef = await addDoc(collection(db, POSTS_COLLECTION), {
+    ...data,
+    likeCount: 0,
+    saveCount: 0,
+    commentCount: 0,
+    createdAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function getFeedPosts(
+  limitCount = 10,
+  afterDoc?: DocumentSnapshot,
+): Promise<{ posts: Post[]; lastDoc: DocumentSnapshot | null }> {
+  const constraints = [
+    orderBy("createdAt", "desc"),
+    ...(afterDoc ? [startAfter(afterDoc)] : []),
+    limit(limitCount),
+  ];
+  const q = query(collection(db, POSTS_COLLECTION), ...constraints);
+  const snap = await getDocs(q);
+  const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Post);
+  const lastDoc = snap.docs[snap.docs.length - 1] ?? null;
+  return { posts, lastDoc };
+}
+
+export async function getPost(id: string): Promise<Post | null> {
+  const snap = await getDoc(doc(db, POSTS_COLLECTION, id));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as Post;
+}
+
+function postLikeDocId(postId: string, userId: string) {
+  return `${postId}_${userId}`;
+}
+
+/** Toggle like — returns true if now liked, false if unliked. */
+export async function togglePostLike(
+  postId: string,
+  userId: string,
+): Promise<boolean> {
+  const likeId = postLikeDocId(postId, userId);
+  const likeRef = doc(db, POST_LIKES_COLLECTION, likeId);
+  const snap = await getDoc(likeRef);
+
+  if (snap.exists()) {
+    await deleteDoc(likeRef);
+    await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+      likeCount: increment(-1),
+    });
+    return false;
+  }
+
+  await setDoc(likeRef, { postId, userId, createdAt: serverTimestamp() });
+  await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+    likeCount: increment(1),
+  });
+  return true;
+}
+
+/** Toggle save — returns true if now saved, false if unsaved. */
+export async function togglePostSave(
+  postId: string,
+  userId: string,
+): Promise<boolean> {
+  const saveId = postLikeDocId(postId, userId);
+  const saveRef = doc(db, POST_SAVES_COLLECTION, saveId);
+  const snap = await getDoc(saveRef);
+
+  if (snap.exists()) {
+    await deleteDoc(saveRef);
+    await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+      saveCount: increment(-1),
+    });
+    return false;
+  }
+
+  await setDoc(saveRef, { postId, userId, createdAt: serverTimestamp() });
+  await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+    saveCount: increment(1),
+  });
+  return true;
+}
+
+/** Batch-check which posts the user has liked and saved. */
+export async function getUserPostInteractions(
+  postIds: string[],
+  userId: string,
+): Promise<{ liked: Set<string>; saved: Set<string> }> {
+  if (postIds.length === 0) return { liked: new Set(), saved: new Set() };
+
+  const likeIds = postIds.map((pid) => postLikeDocId(pid, userId));
+  const saveIds = postIds.map((pid) => postLikeDocId(pid, userId));
+
+  const [likeSnaps, saveSnaps] = await Promise.all([
+    Promise.all(likeIds.map((id) => getDoc(doc(db, POST_LIKES_COLLECTION, id)))),
+    Promise.all(saveIds.map((id) => getDoc(doc(db, POST_SAVES_COLLECTION, id)))),
+  ]);
+
+  const liked = new Set<string>();
+  const saved = new Set<string>();
+
+  likeSnaps.forEach((snap, i) => {
+    if (snap.exists()) liked.add(postIds[i]);
+  });
+  saveSnaps.forEach((snap, i) => {
+    if (snap.exists()) saved.add(postIds[i]);
+  });
+
+  return { liked, saved };
 }

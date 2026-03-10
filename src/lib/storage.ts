@@ -42,3 +42,15 @@ export async function uploadVariantImage(
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 }
+
+/** Upload a post video. Returns the download URL. */
+export async function uploadPostVideo(
+  file: File,
+  postId: string
+): Promise<string> {
+  const ext = file.name.split(".").pop() || "mp4";
+  const path = `posts/${postId}/video.${ext}`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, file);
+  return getDownloadURL(storageRef);
+}

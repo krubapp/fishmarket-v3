@@ -127,6 +127,53 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 - `useSellerOrders(sellerId)` — fetches orders via Firestore client
 - `useSellerInventory(sellerId)` — derives inventory from `getUserListings`
 
+### `posts` collection
+
+Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.ts`.
+
+**Document shape** (matches `Post` type):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `userId` | `string` | Firebase Auth UID of the post creator |
+| `videoUrl` | `string` | Firebase Storage download URL (`posts/{postId}/video.{ext}`) |
+| `thumbnailUrl` | `string` | Optional thumbnail URL |
+| `caption` | `string` | Post caption (max 500 chars) |
+| `likeCount` | `number` | Denormalized like count |
+| `saveCount` | `number` | Denormalized save count |
+| `commentCount` | `number` | Denormalized comment count (future) |
+| `createdAt` | `Timestamp` | Server timestamp |
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `createPost(data)` — adds doc to `posts`, returns doc id
+- `getPost(id)` — fetches a single post by ID
+- `getFeedPosts(limitCount?, afterDoc?)` — paginated feed, `createdAt` desc. Returns `{ posts, lastDoc }`
+- `togglePostLike(postId, userId)` — toggle like (add/remove `post_likes` doc, increment/decrement `likeCount`), returns new liked state
+- `togglePostSave(postId, userId)` — same for saves
+- `getUserPostInteractions(postIds, userId)` — batch check liked/saved states for feed rendering
+- `uploadPostVideo(file, postId)` — `src/lib/storage.ts` — uploads to `posts/{postId}/video.{ext}`, returns download URL
+
+### `post_likes` collection
+
+Tracks which users liked which posts. Document ID = `{postId}_{userId}`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `postId` | `string` | Reference to post |
+| `userId` | `string` | User who liked |
+| `createdAt` | `Timestamp` | When liked |
+
+### `post_saves` collection
+
+Tracks which users saved which posts. Same shape as `post_likes`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `postId` | `string` | Reference to post |
+| `userId` | `string` | User who saved |
+| `createdAt` | `Timestamp` | When saved |
+
 ### User profile (for Firebase Auth / Firestore)
 
 Profile fields used on the profile page and Edit Bio form are defined in **`src/lib/schemas/profile.ts`**. When tying to Firebase, store per user (e.g. `users/{uid}` or `profiles/{uid}`):

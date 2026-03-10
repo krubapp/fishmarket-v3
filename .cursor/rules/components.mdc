@@ -1465,4 +1465,84 @@ import { ListingForm } from "@/components/ListingForm";
 
 ---
 
+## VideoPlayer
+
+**Path**: `@/components/VideoPlayer`
+
+HTML5 video player with Intersection Observer auto-play, tap-to-pause, and muted-by-default autoplay (browser policy). Object-fit cover fills the container. Loop playback. Flash play/pause icon on tap. Mute toggle button bottom-right.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `src` | `string` | Yes | Video source URL |
+| `poster` | `string` | No | Poster/thumbnail URL shown while loading |
+| `autoPlay` | `boolean` | No | Auto-play when visible (default true) |
+| `visibilityThreshold` | `number` | No | Intersection Observer threshold (default 0.5) |
+| `onPlayChange` | `(playing: boolean) => void` | No | Called when play state changes |
+| `className` | `string` | No | Root class |
+
+**Exports**: `VideoPlayer`, `VideoPlayerProps`.
+
+**Example**
+
+```tsx
+import { VideoPlayer } from "@/components/VideoPlayer";
+
+<VideoPlayer src={videoUrl} poster={thumbUrl} />
+<VideoPlayer src={videoUrl} autoPlay={false} />
+```
+
+---
+
+## FeedCard
+
+**Path**: `@/components/FeedCard`
+
+Full-viewport video post card for TikTok-style feed. VideoPlayer as background, bottom-left overlay with user info (Avatar + name) and expandable caption, right-side action column (like, save, comment, share with counts). Gradient scrim for text readability.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `videoUrl` | `string` | Yes | Video source URL |
+| `thumbnailUrl` | `string` | No | Poster/thumbnail |
+| `caption` | `string` | Yes | Post caption (truncated at 80 chars with "more" toggle) |
+| `userDisplayName` | `string` | Yes | Post author display name |
+| `userAvatarUrl` | `string \| null` | No | Post author avatar URL |
+| `likeCount` | `number` | Yes | Number of likes |
+| `saveCount` | `number` | Yes | Number of saves |
+| `commentCount` | `number` | Yes | Number of comments |
+| `liked` | `boolean` | Yes | Whether current user has liked |
+| `saved` | `boolean` | Yes | Whether current user has saved |
+| `onLike` | `() => void` | Yes | Toggle like handler |
+| `onSave` | `() => void` | Yes | Toggle save handler |
+| `onComment` | `() => void` | No | Comment button handler (placeholder) |
+| `onShare` | `() => void` | No | Share button handler (placeholder) |
+| `onUserPress` | `() => void` | No | Navigate to user profile |
+| `className` | `string` | No | Root class |
+
+**Exports**: `FeedCard`, `FeedCardProps`.
+
+**Example**
+
+```tsx
+import { FeedCard } from "@/components/FeedCard";
+
+<FeedCard
+  videoUrl={post.videoUrl}
+  caption={post.caption}
+  userDisplayName="FishingPro"
+  likeCount={42}
+  saveCount={5}
+  commentCount={3}
+  liked={false}
+  saved={false}
+  onLike={() => toggleLike(post.id)}
+  onSave={() => toggleSave(post.id)}
+/>
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

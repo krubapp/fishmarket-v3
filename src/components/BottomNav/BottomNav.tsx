@@ -12,8 +12,8 @@ import {
 const ITEM_ICONS: Record<BottomNavItemId, MaterialSymbol> = {
   home: "home",
   shop: "local_mall",
-  create: "duo",
-  map: "home_pin",
+  create: "add_circle",
+  feed: "play_circle",
   profile: "account_circle",
 };
 

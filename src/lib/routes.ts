@@ -7,6 +7,9 @@ export const ROUTES = {
   home: "/",
   login: "/login",
   shop: "/shop",
+  feed: "/feed",
+  createPost: "/create-post",
+  postDetail: (id: string) => `/feed/${id}` as const,
   createListing: "/create-listing",
   createListingForm: "/create-listing/form",
   editListing: (id: string) => `/create-listing/${id}/edit` as const,
@@ -23,6 +26,7 @@ export const ROUTES = {
 } as const;
 
 export type RoutePath =
-  | (typeof ROUTES)[Exclude<keyof typeof ROUTES, "editListing" | "listingDetail">]
+  | (typeof ROUTES)[Exclude<keyof typeof ROUTES, "editListing" | "listingDetail" | "postDetail">]
   | ReturnType<typeof ROUTES.editListing>
-  | ReturnType<typeof ROUTES.listingDetail>;
+  | ReturnType<typeof ROUTES.listingDetail>
+  | ReturnType<typeof ROUTES.postDetail>;
