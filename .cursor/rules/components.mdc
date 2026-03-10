@@ -20,13 +20,13 @@ alwaysApply: true
 **Path**: `@/components/BottomNav`  
 **Figma**: Roy design system → bottom nav (floating bar, pill shape, bordered).
 
-Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: Home, Shop, Create, Map, Profile.
+Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: Home, Shop, Create, Feed, Profile.
 
 **Props**
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `activeItem` | `BottomNavItemId` | Yes | Current tab: `"home"` \| `"shop"` \| `"create"` \| `"map"` \| `"profile"` |
+| `activeItem` | `BottomNavItemId` | Yes | Current tab: `"home"` \| `"shop"` \| `"create"` \| `"feed"` \| `"profile"` |
 | `onItemChange` | `(item: BottomNavItemId) => void` | No | Called when user selects a tab |
 | `className` | `string` | No | Applied to the outer wrapper (fixed container) |
 
