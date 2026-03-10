@@ -86,7 +86,7 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
         </div>
 
         {/* Info panel */}
-        <div className="flex gap-6 px-6 py-4">
+        <div className="flex h-[124px] gap-6 rounded-b-[16px] px-6 py-4">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <span className="font-medium text-[16px] text-[#660008] underline font-['Oswald',sans-serif]">

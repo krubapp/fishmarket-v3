@@ -47,7 +47,7 @@ export function PromoCTASection({ className = "" }: PromoCTASectionProps) {
   }, []);
 
   return (
-    <section className={`flex flex-col gap-2 px-6 ${className}`}>
+    <section className={`flex flex-col gap-2 ${className}`}>
       <div
         ref={scrollRef}
         onScroll={handleScroll}

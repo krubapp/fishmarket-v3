@@ -18,7 +18,7 @@ export function FavoritesSection({
   if (listings.length === 0) return null;
 
   return (
-    <section className={`flex flex-col gap-[21px] px-6 ${className}`}>
+    <section className={`flex flex-col gap-[21px] ${className}`}>
       <SectionHeader
         title="Favorites"
         subtitle="Don't forget the items you like"

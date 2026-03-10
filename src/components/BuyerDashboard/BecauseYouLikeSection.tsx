@@ -35,7 +35,7 @@ function RecommendedCard({ listing }: { listing: Listing }) {
   const imageUrl = listing.imageUrls?.[0];
 
   return (
-    <div className="flex w-[calc(50%-2px)] flex-col gap-3">
+    <div className="flex w-[194px] flex-col gap-3">
       {/* Product image */}
       <div className="h-[194px] w-full overflow-hidden rounded-[4px] bg-slate-100">
         {imageUrl ? (

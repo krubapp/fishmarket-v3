@@ -33,6 +33,7 @@ export default function BuyerDashboard() {
   }, []);
 
   const favoriteListings = allListings.slice(0, 6);
+  const brandListings = allListings.slice(0, 6);
   const recommendedListings = allListings.slice(0, 4);
 
   return (
@@ -41,9 +42,14 @@ export default function BuyerDashboard() {
         <TopBrandsSection sellers={sellers} />
         <NewReleaseSection listings={newReleases} />
         <CategoriesSection />
-        <FavoritesSection listings={favoriteListings} />
-        <PromoCTASection />
-        <BrandSuggestionsSection sellers={sellers} />
+
+        {/* Favorites + Promo CTAs share a container with wider gap */}
+        <div className="flex flex-col gap-[54px] px-6">
+          <FavoritesSection listings={favoriteListings} />
+          <PromoCTASection />
+        </div>
+
+        <BrandSuggestionsSection listings={brandListings} />
         <BecauseYouLikeSection listings={recommendedListings} />
       </div>
 

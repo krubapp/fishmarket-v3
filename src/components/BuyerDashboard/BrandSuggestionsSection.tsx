@@ -1,19 +1,18 @@
 "use client";
 
-import { Avatar } from "@/components/Avatar";
 import { SectionHeader } from "./SectionHeader";
-import type { UserProfile } from "@/lib/firestore";
+import type { Listing } from "@/lib/schemas/listing";
 
 export type BrandSuggestionsSectionProps = {
-  sellers: UserProfile[];
+  listings: Listing[];
   className?: string;
 };
 
 export function BrandSuggestionsSection({
-  sellers,
+  listings,
   className = "",
 }: BrandSuggestionsSectionProps) {
-  if (sellers.length === 0) return null;
+  if (listings.length === 0) return null;
 
   return (
     <section className={`flex flex-col gap-6 px-6 ${className}`}>
@@ -23,29 +22,29 @@ export function BrandSuggestionsSection({
       />
 
       <div className="flex flex-wrap gap-1">
-        {sellers.map((seller) => (
-          <BrandCard key={seller.uid} seller={seller} />
+        {listings.map((listing) => (
+          <BrandCard key={listing.id} listing={listing} />
         ))}
       </div>
     </section>
   );
 }
 
-function BrandCard({ seller }: { seller: UserProfile }) {
+function BrandCard({ listing }: { listing: Listing }) {
+  const imageUrl = listing.imageUrls?.[0];
+
   return (
-    <button className="relative h-[191px] w-[128px] overflow-hidden bg-white transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97]">
-      <div className="absolute inset-0 flex items-center justify-center">
-        <Avatar
-          src={seller.avatarUrl ?? null}
-          alt={seller.displayName ?? seller.email}
-          size={80}
+    <button className="h-[191px] w-[128px] shrink-0 overflow-hidden bg-white transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97]">
+      {imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={imageUrl}
+          alt={listing.title}
+          className="h-full w-full object-cover"
         />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/30 to-transparent p-2">
-        <p className="truncate text-center font-medium text-[12px] text-white">
-          {seller.displayName ?? seller.email}
-        </p>
-      </div>
+      ) : (
+        <div className="flex h-full w-full items-center justify-center bg-grey-200" />
+      )}
     </button>
   );
 }
