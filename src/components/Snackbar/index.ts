@@ -1,2 +1,2 @@
 export { Snackbar } from "./Snackbar";
-export type { SnackbarProps } from "./types";
+export type { SnackbarProps, SnackbarPosition, SnackbarVariant } from "./types";

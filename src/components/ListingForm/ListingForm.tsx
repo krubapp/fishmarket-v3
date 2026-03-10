@@ -26,6 +26,7 @@ import {
 import { createListing, updateListing } from "@/lib/firestore";
 import { uploadListingImages, uploadVariantImage } from "@/lib/storage";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { ROUTES } from "@/lib/routes";
 import type { ListingFormProps } from "./types";
 
@@ -69,6 +70,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 export function ListingForm({ mode, initialData }: ListingFormProps) {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { success: toastSuccess, error: toastError } = useToast();
   const isEdit = mode === "edit";
 
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
@@ -76,7 +78,6 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
   );
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imageError, setImageError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [variantGroups, setVariantGroups] = useState<VariantGroup[]>(
     () => initialData?.variants ?? [],
   );
@@ -89,7 +90,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
     register,
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ListingFormData>({
     resolver: zodResolver(listingFormSchema) as Resolver<ListingFormData>,
     defaultValues: isEdit && initialData
@@ -134,7 +135,6 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
       return;
     }
 
-    setIsSubmitting(true);
     try {
       const variantsWithValues = variantGroups.filter(
         (g) => g.values.length > 0,
@@ -176,7 +176,8 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
             : { variants: [] }),
         });
 
-        router.push(ROUTES.createListing + "?updated=true");
+        toastSuccess("Listing updated successfully");
+        router.push(ROUTES.createListing);
       } else {
         const listingId = await createListing({
           ...data,
@@ -217,11 +218,12 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
             : {}),
         });
 
-        router.push(ROUTES.createListing + "?created=true");
+        toastSuccess("Listing created successfully");
+        router.push(ROUTES.createListing);
       }
     } catch (err) {
       console.error(`Failed to ${isEdit ? "update" : "create"} listing:`, err);
-      setIsSubmitting(false);
+      toastError(`Failed to ${isEdit ? "update" : "create"} listing`);
     }
   };
 
