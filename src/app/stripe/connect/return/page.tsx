@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/lib/routes";
 
-export default function StripeConnectReturnPage() {
+function StripeConnectReturnContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuth();
@@ -86,5 +86,19 @@ export default function StripeConnectReturnPage() {
         Back to Dashboard
       </Button>
     </div>
+  );
+}
+
+export default function StripeConnectReturnPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex min-h-dvh max-w-[440px] items-center justify-center border-x border-slate-200 bg-white">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+        </div>
+      }
+    >
+      <StripeConnectReturnContent />
+    </Suspense>
   );
 }
