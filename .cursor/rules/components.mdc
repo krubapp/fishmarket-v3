@@ -784,39 +784,6 @@ import { DrawerTopBar } from "@/components/DrawerTopBar";
 
 ---
 
-## ProfileEditDrawer
-
-**Path**: `@/components/ProfileEditDrawer`  
-**Figma**: Nike Fishing Maning 2026 → Edit Bio (node 772:2424).
-
-Drawer for editing profile/bio: title "Edit Bio", form fields (display name, username, location, bio), Save button at bottom. Uses `Drawer` (width 440px), `Input`, `Textarea`, `Button`. Form validated with `profileFormSchema` from `@/lib/schemas/profile`.
-
-**Props**
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `open` | `boolean` | Yes | Whether the drawer is open |
-| `onClose` | `() => void` | Yes | Called when the drawer should close |
-| `profile` | `Profile` | Yes | Current profile (from `@/lib/schemas/profile`) |
-| `onSave` | `(updates: Partial<Profile>) => void` | Yes | Called when user saves; pass partial profile updates |
-
-**Exports**: `ProfileEditDrawer`, `ProfileEditDrawerProps`.
-
-**Example**
-
-```tsx
-import { ProfileEditDrawer } from "@/components/ProfileEditDrawer";
-
-<ProfileEditDrawer
-  open={editOpen}
-  onClose={() => setEditOpen(false)}
-  profile={profile}
-  onSave={(updates) => setProfile((p) => ({ ...p, ...updates }))}
-/>
-```
-
----
-
 ## Dropdown
 
 **Path**: `@/components/Dropdown`  

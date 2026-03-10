@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import type { Listing } from "@/lib/schemas/listing";
+import { ROUTES } from "@/lib/routes";
 
 export type NewReleaseSectionProps = {
   listings: Listing[];
@@ -66,10 +68,15 @@ export function NewReleaseSection({
 }
 
 function NewReleaseCard({ listing }: { listing: Listing }) {
+  const router = useRouter();
   const imageUrl = listing.imageUrls?.[0];
 
   return (
-    <div className="w-full shrink-0 snap-center">
+    <div
+      className="w-full shrink-0 cursor-pointer snap-center"
+      onClick={() => listing.id && router.push(ROUTES.listingDetail(listing.id))}
+      role="link"
+    >
       <div className="flex flex-col">
         {/* Blurred background image */}
         <div className="relative h-[170px] w-full overflow-hidden rounded-t-[4px] bg-slate-100">

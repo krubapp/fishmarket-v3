@@ -23,6 +23,9 @@ Stores user profiles. Document ID = Firebase Auth `uid`. Created on sign-up.
 | `bio` | `string` | Optional, max 500 chars |
 | `avatarUrl` | `string \| null` | Optional profile image URL (Firebase Storage `users/{uid}/avatar.ext`) |
 | `isSeller` | `boolean` | Whether the user is a seller (default false). Sellers appear in Top Brands and Brand Suggestions on the buyer dashboard. |
+| `stripeAccountId` | `string` | Optional. Stripe Connect account ID (sellers). Created during Stripe Connect onboarding. |
+| `stripeCustomerId` | `string` | Optional. Stripe Customer ID (buyers). Created on first purchase. |
+| `stripeOnboardingComplete` | `boolean` | Optional. `true` once Stripe Connect KYC is verified. Sellers cannot receive purchases until this is `true`. |
 | `createdAt` | `Timestamp` | Server timestamp |
 
 **Helpers**:
@@ -90,6 +93,10 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 | `trackingNumber` | `string` | Optional tracking number |
 | `carrier` | `string` | Optional carrier name (e.g. "Postnord") |
 | `shippingAddress` | `string` | Optional buyer shipping address |
+| `stripeCheckoutSessionId` | `string` | Optional. Stripe Checkout Session ID. Set by webhook on order creation. |
+| `stripePaymentIntentId` | `string` | Optional. Stripe PaymentIntent ID. Set by webhook on order creation. |
+| `selectedVariantValueId` | `string` | Optional. ID of the `VariantValue` purchased. |
+| `selectedVariantLabel` | `string` | Optional. Human-readable variant label, e.g. "Color: Red". |
 | `createdAt` | `Timestamp` | Server timestamp |
 | `updatedAt` | `Timestamp` | Server timestamp |
 
@@ -109,6 +116,10 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 **API routes**:
 
 - `GET /api/seller/analytics?sellerId=...` — server-side aggregation via Firebase Admin SDK. Returns `SellerAnalytics`: `earningBalance`, `lifetimeEarning`, `lastPayout`, `nextPayout`, `currency`, `totalOrders`, `shippedOrders`, `pendingOrders`.
+- `POST /api/stripe/connect/onboard` — creates Stripe Connect Express account + Account Link URL for seller onboarding
+- `GET /api/stripe/connect/status?uid=...` — checks Stripe Connect account verification status
+- `POST /api/stripe/checkout` — creates Stripe Checkout Session with destination charge for buyer purchase
+- `POST /api/stripe/webhook` — handles Stripe webhook events (order creation, status updates, stock deduction)
 
 **React Query hooks** (in `src/hooks/`):
 

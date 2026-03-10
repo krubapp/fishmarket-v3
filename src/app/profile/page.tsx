@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { BottomNav } from "@/components/BottomNav";
@@ -8,9 +9,8 @@ import { Link } from "@/components/Link";
 import { Tabs } from "@/components/Tabs";
 import { TabsBox } from "@/components/Tabs";
 import { Icon } from "@/components/Icon";
-import { ProfileEditDrawer } from "@/components/ProfileEditDrawer";
-import type { Profile } from "@/lib/schemas/profile";
 import { getDefaultProfile } from "@/lib/schemas/profile";
+import { ROUTES } from "@/lib/routes";
 
 const PROFILE_SECTION_TABS = [
   { id: "order", label: "Order", icon: "receipt_long" as const },
@@ -34,22 +34,17 @@ function formatFollowerCount(n: number): string {
 }
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<Profile>(() => ({
+  const router = useRouter();
+  const [profile] = useState(() => ({
     ...getDefaultProfile(),
     displayName: "TheLifeofRoy",
     username: "TheLifeofRoy",
     location: "Stockholm Sweden",
   }));
-  const [editDrawerOpen, setEditDrawerOpen] = useState(false);
   const [profileSection, setProfileSection] = useState("order");
   const [contentTab, setContentTab] = useState("my-videos");
 
   const hasBio = Boolean(profile.bio?.trim());
-  const openEdit = useCallback(() => setEditDrawerOpen(true), []);
-  const closeEdit = useCallback(() => setEditDrawerOpen(false), []);
-  const onProfileUpdate = useCallback((next: Partial<Profile>) => {
-    setProfile((p) => ({ ...p, ...next }));
-  }, []);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[120px]">
@@ -72,7 +67,7 @@ export default function ProfilePage() {
                   size="extraSmall"
                   variant="default"
                   leadingIcon="edit"
-                  onClick={openEdit}
+                  onClick={() => router.push(ROUTES.settingsAccount)}
                   aria-label="Edit profile"
                 >
                   Edit
@@ -95,7 +90,7 @@ export default function ProfilePage() {
             <Button
               size="small"
               variant="subtle"
-              onClick={openEdit}
+              onClick={() => router.push(ROUTES.settingsAccount)}
               className="w-full justify-center"
             >
               Add some information about yourself
@@ -147,12 +142,6 @@ export default function ProfilePage() {
       </section>
 
       <BottomNav activeItem="profile" />
-      <ProfileEditDrawer
-        open={editDrawerOpen}
-        onClose={closeEdit}
-        profile={profile}
-        onSave={onProfileUpdate}
-      />
     </div>
   );
 }

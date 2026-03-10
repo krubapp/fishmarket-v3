@@ -31,6 +31,8 @@ export type ProductListingProps = {
   onLike?: () => void;
   /** Content layout: "below" (column) or "right" (row, image left). Default "below". */
   contentPosition?: ProductListingContentPosition;
+  /** Click handler for the entire card. */
+  onClick?: () => void;
   /** Root class. */
   className?: string;
 };

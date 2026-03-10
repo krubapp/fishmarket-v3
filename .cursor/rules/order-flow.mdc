@@ -1,0 +1,115 @@
+# Fishmarket v3 – Order & Payment Flow
+
+## Overview
+
+Fishmarket uses **Stripe Connect (Express)** for seller payouts and **Stripe Checkout (redirect)** for buyer payments. Orders are created and updated exclusively by **webhooks**, not client-side code. Stock is deducted server-side in webhook handlers using Firestore transactions.
+
+## Stripe SDK
+
+- **Server singleton**: `src/lib/stripe.ts` — single `Stripe` instance using `STRIPE_SECRET_KEY`
+- **Client**: `@stripe/stripe-js` available for future embedded UI; currently only redirect-based Checkout is used
+- **Env vars**: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_APP_URL`
+
+## Seller Onboarding (Stripe Connect)
+
+1. Seller enables **seller mode** in General Settings (`/settings/general`)
+2. Seller sees the **StripeAccountCard** on the seller dashboard (`SellerDashboard`)
+3. Clicking "Connect to your payment account" calls `POST /api/stripe/connect/onboard` with `{ uid }`
+4. API route creates a Connect Express account (`stripe.accounts.create`) if none exists, saves `stripeAccountId` to Firestore `users/{uid}`, then creates an Account Link and returns `{ url }`
+5. Seller is redirected to Stripe's hosted onboarding
+6. After completing KYC, Stripe redirects to `/stripe/connect/return`
+7. The return page calls `GET /api/stripe/connect/status?uid=...` to check `charges_enabled` + `details_submitted`
+8. The `account.updated` webhook sets `stripeOnboardingComplete = true` on the user doc when verified
+9. **Sellers cannot receive purchases** until `stripeOnboardingComplete` is `true`
+
+### Connected state
+
+When `stripeOnboardingComplete` is true, StripeAccountCard shows a green "Account connected" state instead of the onboarding CTA.
+
+## Buyer Checkout Flow
+
+1. Buyer views listing at `/listings/[id]`
+2. Buyer selects variants (if any) — each variant shows stock count ("X left") and out-of-stock variants are disabled
+3. Buyer clicks **"Buy Now"** (disabled if variants not fully selected, out of stock, or not authenticated)
+4. Client calls `POST /api/stripe/checkout` with `{ listingId, buyerId, variantValueId? }`
+5. API route:
+   - Fetches listing + seller profile via Admin SDK
+   - Validates seller has `stripeAccountId` and `stripeOnboardingComplete`
+   - Resolves price from selected variant or base listing price
+   - Validates variant stock (`available > 0`)
+   - Creates/reuses buyer's `stripeCustomerId`
+   - Creates Checkout Session with **destination charge** (`transfer_data.destination = seller's stripeAccountId`)
+   - Stores `listingId`, `buyerId`, `sellerId`, `variantValueId` in session metadata
+   - Returns `{ url }`
+6. Client redirects to Stripe Checkout
+7. On successful payment:
+   - `checkout.session.completed` webhook → creates order (status: `pending`) + **deducts variant stock**
+   - `payment_intent.succeeded` webhook → updates order to `confirmed`
+8. On failed payment:
+   - `payment_intent.payment_failed` webhook → updates order to `cancelled` + **restores variant stock**
+9. Buyer is redirected to `/checkout/success?session_id=...`
+
+## Order Statuses
+
+```
+pending → confirmed → shipped → delivered
+                  ↘ needs_fulfillment
+                  ↘ return_requested → returned
+         → cancelled (on payment failure)
+```
+
+- `pending` — Created by `checkout.session.completed` webhook
+- `confirmed` — Set by `payment_intent.succeeded` webhook
+- `shipped` / `delivered` — Updated by seller
+- `needs_fulfillment` — Seller marks when action needed
+- `return_requested` / `returned` — Buyer-initiated return flow
+- `cancelled` — Set by `payment_intent.payment_failed` webhook, restores stock
+
+## Stock / Inventory
+
+- Each `VariantValue` has an `available` integer field (stock count)
+- Stock is **deducted atomically** (Firestore transaction) in the `checkout.session.completed` webhook handler
+- Stock is **restored atomically** in the `payment_intent.payment_failed` webhook handler
+- The listing detail page reads `available` from each variant and:
+  - Shows "X left" below each variant option button
+  - Disables variant buttons when `available === 0` ("Out of stock")
+  - Disables "Buy Now" when selected variant is out of stock
+
+## Key User Fields
+
+On `UserProfile` (Firestore `users/{uid}`):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `stripeAccountId` | `string?` | Stripe Connect account ID (sellers) |
+| `stripeCustomerId` | `string?` | Stripe Customer ID (buyers, created on first purchase) |
+| `stripeOnboardingComplete` | `boolean?` | `true` once Connect KYC is verified |
+
+## Key Order Fields
+
+On `Order` (Firestore `orders/{id}`):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `stripeCheckoutSessionId` | `string?` | Stripe Checkout Session ID |
+| `stripePaymentIntentId` | `string?` | Stripe PaymentIntent ID |
+| `selectedVariantValueId` | `string?` | ID of the variant value purchased |
+| `selectedVariantLabel` | `string?` | Human-readable label, e.g. "Color: Red" |
+
+## API Routes
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/stripe/connect/onboard` | Creates Connect account + returns Account Link URL |
+| `GET` | `/api/stripe/connect/status` | Checks Connect account verification status |
+| `POST` | `/api/stripe/checkout` | Creates Checkout Session with destination charge |
+| `POST` | `/api/stripe/webhook` | Handles Stripe webhook events (signature-verified) |
+
+## Important Conventions
+
+- **Orders are ONLY created via webhooks**, never from client-side code
+- **Stock is ONLY modified server-side** in webhook handlers via Firestore transactions
+- **All Stripe API calls** happen server-side in API routes using `src/lib/stripe.ts`
+- **Webhook handler** reads raw body via `request.text()` for signature verification
+- **Destination charges**: Stripe collects the full payment, then transfers to the seller's Connect account
+- **Metadata**: Checkout Sessions carry `listingId`, `buyerId`, `sellerId`, `variantValueId` in metadata for webhook use

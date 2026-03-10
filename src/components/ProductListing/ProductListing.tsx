@@ -20,6 +20,7 @@ export function ProductListing({
   sellerName,
   onLike,
   contentPosition = "below",
+  onClick,
   className = "",
 }: ProductListingProps) {
   const isRight = contentPosition === "right";
@@ -80,8 +81,10 @@ export function ProductListing({
 
   return (
     <article
-      className={`flex shrink-0 ${isRight ? "flex-row items-stretch" : "w-[218px] flex-col"} ${className}`}
+      className={`flex shrink-0 ${isRight ? "flex-row items-stretch" : "w-[218px] flex-col"} ${onClick ? "cursor-pointer" : ""} ${className}`}
       style={isRight ? undefined : { width: CARD_WIDTH }}
+      onClick={onClick}
+      role={onClick ? "link" : undefined}
     >
       <ImageBlock
         size="large"

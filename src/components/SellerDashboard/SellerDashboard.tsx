@@ -5,7 +5,7 @@ import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { useSellerOrders } from "@/hooks/useSellerOrders";
 import { useSellerInventory } from "@/hooks/useSellerInventory";
-import { getNewReleases, getSellers } from "@/lib/firestore";
+import { getNewReleases, getSellers, getUserProfile } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
 import { StripeAccountCard } from "./StripeAccountCard";
@@ -40,6 +40,8 @@ export function SellerDashboard({
 
   const [suggestedListings, setSuggestedListings] = useState<Listing[]>([]);
   const [sellers, setSellers] = useState<UserProfile[]>([]);
+  const [stripeOnboardingComplete, setStripeOnboardingComplete] =
+    useState(false);
 
   useEffect(() => {
     getNewReleases(10)
@@ -48,11 +50,21 @@ export function SellerDashboard({
     getSellers(10)
       .then(setSellers)
       .catch(() => {});
-  }, []);
+    getUserProfile(sellerId)
+      .then((profile) => {
+        if (profile?.stripeOnboardingComplete) {
+          setStripeOnboardingComplete(true);
+        }
+      })
+      .catch(() => {});
+  }, [sellerId]);
 
   return (
     <div className={`flex flex-col ${className}`}>
-      <StripeAccountCard />
+      <StripeAccountCard
+        uid={sellerId}
+        stripeOnboardingComplete={stripeOnboardingComplete}
+      />
       <EarningBalanceSection
         analytics={analytics}
         isLoading={analyticsLoading}

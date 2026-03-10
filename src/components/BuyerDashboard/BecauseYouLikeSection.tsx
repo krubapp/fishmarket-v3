@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { SectionHeader } from "./SectionHeader";
 import type { Listing } from "@/lib/schemas/listing";
+import { ROUTES } from "@/lib/routes";
 
 export type BecauseYouLikeSectionProps = {
   listings: Listing[];
@@ -32,10 +34,15 @@ export function BecauseYouLikeSection({
 }
 
 function RecommendedCard({ listing }: { listing: Listing }) {
+  const router = useRouter();
   const imageUrl = listing.imageUrls?.[0];
 
   return (
-    <div className="flex w-[194px] flex-col gap-3">
+    <div
+      className="flex w-[194px] cursor-pointer flex-col gap-3"
+      onClick={() => listing.id && router.push(ROUTES.listingDetail(listing.id))}
+      role="link"
+    >
       {/* Product image */}
       <div className="h-[194px] w-full overflow-hidden rounded-[4px] bg-slate-100">
         {imageUrl ? (

@@ -17,8 +17,12 @@ export const ROUTES = {
   settingsGeneral: "/settings/general",
   settingsAccount: "/settings/account",
   searchListings: "/search",
+  listingDetail: (id: string) => `/listings/${id}` as const,
+  checkoutSuccess: "/checkout/success",
+  stripeConnectReturn: "/stripe/connect/return",
 } as const;
 
 export type RoutePath =
-  | (typeof ROUTES)[Exclude<keyof typeof ROUTES, "editListing">]
-  | ReturnType<typeof ROUTES.editListing>;
+  | (typeof ROUTES)[Exclude<keyof typeof ROUTES, "editListing" | "listingDetail">]
+  | ReturnType<typeof ROUTES.editListing>
+  | ReturnType<typeof ROUTES.listingDetail>;

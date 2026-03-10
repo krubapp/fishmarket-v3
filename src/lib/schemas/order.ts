@@ -52,6 +52,10 @@ export const orderSchema = z.object({
   trackingNumber: z.string().optional(),
   carrier: z.string().optional(),
   shippingAddress: z.string().optional(),
+  stripeCheckoutSessionId: z.string().optional(),
+  stripePaymentIntentId: z.string().optional(),
+  selectedVariantValueId: z.string().optional(),
+  selectedVariantLabel: z.string().optional(),
 });
 
 export type OrderFormData = z.infer<typeof orderSchema>;

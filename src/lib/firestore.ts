@@ -33,6 +33,9 @@ export type UserProfile = {
   bio?: string;
   avatarUrl?: string | null;
   isSeller?: boolean;
+  stripeAccountId?: string;
+  stripeCustomerId?: string;
+  stripeOnboardingComplete?: boolean;
   createdAt?: { seconds: number; nanoseconds: number };
 };
 
