@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 
@@ -10,9 +10,9 @@ import type { VariantListProps } from "./types";
 /**
  * VariantList (Figma: node 443:1585).
  *
- * Displays variant groups as collapsible sections — each group has a header
- * row (name + value count + chevron) followed by value rows with image,
- * price, and available inputs.
+ * Table display of variant groups: header (Variant – Expand all, Price, Available),
+ * group rows with checkbox, placeholder, name, "X variants ^", and indented value
+ * rows with checkbox, image, name, price/available inputs. Add button at bottom.
  */
 export function VariantList({
   groups,
@@ -31,6 +31,16 @@ export function VariantList({
     () => groups.filter((g) => g.values.length > 0),
     [groups],
   );
+
+  const groupIdsKey = useMemo(
+    () => groupsWithValues.map((g) => g.id).join(","),
+    [groupsWithValues],
+  );
+
+  useEffect(() => {
+    if (groupsWithValues.length === 0) return;
+    setExpandedGroups(new Set(groupsWithValues.map((g) => g.id)));
+  }, [groupIdsKey]);
 
   const allExpanded =
     groupsWithValues.length > 0 &&
@@ -101,19 +111,24 @@ export function VariantList({
     return (
       <div>
         <Button
-          variant="subtle"
+          variant="default"
+          size="large"
           type="button"
           onClick={onOpenDrawer}
           leadingIcon="add"
         >
-          Add variants
+          Add
         </Button>
       </div>
     );
   }
 
+  const cellBorder = "border-b border-slate-200";
+  const colPrice = "w-[92px] shrink-0";
+  const colAvailable = "w-[92px] shrink-0";
+
   return (
-    <div className="-mx-6 flex flex-col">
+    <div className="-mx-6 flex flex-col border border-slate-200 bg-white">
       <input
         ref={fileInputRef}
         type="file"
@@ -122,143 +137,176 @@ export function VariantList({
         onChange={handleFileChange}
       />
 
-      {/* Header row */}
-      <div className="flex h-14 items-center gap-3 border-b border-t border-slate-200 bg-slate-100 px-6">
+      {/* Table header */}
+      <div
+        className={`flex h-14 items-center gap-3 px-6 ${cellBorder} bg-slate-100`}
+      >
         <button
           type="button"
           onClick={toggleExpandAll}
-          className="flex flex-1 items-center gap-1"
+          className="flex flex-1 items-center gap-2"
         >
-          <span className="font-semibold text-slate-900 text-paragraph-sm">
-            Variant
+          <span
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 border-slate-400 bg-white"
+            aria-hidden
+          >
+            {allExpanded ? (
+              <Icon name="check" size={16} className="text-slate-900" />
+            ) : null}
           </span>
-          <span className="text-grey-500 text-paragraph-sm">-</span>
+          <span className="font-semibold text-slate-900 text-paragraph-sm">
+            Variant –
+          </span>
           <span className="text-grey-500 text-paragraph-sm underline">
             {allExpanded ? "Collapse all" : "Expand all"}
           </span>
         </button>
-        <span className="w-[92px] text-center font-semibold text-slate-900 text-paragraph-sm">
+        <span
+          className={`text-center font-semibold text-slate-900 text-paragraph-sm ${colPrice}`}
+        >
           Price
         </span>
-        <span className="w-[92px] text-center font-semibold text-slate-900 text-paragraph-sm underline">
+        <span
+          className={`text-center font-semibold text-slate-900 text-paragraph-sm underline ${colAvailable}`}
+        >
           Available
         </span>
       </div>
 
-      {/* Group sections */}
+      {/* Group and value rows */}
       {groupsWithValues.map((group) => {
         const isExpanded = expandedGroups.has(group.id);
         const valueCount = group.values.length;
 
         return (
           <div key={group.id}>
-            {/* Group header */}
+            {/* Group row */}
             <button
               type="button"
               onClick={() => toggleExpandGroup(group.id)}
-              className="flex w-full items-center gap-3 border-b border-slate-200 px-6 py-2"
+              className={`flex w-full items-center gap-3 px-6 py-3 ${cellBorder} bg-white text-left`}
             >
+              <span
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 border-slate-400 bg-white"
+                aria-hidden
+              />
+              <div
+                className="h-10 w-10 shrink-0 rounded bg-slate-200"
+                style={{
+                  backgroundImage: `linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)`,
+                  backgroundSize: "8px 8px",
+                  backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
+                }}
+              />
               <div className="flex min-w-0 flex-1 flex-col items-start">
-                <span className="font-semibold text-slate-900 text-paragraph-sm">
+                <span className="block font-semibold text-slate-900 text-paragraph-sm">
                   {group.name}
                 </span>
-                <span className="text-grey-500 text-caption">
-                  {valueCount} {valueCount === 1 ? "value" : "values"}
+                <span className="block text-grey-500 text-caption">
+                  {valueCount} {valueCount === 1 ? "variant" : "variants"}{" "}
+                  <span
+                    className="inline-flex transition-transform duration-(--duration-normal) ease-(--ease-out)"
+                    style={{
+                      transform: isExpanded ? "rotate(0deg)" : "rotate(-90deg)",
+                    }}
+                    aria-hidden
+                  >
+                    ^
+                  </span>
                 </span>
               </div>
-              <span
-                className="inline-flex transition-transform duration-(--duration-normal) ease-(--ease-out)"
-                style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
-              >
-                <Icon
-                  name="keyboard_arrow_down"
-                  size={20}
-                  className="text-grey-500"
-                />
-              </span>
+              <span className={colPrice} />
+              <span className={colAvailable} />
             </button>
 
-            {/* Value rows */}
+            {/* Value rows (indented) */}
             <div
               className="grid transition-[grid-template-rows] duration-(--duration-normal) ease-(--ease-out)"
               style={{ gridTemplateRows: isExpanded ? "1fr" : "0fr" }}
             >
               <div className="overflow-hidden">
-              {group.values.map((value) => {
-                const imageSrc = getImageSrc(value);
-
-                return (
-                  <div
-                    key={value.id}
-                    className="flex items-center gap-5 border-b border-slate-200 px-6 py-2"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => handleImageClick(value.id)}
-                      className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded bg-grey-200"
+                {group.values.map((value) => {
+                  const imageSrc = getImageSrc(value);
+                  return (
+                    <div
+                      key={value.id}
+                      className={`flex items-center gap-3 border-b border-slate-200 bg-white pl-14 pr-6 py-2`}
                     >
-                      {imageSrc ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={imageSrc}
-                          alt={value.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Icon
-                          name="add_photo_alternate"
-                          size={20}
-                          className="text-grey-500"
-                        />
-                      )}
-                    </button>
-
-                    <span className="min-w-0 flex-1 font-semibold text-slate-900 text-paragraph-sm">
-                      {value.name}
-                    </span>
-
-                    <input
-                      type="number"
-                      min={0}
-                      value={value.price || ""}
-                      onChange={(e) =>
-                        updateValue(group.id, value.id, {
-                          price: Number(e.target.value) || 0,
-                        })
-                      }
-                      placeholder="0"
-                      className="h-9 w-[92px] rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900"
-                    />
-
-                    <input
-                      type="number"
-                      min={0}
-                      value={value.available || ""}
-                      onChange={(e) =>
-                        updateValue(group.id, value.id, {
-                          available: Number(e.target.value) || 0,
-                        })
-                      }
-                      placeholder="0"
-                      className="h-9 w-[92px] rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900"
-                    />
-                  </div>
-                );
-              })}
+                      <span
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 border-slate-400 bg-white"
+                        aria-hidden
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleImageClick(value.id)}
+                        className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded bg-slate-200"
+                        style={
+                          !imageSrc
+                            ? {
+                                backgroundImage: `linear-gradient(45deg, #e2e8f0 25%, transparent 25%), linear-gradient(-45deg, #e2e8f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e2e8f0 75%), linear-gradient(-45deg, transparent 75%, #e2e8f0 75%)`,
+                                backgroundSize: "8px 8px",
+                                backgroundPosition:
+                                  "0 0, 0 4px, 4px -4px, -4px 0",
+                              }
+                            : undefined
+                        }
+                      >
+                        {imageSrc ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={imageSrc}
+                            alt={value.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : null}
+                      </button>
+                      <span className="min-w-0 flex-1 font-semibold text-slate-900 text-paragraph-sm">
+                        {value.name}
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={value.price ?? ""}
+                        onChange={(e) =>
+                          updateValue(group.id, value.id, {
+                            price: Number(e.target.value) || 0,
+                          })
+                        }
+                        placeholder="0.00"
+                        className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colPrice}`}
+                      />
+                      <input
+                        type="number"
+                        min={0}
+                        value={value.available ?? ""}
+                        onChange={(e) =>
+                          updateValue(group.id, value.id, {
+                            available: Number(e.target.value) || 0,
+                          })
+                        }
+                        placeholder="0"
+                        className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colAvailable}`}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
         );
       })}
 
-      {/* Add variants button */}
-      <div className="p-6">
+      {/* Add button */}
+      <div className="border-t border-slate-200 p-6">
         <Button
-          variant="subtle"
+          variant="default"
+          size="large"
           type="button"
           onClick={onOpenDrawer}
+          leadingIcon="add"
         >
-          Add variants
+          Add
         </Button>
       </div>
     </div>

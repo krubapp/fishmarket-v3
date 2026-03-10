@@ -18,6 +18,8 @@ export interface DrawerTopBarProps {
   actionIcon?: MaterialSymbol;
   /** Accessible label for the back button (default "Back"). */
   backAriaLabel?: string;
+  /** When true, back button is disabled (greyed out, not clickable). */
+  backDisabled?: boolean;
   /** Applied to the root header. */
   className?: string;
 }

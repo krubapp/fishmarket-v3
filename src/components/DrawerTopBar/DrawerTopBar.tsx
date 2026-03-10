@@ -16,6 +16,7 @@ export function DrawerTopBar({
   onAction,
   actionIcon,
   backAriaLabel = "Back",
+  backDisabled = false,
   className = "",
 }: DrawerTopBarProps) {
   return (
@@ -28,6 +29,7 @@ export function DrawerTopBar({
           name="chevron_left"
           size="large"
           variant="subtle"
+          disabled={backDisabled}
           aria-label={backAriaLabel}
           onClick={onBack}
         />

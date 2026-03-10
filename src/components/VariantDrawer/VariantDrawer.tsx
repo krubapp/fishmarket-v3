@@ -156,18 +156,36 @@ export function VariantDrawer({
     ? groups.find((g) => g.id === focusedGroupId)
     : null;
   const isFocusedView = focusedGroupId !== null;
+  const canLeaveFocusedGroup =
+    !focusedGroup || focusedGroup.values.length >= 2;
+
+  const handleDrawerClose = useCallback(() => {
+    if (isFocusedView && !canLeaveFocusedGroup) return;
+    onClose();
+  }, [isFocusedView, canLeaveFocusedGroup, onClose]);
 
   return (
-    <Drawer open={open} onClose={onClose} width={440} aria-label="Variants">
+    <Drawer
+      open={open}
+      onClose={handleDrawerClose}
+      width={440}
+      aria-label="Variants"
+    >
       {isFocusedView && focusedGroup ? (
         <>
           <DrawerTopBar
             title={focusedGroup.name}
-            onBack={goToOverview}
+            onBack={canLeaveFocusedGroup ? goToOverview : () => {}}
             backAriaLabel="Back to variant groups"
+            backDisabled={!canLeaveFocusedGroup}
             className="-mx-6 -mt-4"
           />
           <div className="flex flex-col gap-6 px-6 py-6">
+            {!canLeaveFocusedGroup && (
+              <p className="font-medium text-[#525651] text-paragraph-sm leading-[1.43]">
+                Add at least 2 variant options before you can go back or close.
+              </p>
+            )}
             {/* Existing values */}
             {focusedGroup.values.map((value) => (
               <div key={value.id} className="flex items-center gap-4">
@@ -226,7 +244,7 @@ export function VariantDrawer({
       ) : (
         <>
           <DrawerTopBar
-            title="Variants"
+            title={groups.length === 0 ? "Add variants" : "Variants"}
             onBack={onClose}
             className="-mx-6 -mt-4"
           />
@@ -342,14 +360,11 @@ export function VariantDrawer({
           {/* New group creation form */}
           <div className="-mx-6 flex flex-col gap-6 border-b border-slate-200 px-6 py-6">
             <div className="flex flex-col gap-2">
-              <div className="flex min-h-[40px] items-start gap-1 text-paragraph-lg leading-[1.4]">
-                <span className="w-[137px] shrink-0 font-bold text-[#373a36]">
-                  Variant group:
-                </span>
-                <span className="min-w-0 flex-1 font-semibold text-[#121412]">
-                  Name
-                </span>
-              </div>
+              <p className="font-semibold text-[#121412] text-paragraph-lg leading-[1.4]">
+                {groups.length === 0
+                  ? "Name your variant group"
+                  : `Add another variant`}
+              </p>
 
               <div className="flex items-center gap-4">
                 <div className="flex h-10 flex-1 items-center rounded-lg border border-slate-400 bg-white px-3">

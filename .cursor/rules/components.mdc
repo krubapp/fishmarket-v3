@@ -759,6 +759,7 @@ Header bar for use at the top of a drawer: back button (40×40, subtle), center 
 | `onAction` | `() => void` | No | Called when action button is pressed |
 | `actionIcon` | `MaterialSymbol` | No | Optional icon for action button |
 | `backAriaLabel` | `string` | No | Accessible name for back button (default "Back") |
+| `backDisabled` | `boolean` | No | When true, back button is disabled (greyed out) |
 | `className` | `string` | No | Root class (use `-mx-6 -mt-4` when inside Drawer) |
 
 **Exports**: `DrawerTopBar`, `DrawerTopBarProps`.
