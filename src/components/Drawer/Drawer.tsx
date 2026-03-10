@@ -41,7 +41,7 @@ export function Drawer({
     <AnimatePresence>
       {open && (
         <div
-          className="fixed inset-0 z-50 flex"
+          className="fixed inset-0 z-[100] flex"
           role="dialog"
           aria-modal="true"
           aria-label={title ?? ariaLabel}
