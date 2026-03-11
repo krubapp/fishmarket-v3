@@ -7,11 +7,15 @@ import type { MaterialSymbol } from "material-symbols";
 
 export type DropdownVariant = "default" | "toggle";
 
+export type DropdownItemTone = "default" | "error";
+
 export interface DropdownItemOption {
   id: string;
   label: string;
   icon?: MaterialSymbol;
   disabled?: boolean;
+  /** When "error", item is styled in red (e.g. destructive actions). */
+  tone?: DropdownItemTone;
 }
 
 export interface DropdownProps {

@@ -20,7 +20,7 @@ alwaysApply: true
 **Path**: `@/components/BottomNav`  
 **Figma**: Roy design system → bottom nav (floating bar, pill shape, bordered).
 
-Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: Home, Shop, Create, Feed, Profile.
+Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: first item shows **Home** for buyers and **Dashboard** for sellers (based on user profile `isSeller` from Settings → General); then Shop, Add Video, Feed, Profile. Same home icon for both; label only differs by role.
 
 **Props**
 
@@ -50,7 +50,7 @@ import { BottomNav } from "@/components/BottomNav";
 **Path**: `@/components/RootTopBar`  
 **Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260).
 
-Horizontal bar: avatar + title on the left; Add product, Feed, and Search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; action buttons 40×40.
+Horizontal bar: avatar + title on the left; **Sell Product** text button (small, default variant), Feed and Search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Feed/Search icon buttons 40×40.
 
 **Props**
 
@@ -58,7 +58,7 @@ Horizontal bar: avatar + title on the left; Add product, Feed, and Search icon b
 |------|------|----------|-------------|
 | `title` | `string` | Yes | Display name or screen title |
 | `avatarSrc` | `string \| null` | No | Avatar image URL; omit for placeholder |
-| `onAddProduct` | `() => void` | No | Called when Add product is pressed |
+| `onAddProduct` | `() => void` | No | Called when Sell Product button is pressed |
 | `onFeed` | `() => void` | No | Called when Feed is pressed |
 | `onSearch` | `() => void` | No | Called when Search is pressed |
 | `feedActive` | `boolean` | No | When true, the Feed button shows an active/highlighted state (default false) |
@@ -760,6 +760,7 @@ Header bar for use at the top of a drawer: back button (40×40, subtle), center 
 | `actionIcon` | `MaterialSymbol` | No | Optional icon for action button |
 | `backAriaLabel` | `string` | No | Accessible name for back button (default "Back") |
 | `backDisabled` | `boolean` | No | When true, back button is disabled (greyed out) |
+| `actionDisabled` | `boolean` | No | When true, action button is disabled (greyed out) |
 | `className` | `string` | No | Root class (use `-mx-6 -mt-4` when inside Drawer) |
 
 **Exports**: `DrawerTopBar`, `DrawerTopBarProps`.
@@ -790,7 +791,7 @@ import { DrawerTopBar } from "@/components/DrawerTopBar";
 **Path**: `@/components/Dropdown`  
 **Figma**: Roy design system → Menu (32:334), Menu-items (32:27).
 
-Dropdown with two trigger types. **Default**: trigger row with label + chevron (bg slate-100, 8px padding, 4px radius). **Toggle**: 40px icon button (more_vert, transparent). Panel: white bg, 4px radius, 1px slate-200 border, shadow; list of items (medium/paragraph-sm, 8px padding, 8px gap, optional 16px icon). Item states: default (white), hover (slate-100), active (slate-200), disabled (grey-200, grey-700). First item rounded top, last rounded bottom; 1px bottom border between items. Supports controlled or uncontrolled open state; closes on Escape and click outside.
+Dropdown with two trigger types. **Default**: trigger row with label + chevron (bg slate-100, 8px padding, 4px radius). **Toggle**: 40px icon button (more_vert, transparent). Panel: white bg, 4px radius, 1px slate-200 border, shadow; list of items (semi/paragraph-sm, 8px padding, 8px gap, optional 16px icon). Item states: default (white), hover (slate-100), active (slate-200), disabled (grey-200, grey-700). Item option `tone: "error"` styles the item in red (e.g. destructive actions). First item rounded top, last rounded bottom; 1px bottom border between items. Supports controlled or uncontrolled open state; closes on Escape and click outside.
 
 **Props**
 
@@ -799,14 +800,14 @@ Dropdown with two trigger types. **Default**: trigger row with label + chevron (
 | `variant` | `DropdownVariant` | No | `"default"` (label + chevron) \| `"toggle"` (icon button) |
 | `label` | `string` | No | Trigger label for default (default "Select") |
 | `value` | `string` | No | Selected item id (for default trigger display) |
-| `items` | `DropdownItemOption[]` | Yes | `{ id, label, icon?, disabled? }[]` |
+| `items` | `DropdownItemOption[]` | Yes | `{ id, label, icon?, disabled?, tone? }[]` — `tone: "error"` for red/destructive |
 | `onSelect` | `(id: string) => void` | No | Called when an item is selected |
 | `open` | `boolean` | No | Controlled open state |
 | `onOpenChange` | `(open: boolean) => void` | No | Called when open changes |
 | `aria-label` | `string` | No | Accessible name for trigger |
 | `className` | `string` | No | Root wrapper class |
 
-**Exports**: `Dropdown`, `DropdownProps`, `DropdownVariant`, `DropdownItemOption`.
+**Exports**: `Dropdown`, `DropdownProps`, `DropdownVariant`, `DropdownItemOption`, `DropdownItemTone`.
 
 **Example**
 
@@ -1293,7 +1294,7 @@ import { Avatar } from "@/components/Avatar";
 **Path**: `@/components/VariantDrawer` 
 **Figma**: Roy design system → variant headers flow (node 410:10870), initial drawer (node 410:10422).
 
-Drawer for creating and managing variant groups on a listing. Full flow: create variant groups (Color, Size, etc.), add values (Red, Blue, etc.), collapse/expand groups, delete/rename via dropdown menu. Uses `Drawer` + `DrawerTopBar` internally. Width 440px.
+Drawer for creating and managing variant groups on a listing. **Single view** (no separate create vs edit screens): when no groups exist, a "Name your variant group" form with quick select is shown; once groups exist, the **active group** (first in the list) is shown at top with "Variant group: &lt;name&gt;", option list, add-option input, and "+ Add group" button. Other groups appear below as **collapsed accordions** (expand to view options). "+ Add group" is disabled until the active group has at least 2 options. Back and overlay click always close the drawer; if the active group is unfinished (fewer than 2 options), it is discarded on close. Uses `Drawer` + `DrawerTopBar` internally. Width 440px.
 
 **Props**
 

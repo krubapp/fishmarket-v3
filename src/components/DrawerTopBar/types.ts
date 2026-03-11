@@ -20,6 +20,8 @@ export interface DrawerTopBarProps {
   backAriaLabel?: string;
   /** When true, back button is disabled (greyed out, not clickable). */
   backDisabled?: boolean;
+  /** When true, action button is disabled (greyed out, not clickable). */
+  actionDisabled?: boolean;
   /** Applied to the root header. */
   className?: string;
 }

@@ -17,6 +17,7 @@ export function DrawerTopBar({
   actionIcon,
   backAriaLabel = "Back",
   backDisabled = false,
+  actionDisabled = false,
   className = "",
 }: DrawerTopBarProps) {
   return (
@@ -44,6 +45,7 @@ export function DrawerTopBar({
             variant="subtle"
             trailingIcon={actionIcon}
             onClick={onAction}
+            disabled={actionDisabled}
           >
             {actionLabel}
           </Button>
