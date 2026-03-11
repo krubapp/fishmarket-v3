@@ -9,7 +9,7 @@ function ActionButton({
   label,
   onClick,
 }: {
-  icon: "tune" | "search";
+  icon: "tune" | "search" | "share";
   label: string;
   onClick?: () => void;
 }) {
@@ -33,6 +33,7 @@ export function ContextTopBar({
   backLabel,
   title,
   onBack,
+  onShare,
   onFilter,
   onSearch,
   className = "",
@@ -68,6 +69,7 @@ export function ContextTopBar({
         </h1>
 
         <div className="relative z-10 ml-auto flex shrink-0 items-center gap-4">
+          {onShare && <ActionButton icon="share" label="Share" onClick={onShare} />}
           {onFilter && <ActionButton icon="tune" label="Filter" onClick={onFilter} />}
           {onSearch && <ActionButton icon="search" label="Search" onClick={onSearch} />}
         </div>

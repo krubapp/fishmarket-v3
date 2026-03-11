@@ -96,6 +96,7 @@ Contextual top bar: back button + section label on the left; center title (absol
 | `backLabel` | `string` | Yes | Label next to back (e.g. "Section", "Categories") |
 | `title` | `string` | Yes | Center title (e.g. "Perch") |
 | `onBack` | `() => void` | No | Called when back is pressed |
+| `onShare` | `() => void` | No | When set, shows share icon before filter/search (e.g. listing detail) |
 | `onFilter` | `() => void` | No | Called when filter is pressed |
 | `onSearch` | `() => void` | No | Called when search is pressed |
 | `className` | `string` | No | Applied to the root `<header>` |
