@@ -6,9 +6,10 @@ import { z } from "zod";
  */
 const optionalUrl = z
   .string()
-  .optional()
-  .transform((v) => v?.trim() || undefined)
-  .refine((v) => !v || z.string().url().safeParse(v).success, "Enter a valid URL");
+  .refine(
+    (v) => !v.trim() || z.url().safeParse(v.trim()).success,
+    "Enter a valid URL",
+  );
 
 export const profileSchema = z.object({
   displayName: z.string().min(1, "Display name is required"),
@@ -18,7 +19,7 @@ export const profileSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
   location: z.string().optional(),
   bio: z.string().max(500).optional(),
-  avatarUrl: z.string().url().optional().nullable(),
+  avatarUrl: z.url().optional().nullable(),
   tiktokUrl: optionalUrl,
   youtubeUrl: optionalUrl,
   instagramUrl: optionalUrl,
@@ -51,6 +52,9 @@ export function getDefaultProfile(): Profile {
     location: undefined,
     bio: undefined,
     avatarUrl: null,
+    tiktokUrl: "",
+    youtubeUrl: "",
+    instagramUrl: "",
     isSeller: false,
     followerCount: 0,
   };

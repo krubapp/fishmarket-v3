@@ -27,7 +27,7 @@ export const variantValueSchema = z.object({
   name: z.string().min(1),
   price: z.number().min(0).default(0),
   available: z.number().int().min(0).default(0),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.url().optional(),
 });
 
 export type VariantValue = z.infer<typeof variantValueSchema>;
@@ -58,7 +58,7 @@ export const listingFormSchema = z.object({
 });
 
 export const listingSchema = listingFormSchema.extend({
-  imageUrls: z.array(z.string().url()).min(1, "At least one image is required"),
+  imageUrls: z.array(z.url()).min(1, "At least one image is required"),
 });
 
 export type ListingFormData = z.infer<typeof listingFormSchema>;

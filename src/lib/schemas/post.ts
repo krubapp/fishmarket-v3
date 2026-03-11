@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const postSchema = z.object({
   userId: z.string().min(1),
-  videoUrl: z.string().url(),
-  thumbnailUrl: z.string().url().optional(),
+  videoUrl: z.url(),
+  thumbnailUrl: z.url().optional(),
   caption: z.string().max(500).default(""),
   likeCount: z.number().int().min(0).default(0),
   saveCount: z.number().int().min(0).default(0),

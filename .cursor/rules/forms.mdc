@@ -25,3 +25,25 @@ alwaysApply: true
 - Use form components (Input, Textarea, Checkbox, Radio, Dropdown) with the `error` prop from `formState.errors`.
 - For components that don't support `register` (e.g. Dropdown), use `Controller` from react-hook-form.
 - File uploads (e.g. MediaDropzone): store `File[]` in local state, validate in `onSubmit` before calling the submit handler.
+
+## Zod v4 string formats
+
+The project uses **Zod v4**, which moved string format validators to top-level constructors. The old method forms (`z.string().url()`, `z.string().email()`, etc.) are **deprecated**.
+
+Use the top-level equivalents instead — they return `string` just like the old method forms:
+
+```ts
+// Deprecated (Zod v3 style)
+z.string().url()       // ❌
+z.string().email()     // ❌
+z.string().uuid()      // ❌
+
+// Recommended (Zod v4)
+z.url()                // ✅
+z.email()              // ✅
+z.uuid()               // ✅
+```
+
+Chaining works the same way: `z.url().optional()`, `z.array(z.url())`, `z.url().nullable()`.
+
+Reference: [Zod v4 migration guide — deprecates .email() etc](https://v4.zod.dev/v4/changelog#deprecates-email-etc).

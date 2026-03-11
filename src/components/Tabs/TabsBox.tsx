@@ -33,7 +33,7 @@ function TabsBoxCell({
   onSelect: () => void;
   isLast: boolean;
 }) {
-  const isDisabled = tab.disabled;
+  const isDisabled = tab.disabled ?? false;
   const content = (
     <>
       {tab.badge != null && tab.badge !== "" && (
