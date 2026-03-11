@@ -11,6 +11,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { Link } from "@/components/Link";
+import { Snackbar } from "@/components/Snackbar";
 import { Tabs } from "@/components/Tabs";
 import { TabsBox } from "@/components/Tabs";
 import { useAuth } from "@/hooks/useAuth";
@@ -97,6 +98,7 @@ export default function ProfileByUsernamePage() {
   const pathname = usePathname();
   const [contentTab, setContentTab] = useState("my-videos");
   const [qrPopupOpen, setQrPopupOpen] = useState(false);
+  const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
 
   useEffect(() => {
     if (!qrPopupOpen) return;
@@ -273,12 +275,27 @@ export default function ProfileByUsernamePage() {
             )}
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 const url = typeof window !== "undefined" ? window.location.href : "";
-                if (url && navigator.share) {
-                  navigator.share({ url, title: display.displayName || "Profile" }).catch(() => {});
-                } else {
-                  navigator.clipboard?.writeText(url).then(() => {});
+                if (!url) return;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      url,
+                      title: display.displayName || "Profile",
+                      text: display.bio || undefined,
+                    });
+                  } catch {
+                    // User cancelled or share failed; no need to surface
+                  }
+                  return;
+                }
+                // Desktop fallback when Web Share API isn't available: copy link
+                try {
+                  await navigator.clipboard?.writeText(url);
+                  setShareSnackbarOpen(true);
+                } catch {
+                  // Clipboard failed (e.g. insecure context)
                 }
               }}
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded p-1 text-slate-600 transition-colors hover:text-slate-900"
@@ -390,6 +407,13 @@ export default function ProfileByUsernamePage() {
           document.body
         )}
 
+      <Snackbar
+        open={shareSnackbarOpen}
+        onClose={() => setShareSnackbarOpen(false)}
+        message="Link copied"
+        icon="link"
+        duration={3000}
+      />
       <BottomNav activeItem="profile" />
     </div>
   );
