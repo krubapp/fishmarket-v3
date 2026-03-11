@@ -38,7 +38,7 @@ export interface ButtonProps {
   /** Mini only: active/pressed state (blue tint). */
   active?: boolean;
   /** Click handler. */
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   /** type="submit" for forms. */
   type?: "button" | "submit";
   /** Accessible name when label isn’t sufficient. */
