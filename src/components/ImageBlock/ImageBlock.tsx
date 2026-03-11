@@ -24,16 +24,29 @@ export function ImageBlock({
   const showAddIcon = !hasImage && onAdd;
   const showActionButton = isLarge && onAction;
 
-  const style: React.CSSProperties = {
-    width,
-    height,
-    borderRadius: radius,
-    backgroundImage:
-      "linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%)",
-    backgroundSize: "20px 20px",
-    backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
-    backgroundColor: "#f3f4f6",
-  };
+  const style: React.CSSProperties = isLarge
+    ? {
+        width: "100%",
+        maxWidth: width,
+        aspectRatio: "1",
+        height: "auto",
+        borderRadius: radius,
+        backgroundImage:
+          "linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%)",
+        backgroundSize: "20px 20px",
+        backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+        backgroundColor: "#f3f4f6",
+      }
+    : {
+        width,
+        height,
+        borderRadius: radius,
+        backgroundImage:
+          "linear-gradient(45deg, #e5e7eb 25%, transparent 25%), linear-gradient(-45deg, #e5e7eb 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #e5e7eb 75%), linear-gradient(-45deg, transparent 75%, #e5e7eb 75%)",
+        backgroundSize: "20px 20px",
+        backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+        backgroundColor: "#f3f4f6",
+      };
 
   const root = (
     <div

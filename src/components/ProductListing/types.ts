@@ -31,6 +31,8 @@ export type ProductListingProps = {
   onLike?: () => void;
   /** Content layout: "below" (column) or "right" (row, image left). Default "below". */
   contentPosition?: ProductListingContentPosition;
+  /** Optional node rendered after seller row (e.g. "Buy again" button). */
+  trailingContent?: React.ReactNode;
   /** Click handler for the entire card. */
   onClick?: () => void;
   /** Root class. */

@@ -1038,7 +1038,7 @@ import { ImageBlock } from "@/components/ImageBlock";
 **Path**: `@/components/ProductListing`  
 **Figma**: Single listing (492:7977); content to right of image (568:2576).
 
-Single listing card: **ImageBlock** large (218×218), no border radius; white content panel (padding 16px, gap 24px). Use **contentPosition**: `"below"` (column, content under image, panel height 209px, seller at bottom) or `"right"` (row, image left, content right, items-stretch so panel height matches image). Content: optional badge; condition row; title; price + optional originalPrice; seller (Avatar 16 + name right).
+Single listing card: **ImageBlock** large (218×218), no border radius; white content panel (padding 16px, gap 24px). Use **contentPosition**: `"below"` (column, content under image, panel height 209px, seller at bottom) or `"right"` (row, image left, content right, items-stretch so panel height matches image). Content: optional badge; condition row; title; price + optional originalPrice; seller (Avatar 16 + name right); optional **trailingContent** (e.g. "Buy again" button) after seller row.
 
 **Props**
 
@@ -1056,6 +1056,8 @@ Single listing card: **ImageBlock** large (218×218), no border radius; white co
 | `sellerName` | `string` | Yes | Seller display name |
 | `onLike` | `() => void` | No | Like/favorite on image |
 | `contentPosition` | `ProductListingContentPosition` | No | `"below"` \| `"right"` (default `"below"`) |
+| `trailingContent` | `React.ReactNode` | No | Optional node after seller row (e.g. "Buy again" button) |
+| `onClick` | `() => void` | No | Click handler for the entire card |
 | `className` | `string` | No | Root class |
 
 **Exports**: `ProductListing`, `ProductListingProps`, `ProductListingContentPosition`.

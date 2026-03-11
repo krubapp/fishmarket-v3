@@ -5,8 +5,6 @@ import { ImageBlock } from "@/components/ImageBlock";
 
 import type { ProductListingProps } from "./types";
 
-const CARD_WIDTH = 218;
-
 export function ProductListing({
   imageSrc,
   imageAlt = "",
@@ -20,6 +18,7 @@ export function ProductListing({
   sellerName,
   onLike,
   contentPosition = "below",
+  trailingContent,
   onClick,
   className = "",
 }: ProductListingProps) {
@@ -67,7 +66,7 @@ export function ProductListing({
           </div>
         </div>
       </div>
-      <div className="mt-auto">
+      <div className="mt-auto flex flex-col gap-2">
         <Avatar
           size={16}
           src={sellerAvatarSrc ?? undefined}
@@ -75,14 +74,15 @@ export function ProductListing({
           label={sellerName}
           labelPosition="right"
         />
+        {trailingContent != null ? trailingContent : null}
       </div>
     </div>
   );
 
   return (
     <article
-      className={`flex shrink-0 ${isRight ? "flex-row items-stretch" : "w-[218px] flex-col"} ${onClick ? "cursor-pointer" : ""} ${className}`}
-      style={isRight ? undefined : { width: CARD_WIDTH }}
+      className={`flex shrink-0 min-w-0 ${isRight ? "flex-row items-stretch" : "w-full max-w-[218px] flex-col"} ${onClick ? "cursor-pointer" : ""} ${className}`}
+      style={isRight ? undefined : undefined}
       onClick={onClick}
       role={onClick ? "link" : undefined}
     >

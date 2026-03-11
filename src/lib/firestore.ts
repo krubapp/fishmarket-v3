@@ -279,6 +279,20 @@ export async function getSellerOrders(
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
 }
 
+export async function getBuyerOrders(
+  buyerId: string,
+  limitCount = 50,
+): Promise<Order[]> {
+  const q = query(
+    collection(db, ORDERS_COLLECTION),
+    where("buyerId", "==", buyerId),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
+}
+
 export async function updateOrder(
   orderId: string,
   data: Partial<CreateOrderInput>,

@@ -118,6 +118,7 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 
 - `createOrder(data)` — adds doc to `orders`, returns doc id
 - `getSellerOrders(sellerId, limitCount?)` — query orders for a seller, ordered by `createdAt` desc
+- `getBuyerOrders(buyerId, limitCount?)` — query orders for a buyer, ordered by `createdAt` desc
 - `updateOrder(orderId, data)` — partial update (e.g. status change, adds `updatedAt`)
 - `getOrdersByStatus(sellerId, status)` — filter orders by status
 
