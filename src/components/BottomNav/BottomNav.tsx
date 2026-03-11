@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { useAuth } from "@/hooks/useAuth";
+import { getUserProfile } from "@/lib/firestore";
 import type { MaterialSymbol } from "material-symbols";
 import NextLink from "next/link";
 import {
@@ -12,16 +15,35 @@ import {
 const ITEM_ICONS: Record<BottomNavItemId, MaterialSymbol> = {
   home: "home",
   shop: "local_mall",
-  create: "add_circle",
+  add_video: "duo",
   feed: "play_circle",
   profile: "account_circle",
 };
+
+function getHomeLabel(isSeller: boolean): string {
+  return isSeller ? "Dashboard" : "Home";
+}
 
 export function BottomNav({
   activeItem,
   onItemChange,
   className = "",
 }: BottomNavProps) {
+  const { user } = useAuth();
+  const [isSeller, setIsSeller] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setIsSeller(false);
+      return;
+    }
+    getUserProfile(user.uid)
+      .then((profile) => setIsSeller(!!profile?.isSeller))
+      .catch(() => setIsSeller(false));
+  }, [user?.uid]);
+
+  const homeLabel = getHomeLabel(isSeller);
+
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 z-50 flex justify-center px-5 pt-0 ${className}`}
@@ -34,6 +56,7 @@ export function BottomNav({
         aria-label="Bottom navigation"
       >
       {BOTTOM_NAV_ITEMS.map(({ id, label, href }) => {
+        const displayLabel = id === "home" ? homeLabel : label;
         const isActive = activeItem === id;
         return (
           <NextLink
@@ -42,7 +65,7 @@ export function BottomNav({
             className="flex flex-1 flex-col items-center justify-center gap-1 border-none bg-transparent p-0 text-left no-underline outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             onClick={() => onItemChange?.(id)}
             aria-current={isActive ? "page" : undefined}
-            aria-label={label}
+            aria-label={displayLabel}
           >
             <Icon
               name={ITEM_ICONS[id]}
@@ -61,7 +84,7 @@ export function BottomNav({
                   : "text-grey-700"
               }`}
             >
-              {label}
+              {displayLabel}
             </span>
           </NextLink>
         );
