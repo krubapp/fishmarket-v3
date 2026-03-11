@@ -28,17 +28,17 @@ export function AccordionItem({
   };
 
   const triggerClasses =
-    "flex w-full min-w-0 items-center gap-3 rounded-lg border-0 bg-transparent p-0 text-left outline-none transition-colors " +
+    "flex w-full min-w-0 items-center gap-[var(--spacing-layout-sm)] rounded-none border-0 bg-transparent p-0 text-left outline-none transition-colors " +
     "hover:text-slate-950 focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-0 " +
     (disabled ? "cursor-not-allowed text-grey-700 hover:text-grey-700" : "cursor-pointer text-slate-900");
 
   const panelClasses =
-    "flex flex-col gap-2 " +
+    "flex flex-col gap-[var(--spacing-layout-xsm)] " +
     (disabled ? "text-grey-700" : "");
 
   return (
     <div
-      className={`flex flex-col gap-6 rounded-lg border border-slate-200 bg-white px-6 py-6 ${disabled ? "bg-grey-200" : ""} ${className}`.trim()}
+      className={`flex flex-col gap-6 border-y border-slate-200 bg-white px-6 py-6 ${disabled ? "bg-grey-200" : ""} ${className}`.trim()}
     >
       <button
         type="button"
@@ -48,7 +48,7 @@ export function AccordionItem({
         aria-disabled={disabled}
         className={triggerClasses}
       >
-        <span className="min-w-0 flex-1 font-semibold text-[length:var(--font-size-paragraph-lg)] leading-[1.4]">
+        <span className="min-w-0 flex-1 font-semibold leading-[var(--line-height-paragraph-lg)] text-[length:var(--font-size-paragraph-lg)] text-[var(--color-text-default-headings)]">
           {title}
         </span>
         {headerRight != null && (
@@ -56,8 +56,10 @@ export function AccordionItem({
             {headerRight}
           </span>
         )}
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center text-current transition-transform duration-(--duration-normal) ease-(--ease-out)"
-          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center text-current transition-transform duration-(--duration-normal) ease-(--ease-out)"
+          style={{ transform: open ? "rotate(0deg)" : "rotate(180deg)" }}
+          aria-hidden
         >
           <Icon name="keyboard_arrow_down" size={24} />
         </span>

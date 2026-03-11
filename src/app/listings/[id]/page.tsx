@@ -7,7 +7,6 @@ import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { VariantOptionButton } from "@/components/VariantOptionButton";
 import { AccordionItem } from "@/components/Accordion";
-import { CostBreakdown } from "@/components/CostBreakdown";
 import { ImageButton } from "@/components/ImageButton";
 import { Icon } from "@/components/Icon";
 import { Rating } from "@/components/Rating";
@@ -170,9 +169,6 @@ export default function ListingDetailPage() {
     }
   }
 
-  const shippingCost = listing.shippingCost ?? 0;
-  const totalAmount = activePrice + shippingCost;
-
   async function handleShare() {
     const url = typeof window !== "undefined" ? window.location.href : "";
     if (!url || !listing) return;
@@ -204,7 +200,6 @@ export default function ListingDetailPage() {
         title={listing.title}
         onBack={() => router.back()}
         onShare={handleShare}
-        onSearch={() => router.push(ROUTES.searchListings)}
       />
 
       {/* Product image + thumbnail strip (Figma 611:2552–2554) */}
@@ -238,18 +233,18 @@ export default function ListingDetailPage() {
         )}
       </div>
 
-      {/* Content (Figma 611:2560–2581) */}
+      {/* Content (Figma 611:2560–2581, 611:2561) */}
       <div className="flex flex-col gap-6 px-6 pb-24">
-        {/* NEW DROP + Condition + Title + Price + Seller */}
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-1">
+        {/* NEW DROP + Condition + Title + Price + Seller (Figma 611:2561) */}
+        <div className="flex flex-col gap-[9px]">
+          <div className="flex flex-col gap-[var(--spacing-layout-xxxs)]">
             {listing.condition === "new" && (
-              <span className="font-bold leading-[1.33] text-[length:var(--font-size-caption)] text-slate-900">
+              <span className="font-bold leading-[var(--line-height-caption)] text-[length:var(--font-size-caption)] text-slate-900">
                 NEW DROP
               </span>
             )}
-            <div className="flex items-center gap-1 text-[length:var(--font-size-paragraph-sm)]">
-              <span className="font-medium text-grey-600">Condition:</span>
+            <div className="flex items-center gap-[var(--spacing-layout-xxxs)] text-[length:var(--font-size-paragraph-sm)] leading-[var(--line-height-paragraph-sm)]">
+              <span className="font-medium text-grey-500">Condition:</span>
               <span className="font-semibold text-grey-800">
                 {listing.condition
                   ? listing.condition.charAt(0).toUpperCase() +
@@ -258,22 +253,22 @@ export default function ListingDetailPage() {
               </span>
             </div>
           </div>
-          <h1 className="font-medium leading-[1.33] text-[length:var(--font-size-body-xl)] text-lime-600">
+          <h1 className="font-medium leading-[var(--line-height-paragraph-xl)] text-[length:var(--font-size-paragraph-xl)] text-lime-600">
             {listing.title}
           </h1>
-          <div className="flex items-baseline gap-3">
-            <span className="font-semibold leading-[1.5] text-[length:var(--font-size-body-md)] text-lime-700">
+          <div className="flex items-baseline gap-[var(--spacing-layout-sm)]">
+            <span className="font-semibold leading-[var(--line-height-paragraph-md)] text-[length:var(--font-size-paragraph-md)] text-lime-700">
               {listing.currency || "SEK"} {activePrice.toLocaleString()}
             </span>
           </div>
           {seller && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[var(--spacing-layout-xsm)]">
               <Avatar
                 src={seller.avatarUrl}
                 alt={seller.displayName}
                 size={16}
               />
-              <span className="font-medium leading-[1.43] text-[length:var(--font-size-paragraph-sm)] text-slate-900">
+              <span className="font-medium leading-[var(--line-height-paragraph-sm)] text-[length:var(--font-size-paragraph-sm)] text-slate-900">
                 {seller.displayName || seller.username || "Seller"}
               </span>
             </div>
@@ -316,28 +311,6 @@ export default function ListingDetailPage() {
               </div>
             </div>
           ))}
-
-        {/* Cost breakdown */}
-        <CostBreakdown
-          rows={[
-            {
-              label: "Item price",
-              value: `${listing.currency || "SEK"} ${activePrice.toLocaleString()}`,
-            },
-            {
-              label: "Shipping",
-              value:
-                shippingCost > 0
-                  ? `${listing.currency || "SEK"} ${shippingCost.toLocaleString()}`
-                  : "Free",
-            },
-            {
-              label: "Total",
-              value: `${listing.currency || "SEK"} ${totalAmount.toLocaleString()}`,
-              highlightLabel: true,
-            },
-          ]}
-        />
 
         {/* Buy Now + Add to Cart (Figma 611:2579–2580) */}
         <div className="flex flex-col gap-3">
@@ -387,64 +360,65 @@ export default function ListingDetailPage() {
           </div>
         </section>
 
-        {/* Description */}
-        {listing.description && (
+        {/* Accordions: full-bleed, border top/bottom only (Figma 611:2583) */}
+        <div className="-mx-6">
           <AccordionItem title="Description" defaultOpen>
-            <p className="text-[length:var(--font-size-body-md)] leading-normal text-grey-800">
-              {listing.description}
+            <p className="font-normal leading-[var(--line-height-paragraph-sm)] text-[length:var(--font-size-paragraph-sm)] text-grey-800">
+              {listing.description || "No description provided."}
             </p>
           </AccordionItem>
-        )}
 
-        {/* Specifications */}
-        {listing.specifications && (
-          <AccordionItem title="Specifications">
-            <p className="text-[length:var(--font-size-body-md)] leading-normal text-grey-800 whitespace-pre-wrap">
-              {listing.specifications}
-            </p>
+          <AccordionItem title="Specifications" defaultOpen>
+            {listing.specifications?.trim() ? (
+              <p className="font-normal leading-[var(--line-height-paragraph-sm)] text-[length:var(--font-size-paragraph-sm)] text-grey-800 whitespace-pre-wrap">
+                {listing.specifications}
+              </p>
+            ) : (
+              <p className="font-normal leading-[var(--line-height-paragraph-sm)] text-[length:var(--font-size-paragraph-sm)] text-grey-500">
+                No specifications added yet.
+              </p>
+            )}
           </AccordionItem>
-        )}
 
-        {/* Ratings (Figma 611:2245, 611:2432–2451) */}
-        <AccordionItem
-          title="Ratings"
-          headerRight={<Rating value={0} size={24} className="shrink-0" />}
-          defaultOpen
-        >
-          <div className="flex flex-col gap-6">
-            <Button size="small" variant="subtle" className="w-fit">
-              Add a Review
-            </Button>
-            {/* Placeholder review cards */}
-            <div className="flex flex-col divide-y divide-slate-200">
-              <div className="flex flex-col gap-4 py-4">
-                <div className="flex gap-2">
-                  <Avatar size={80} className="shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium text-[length:var(--font-size-body-md)] text-grey-800">
-                        Customer review
+          <AccordionItem
+            title="Ratings"
+            headerRight={<Rating value={0} size={24} className="shrink-0" />}
+            defaultOpen
+          >
+            <div className="flex flex-col gap-6">
+              <Button size="small" variant="subtle" className="w-fit">
+                Add a Review
+              </Button>
+              <div className="flex flex-col divide-y divide-slate-200">
+                <div className="flex flex-col gap-4 py-4">
+                  <div className="flex gap-2">
+                    <Avatar size={80} className="shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium text-[length:var(--font-size-body-md)] text-grey-800">
+                          Customer review
+                        </span>
+                        <IconButton
+                          name="more_vert"
+                          size="large"
+                          variant="transparent"
+                          aria-label="More options"
+                        />
+                      </div>
+                      <Rating value={0} size={24} className="mt-1" />
+                      <p className="mt-2 font-normal text-[length:var(--font-size-paragraph-sm)] leading-[1.43] text-grey-600">
+                        No reviews yet. Be the first to share your experience.
+                      </p>
+                      <span className="mt-1 block font-normal text-[length:var(--font-size-caption)] text-grey-700">
+                        —
                       </span>
-                      <IconButton
-                        name="more_vert"
-                        size="large"
-                        variant="transparent"
-                        aria-label="More options"
-                      />
                     </div>
-                    <Rating value={0} size={24} className="mt-1" />
-                    <p className="mt-2 font-normal text-[length:var(--font-size-paragraph-sm)] leading-[1.43] text-grey-600">
-                      No reviews yet. Be the first to share your experience.
-                    </p>
-                    <span className="mt-1 block font-normal text-[length:var(--font-size-caption)] text-grey-700">
-                      —
-                    </span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </AccordionItem>
+          </AccordionItem>
+        </div>
       </div>
 
       <Snackbar
