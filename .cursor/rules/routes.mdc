@@ -25,37 +25,39 @@ When adding a new route, add its path to `ROUTES` first, then reference the key 
 
 ## Route protection
 
-Protected routes require authentication. Unauthenticated users are redirected to `/login`.
+**Global rule: if the user is not signed in, they are always redirected to the login page.** The only route accessible when unauthenticated is `/login`.
 
 - **`AuthProvider`** (`src/contexts/AuthContext.tsx`) wraps the app in the root layout, providing `{ user, loading }` via context.
+- **`AuthGuard`** (`src/components/AuthGuard/`) wraps app content in the root layout (inside `AuthProvider`). It redirects unauthenticated users to `ROUTES.login` for every path except the login page. Shows a loading spinner while auth state resolves. No per-route protection is needed — all routes are protected by this single guard.
 - **`useAuth`** (`src/hooks/useAuth.ts`) is a re-export of `useAuthContext` — use it in any client component.
-- **`ProtectedRoute`** (`src/components/ProtectedRoute/`) is a wrapper component that checks auth and redirects to `/login` if not authenticated. Shows a loading spinner while auth state resolves.
-- To protect a route group, add a `layout.tsx` that wraps children with `<ProtectedRoute>` (see `src/app/create-listing/layout.tsx`).
+- **`ProtectedRoute`** (`src/components/ProtectedRoute/`) is an optional wrapper that does the same redirect + loading; use only if you need to protect a subtree outside the default layout (e.g. a future route group that opts out of the global guard).
 
 ## Route table
 
+**Protected** = requires auth; unauthenticated users are redirected to `/login`. Only `login` is public.
+
 | Key | Path | File | Protected | Description |
 |-----|------|------|-----------|-------------|
-| `home` | `/` | `src/app/page.tsx` | No | Buyer dashboard homepage (Figma node `798:6035`). Top Brands, New Releases, Fish Type categories, Favorites, Promo CTAs, Brand Suggestions, Because You Like. |
-| `login` | `/login` | `src/app/login/page.tsx` | No | Email/password sign-in and sign-up. Redirects to `/create-listing` on success. |
-| `shop` | `/shop` | — | No | Shop (placeholder) |
-| `feed` | `/feed` | `src/app/feed/page.tsx` | No | TikTok-style vertical video feed. Full-viewport scroll-snap posts with like/save interactions. Infinite scroll pagination. |
+| `home` | `/` | `src/app/page.tsx` | Yes | Buyer dashboard homepage (Figma node `798:6035`). Top Brands, New Releases, Fish Type categories, Favorites, Promo CTAs, Brand Suggestions, Because You Like. |
+| `login` | `/login` | `src/app/login/page.tsx` | **No** | Only route accessible when signed out. Email/password sign-in and sign-up. Redirects to `/create-listing` on success. |
+| `shop` | `/shop` | — | Yes | Shop (placeholder) |
+| `feed` | `/feed` | `src/app/feed/page.tsx` | Yes | TikTok-style vertical video feed. Full-viewport scroll-snap posts with like/save interactions. Infinite scroll pagination. |
 | `createPost` | `/create-post` | `src/app/create-post/page.tsx` | Yes | Create a new video post. Upload video, add caption, submit to Firestore + Storage. |
-| `postDetail(id)` | `/feed/[id]` | — | No | Post detail (placeholder). Single post view. |
+| `postDetail(id)` | `/feed/[id]` | — | Yes | Post detail (placeholder). Single post view. |
 | `createListing` | `/create-listing` | `src/app/create-listing/page.tsx` | Yes | Listing flow entry — "Advance listing" intro screen (Figma node `394:1125`). Decorative image grid, heading, and Create CTA. |
 | `createListingForm` | `/create-listing/form` | `src/app/create-listing/form/page.tsx` | Yes | Advance listing form (Figma node `417:1722`). Uses shared `ListingForm` component in create mode. |
 | `editListing(id)` | `/create-listing/[id]/edit` | `src/app/create-listing/[id]/edit/page.tsx` | Yes | Edit listing form. Fetches listing by ID, verifies ownership, renders `ListingForm` in edit mode with pre-populated data. Redirects to dashboard with `?updated=true` on success. |
-| `map` | `/map` | — | No | Map (placeholder, not in BottomNav) |
-| `profile` | `/profile` | `src/app/profile/page.tsx` | No | Redirect: when authenticated redirects to `/profile/[username-or-uid]`; when not, shows "Sign in to view your profile" + Sign in button. |
-| `profileByUsername(username)` | `/profile/[username]` | `src/app/profile/[username]/page.tsx` | No | Dynamic profile by username or uid. Resolves user via `getUserProfileByUsernameOrId`. Own profile: Edit, "Add some information" CTA, section TabsBox (Order, Favorites, Comments, Settings). Other users: read-only header + content Tabs (My videos, Tagged, etc.). 404 when not found. |
-| `profileOrders` | `/profile/orders` | `src/app/profile/orders/page.tsx` | No | Profile orders (placeholder). Linked from profile section tabs. |
-| `profileFavorites` | `/profile/favorites` | `src/app/profile/favorites/page.tsx` | No | Profile favorites (placeholder). Linked from profile section tabs. |
-| `profileComments` | `/profile/comments` | `src/app/profile/comments/page.tsx` | No | Profile comments (placeholder). Linked from profile section tabs. |
-| `showcase` | `/showcase` | `src/app/showcase/page.tsx` | No | Component showcase (design system demo). All primitives displayed with labels for visual testing. |
+| `map` | `/map` | — | Yes | Map (placeholder, not in BottomNav) |
+| `profile` | `/profile` | `src/app/profile/page.tsx` | Yes | When authenticated redirects to `/profile/[username-or-uid]`; otherwise AuthGuard redirects to login. |
+| `profileByUsername(username)` | `/profile/[username]` | `src/app/profile/[username]/page.tsx` | Yes | Dynamic profile by username or uid. Resolves user via `getUserProfileByUsernameOrId`. Own profile: Edit, "Add some information" CTA, section TabsBox (Order, Favorites, Comments, Settings). Other users: read-only header + content Tabs (My videos, Tagged, etc.). 404 when not found. |
+| `profileOrders` | `/profile/orders` | `src/app/profile/orders/page.tsx` | Yes | Profile orders (placeholder). Linked from profile section tabs. |
+| `profileFavorites` | `/profile/favorites` | `src/app/profile/favorites/page.tsx` | Yes | Profile favorites (placeholder). Linked from profile section tabs. |
+| `profileComments` | `/profile/comments` | `src/app/profile/comments/page.tsx` | Yes | Profile comments (placeholder). Linked from profile section tabs. |
+| `showcase` | `/showcase` | `src/app/showcase/page.tsx` | Yes | Component showcase (design system demo). All primitives displayed with labels for visual testing. |
 | `settings` | `/settings` | `src/app/settings/page.tsx` | Yes | Settings index. Navigation hub linking to Account and General sub-pages. |
 | `settingsGeneral` | `/settings/general` | `src/app/settings/general/page.tsx` | Yes | General settings. Seller mode toggle (`isSeller`). The "Become a lure seller" promo CTA on the buyer dashboard links here. |
 | `settingsAccount` | `/settings/account` | `src/app/settings/account/page.tsx` | Yes | Account settings. Edit profile: display name, username, location, bio, avatar image. Persists to Firestore `users/{uid}`. |
-| `searchListings` | `/search` | `src/app/search/page.tsx` | No | Search and filter listings. Supports URL search params: `q` (text), `fishType`, `category`, `condition`, `sellerId`, `minPrice`, `maxPrice`. Two modes: results grid (ContextTopBar + ProductListing grid + filter Drawer) and search overlay (SearchBar + suggestions). Linked from seller top bar search icon and buyer homepage fish-type category buttons (e.g. `/search?fishType=Perch`). |
-| `listingDetail(id)` | `/listings/[id]` | `src/app/listings/[id]/page.tsx` | No | Listing detail page. Shows product image, title, price, condition, category, description, seller info, variant selection with stock display, cost breakdown, and Buy Now button that initiates Stripe Checkout. |
-| `checkoutSuccess` | `/checkout/success` | `src/app/checkout/success/page.tsx` | No | Post-checkout confirmation page. Shows success message after Stripe redirects back with `?session_id=`. |
-| `stripeConnectReturn` | `/stripe/connect/return` | `src/app/stripe/connect/return/page.tsx` | No | Stripe Connect onboarding return page. Checks verification status and shows success/pending message. |
+| `searchListings` | `/search` | `src/app/search/page.tsx` | Yes | Search and filter listings. Supports URL search params: `q` (text), `fishType`, `category`, `condition`, `sellerId`, `minPrice`, `maxPrice`. Two modes: results grid (ContextTopBar + ProductListing grid + filter Drawer) and search overlay (SearchBar + suggestions). Linked from seller top bar search icon and buyer homepage fish-type category buttons (e.g. `/search?fishType=Perch`). |
+| `listingDetail(id)` | `/listings/[id]` | `src/app/listings/[id]/page.tsx` | Yes | Listing detail page. Shows product image, title, price, condition, category, description, seller info, variant selection with stock display, cost breakdown, and Buy Now button that initiates Stripe Checkout. |
+| `checkoutSuccess` | `/checkout/success` | `src/app/checkout/success/page.tsx` | Yes | Post-checkout confirmation page. Shows success message after Stripe redirects back with `?session_id=`. |
+| `stripeConnectReturn` | `/stripe/connect/return` | `src/app/stripe/connect/return/page.tsx` | Yes | Stripe Connect onboarding return page. Checks verification status and shows success/pending message. |
