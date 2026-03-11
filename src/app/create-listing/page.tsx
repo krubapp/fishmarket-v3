@@ -92,7 +92,7 @@ export default function CreateListingPage() {
         </>
       )}
 
-      <BottomNav activeItem="create" />
+      <BottomNav activeItem="add_video" />
     </div>
   );
 }
