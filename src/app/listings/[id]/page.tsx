@@ -12,6 +12,7 @@ import { ImageButton } from "@/components/ImageButton";
 import { Icon } from "@/components/Icon";
 import { Rating } from "@/components/Rating";
 import { IconButton } from "@/components/IconButton";
+import { Snackbar } from "@/components/Snackbar";
 import { getListing, getUserProfile } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing, VariantGroup, VariantValue } from "@/lib/schemas/listing";
@@ -45,6 +46,7 @@ export default function ListingDetailPage() {
     Record<string, string>
   >({});
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -171,13 +173,27 @@ export default function ListingDetailPage() {
   const shippingCost = listing.shippingCost ?? 0;
   const totalAmount = activePrice + shippingCost;
 
-  function handleShare() {
-    if (typeof navigator !== "undefined" && navigator.share && listing) {
-      navigator.share({
-        title: listing.title,
-        url: window.location.href,
-        text: listing.title,
-      }).catch(() => {});
+  async function handleShare() {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    if (!url || !listing) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          url,
+          title: listing.title,
+          text: listing.title,
+        });
+      } catch {
+        // User cancelled or share failed; no need to surface
+      }
+      return;
+    }
+    // Fallback when Web Share API isn't available: copy link
+    try {
+      await navigator.clipboard?.writeText(url);
+      setShareSnackbarOpen(true);
+    } catch {
+      // Clipboard failed (e.g. insecure context)
     }
   }
 
@@ -430,6 +446,14 @@ export default function ListingDetailPage() {
           </div>
         </AccordionItem>
       </div>
+
+      <Snackbar
+        open={shareSnackbarOpen}
+        onClose={() => setShareSnackbarOpen(false)}
+        message="Link copied"
+        icon="link"
+        duration={3000}
+      />
     </div>
   );
 }
