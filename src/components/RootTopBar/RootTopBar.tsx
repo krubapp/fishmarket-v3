@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 
 import type { RootTopBarProps } from "./types";
@@ -81,11 +82,16 @@ export function RootTopBar({
       </div>
 
       <div className="flex shrink-0 items-center gap-4">
-        <ActionButton
-          icon="add"
-          label="Add product"
-          onClick={onAddProduct}
-        />
+        {onAddProduct && (
+          <Button
+            size="small"
+            variant="subtle"
+            onClick={onAddProduct}
+            aria-label="Sell product"
+          >
+            Sell Product
+          </Button>
+        )}
         <ActionButton
           icon="subscriptions"
           label="Feed"
