@@ -34,4 +34,9 @@ alwaysApply: true
 
 ## Rules and skills
 
-- **Keep rules and skills in sync**: Whenever the codebase changes in ways that affect how we work (new patterns, conventions, stack, or tooling), update the relevant Cursor rules (`.cursor/rules/*.mdc`) and skills so they stay accurate and useful. Do this as part of the same change when applicable.
+- **Keep rules and skills in sync (mandatory)**: Before finishing any change that does any of the following, you **must** update the relevant `.cursor/rules/*.mdc` (and skills if applicable) in the same change — do not leave rule updates for later or skip them.
+  - Add, remove, or rename routes, route files, or route protection.
+  - Add, change, or remove components, patterns, or conventions (e.g. new shared components, form patterns, data helpers, theme tokens).
+  - Change stack, tooling, or dependencies (e.g. new lib, new rule file, Zod/form/animations conventions).
+  - Change Firestore/API/data shapes, helpers, or documented behavior.
+  If in doubt, treat the change as rule-affecting and update the matching rule file (e.g. `routes.mdc`, `components.mdc`, `data.mdc`, `forms.mdc`, `animations.mdc`, or this file).
