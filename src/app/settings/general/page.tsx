@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Switch } from "@/components/Switch";
 import { Snackbar } from "@/components/Snackbar";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile, updateUserProfile } from "@/lib/firestore";
+import { updateUserProfile } from "@/lib/firestore";
 import { ROUTES } from "@/lib/routes";
 
 export default function SettingsGeneralPage() {
-  const { user } = useAuth();
+  const { user, profile, profileLoading, refreshProfile } = useAuth();
   const router = useRouter();
-  const [isSeller, setIsSeller] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isSeller, setIsSeller] = useState(profile?.isSeller ?? false);
   const [saving, setSaving] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
@@ -21,21 +20,13 @@ export default function SettingsGeneralPage() {
     icon?: "check_circle" | "error";
   }>({ open: false, message: "" });
 
-  useEffect(() => {
-    if (!user) return;
-    getUserProfile(user.uid)
-      .then((profile) => {
-        if (profile) setIsSeller(profile.isSeller ?? false);
-      })
-      .finally(() => setLoading(false));
-  }, [user]);
-
   async function handleSellerToggle(checked: boolean) {
     if (!user || saving) return;
     setIsSeller(checked);
     setSaving(true);
     try {
       await updateUserProfile(user.uid, { isSeller: checked });
+      await refreshProfile();
       setSnackbar({
         open: true,
         message: checked ? "Seller mode enabled" : "Seller mode disabled",
@@ -62,7 +53,7 @@ export default function SettingsGeneralPage() {
       />
 
       <div className="mx-auto flex w-full max-w-[440px] flex-col">
-        {loading ? (
+        {profileLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
           </div>

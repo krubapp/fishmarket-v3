@@ -274,8 +274,12 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-dvh items-center justify-center bg-white">
-          <span className="text-grey-500 text-sm">Loading...</span>
+        <div className="flex min-h-dvh flex-col bg-white">
+          <ContextTopBar title="Shop" />
+          <div className="flex flex-1 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+          </div>
+          <BottomNav activeItem="shop" />
         </div>
       }
     >

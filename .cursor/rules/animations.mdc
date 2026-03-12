@@ -17,6 +17,7 @@ Defined as CSS custom properties in `src/app/theme/animations.css`:
 | `--duration-fast` | `150ms` | Quick transitions — toggle, entry/exit panels |
 | `--duration-normal` | `200ms` | Standard transitions — expand/collapse, drawer slide |
 | `--duration-slow` | `300ms` | Longer transitions (reserved) |
+| `--duration-page` | `150ms` | Page transition fade (enter + exit, 0.15s each) |
 | `--ease-out` | `cubic-bezier(0.33, 1, 0.68, 1)` | General deceleration — panels, expand/collapse |
 | `--ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Bouncy overshoot — press feedback, toggle check/dot |
 | `--ease-in-out` | `cubic-bezier(0.65, 0, 0.35, 1)` | Symmetric easing (reserved) |
@@ -121,6 +122,12 @@ For the **Drawer**, use `x` instead of `y` for slide-in/out, and wrap backdrop +
 ```
 
 Common easing as array: `[0.33, 1, 0.68, 1]` (matches `--ease-out`).
+
+### Page transitions
+
+Global route-change animation handled by the `PageTransition` component (wraps children in root layout). Uses `AnimatePresence mode="wait"` keyed by `usePathname()`. Opacity fade 0 ↔ 1, 150ms ease-out. `initial={false}` skips animation on first page load. Respects `prefers-reduced-motion` via Framer Motion's `useReducedMotion()` (sets duration to 0).
+
+No per-page setup needed — all routes animate automatically through the root layout wrapper.
 
 ## Accessibility
 

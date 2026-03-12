@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile } from "@/lib/firestore";
 import { ROUTES } from "@/lib/routes";
 
 /**
@@ -14,19 +13,13 @@ import { ROUTES } from "@/lib/routes";
  */
 export default function ProfileRedirectPage() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, profile, profileLoading } = useAuth();
 
   useEffect(() => {
-    if (authLoading || !user) return;
-    getUserProfile(user.uid)
-      .then((profile) => {
-        const segment = profile?.username?.trim() || user.uid;
-        router.replace(ROUTES.profileByUsername(segment));
-      })
-      .catch(() => {
-        router.replace(ROUTES.profileByUsername(user.uid));
-      });
-  }, [user, authLoading, router]);
+    if (authLoading || profileLoading || !user) return;
+    const segment = profile?.username?.trim() || user.uid;
+    router.replace(ROUTES.profileByUsername(segment));
+  }, [user, authLoading, profile, profileLoading, router]);
 
   if (authLoading) {
     return (

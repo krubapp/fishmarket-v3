@@ -1550,4 +1550,30 @@ import { FeedCard } from "@/components/FeedCard";
 
 ---
 
+## PageTransition
+
+**Path**: `@/components/PageTransition`
+
+Global page transition wrapper using Framer Motion. Wraps children in the root layout and animates route changes with an opacity fade. Uses `AnimatePresence mode="wait"` keyed by `usePathname()`. `initial={false}` skips animation on first page load. Respects `prefers-reduced-motion` via `useReducedMotion()`.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `children` | `React.ReactNode` | Yes | Page content (passed from layout) |
+
+**Exports**: `PageTransition`, `PageTransitionProps`.
+
+**Integration** (in root layout):
+
+```tsx
+import { PageTransition } from "@/components/PageTransition";
+
+<ToastProvider>
+  <PageTransition>{children}</PageTransition>
+</ToastProvider>
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

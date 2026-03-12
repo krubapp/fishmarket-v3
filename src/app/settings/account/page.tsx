@@ -12,19 +12,21 @@ import { Input } from "@/components/Input";
 import { Snackbar } from "@/components/Snackbar";
 import { Textarea } from "@/components/Textarea";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile, updateUserProfile } from "@/lib/firestore";
+import { updateUserProfile } from "@/lib/firestore";
 import { ROUTES } from "@/lib/routes";
 import { profileFormSchema, type ProfileForm } from "@/lib/schemas/profile";
 import { uploadAvatar } from "@/lib/storage";
 
 export default function SettingsAccountPage() {
-  const { user } = useAuth();
+  const { user, profile, profileLoading, refreshProfile } = useAuth();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formInitialized = useRef(false);
 
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
+  const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(
+    profile?.avatarUrl ?? null,
+  );
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{
@@ -41,35 +43,30 @@ export default function SettingsAccountPage() {
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      displayName: "",
-      username: "",
-      location: "",
-      bio: "",
-      tiktokUrl: "",
-      youtubeUrl: "",
-      instagramUrl: "",
+      displayName: profile?.displayName ?? "",
+      username: profile?.username ?? "",
+      location: profile?.location ?? "",
+      bio: profile?.bio ?? "",
+      tiktokUrl: profile?.tiktokUrl ?? "",
+      youtubeUrl: profile?.youtubeUrl ?? "",
+      instagramUrl: profile?.instagramUrl ?? "",
     },
   });
 
   useEffect(() => {
-    if (!user) return;
-    getUserProfile(user.uid)
-      .then((profile) => {
-        if (profile) {
-          reset({
-            displayName: profile.displayName ?? "",
-            username: profile.username ?? "",
-            location: profile.location ?? "",
-            bio: profile.bio ?? "",
-            tiktokUrl: profile.tiktokUrl ?? "",
-            youtubeUrl: profile.youtubeUrl ?? "",
-            instagramUrl: profile.instagramUrl ?? "",
-          });
-          setCurrentAvatarUrl(profile.avatarUrl ?? null);
-        }
-      })
-      .finally(() => setLoading(false));
-  }, [user, reset]);
+    if (!profile || formInitialized.current) return;
+    formInitialized.current = true;
+    reset({
+      displayName: profile.displayName ?? "",
+      username: profile.username ?? "",
+      location: profile.location ?? "",
+      bio: profile.bio ?? "",
+      tiktokUrl: profile.tiktokUrl ?? "",
+      youtubeUrl: profile.youtubeUrl ?? "",
+      instagramUrl: profile.instagramUrl ?? "",
+    });
+    setCurrentAvatarUrl(profile.avatarUrl ?? null);
+  }, [profile, reset]);
 
   useEffect(() => {
     if (!avatarFile) {
@@ -106,6 +103,7 @@ export default function SettingsAccountPage() {
         avatarUrl,
       });
 
+      await refreshProfile();
       setCurrentAvatarUrl(avatarUrl ?? null);
       setAvatarFile(null);
       const profileSegment = data.username?.trim() || user.uid;
@@ -133,7 +131,7 @@ export default function SettingsAccountPage() {
       />
 
       <div className="mx-auto flex w-full max-w-[440px] flex-col">
-        {loading ? (
+        {profileLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
           </div>

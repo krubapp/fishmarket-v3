@@ -4,6 +4,7 @@ import "material-symbols";
 import "./globals.css";
 import { AuthGuard } from "@/components/AuthGuard";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { PageTransition } from "@/components/PageTransition";
 import { ToastProvider } from "@/hooks/useToast";
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -35,7 +36,9 @@ export default function RootLayout({
 <QueryProvider>
           <AuthProvider>
             <AuthGuard>
-              <ToastProvider>{children}</ToastProvider>
+              <ToastProvider>
+                <PageTransition>{children}</PageTransition>
+              </ToastProvider>
             </AuthGuard>
           </AuthProvider>
         </QueryProvider>

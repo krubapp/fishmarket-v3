@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserProfile } from "@/lib/firestore";
 import type { MaterialSymbol } from "material-symbols";
 import NextLink from "next/link";
 import {
@@ -20,29 +18,13 @@ const ITEM_ICONS: Record<BottomNavItemId, MaterialSymbol> = {
   profile: "account_circle",
 };
 
-function getHomeLabel(isSeller: boolean): string {
-  return isSeller ? "Dashboard" : "Home";
-}
-
 export function BottomNav({
   activeItem,
   onItemChange,
   className = "",
 }: BottomNavProps) {
-  const { user } = useAuth();
-  const [isSeller, setIsSeller] = useState(false);
-
-  useEffect(() => {
-    if (!user) {
-      setIsSeller(false);
-      return;
-    }
-    getUserProfile(user.uid)
-      .then((profile) => setIsSeller(!!profile?.isSeller))
-      .catch(() => setIsSeller(false));
-  }, [user?.uid]);
-
-  const homeLabel = getHomeLabel(isSeller);
+  const { profile } = useAuth();
+  const homeLabel = profile?.isSeller ? "Dashboard" : "Home";
 
   return (
     <div

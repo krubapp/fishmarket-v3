@@ -14,7 +14,7 @@ import {
   BecauseYouLikeSection,
 } from "@/components/BuyerDashboard";
 import { SellerDashboard } from "@/components/SellerDashboard";
-import { getSellers, getNewReleases, getUserProfile } from "@/lib/firestore";
+import { getSellers, getNewReleases } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,12 +22,10 @@ import { ROUTES } from "@/lib/routes";
 
 export default function HomePage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, profile, profileLoading } = useAuth();
   const [sellers, setSellers] = useState<UserProfile[]>([]);
   const [newReleases, setNewReleases] = useState<Listing[]>([]);
   const [allListings, setAllListings] = useState<Listing[]>([]);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
     getSellers(20)
@@ -41,19 +39,6 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!user) {
-      setProfile(null);
-      setProfileLoaded(false);
-      return;
-    }
-    setProfileLoaded(false);
-    getUserProfile(user.uid)
-      .then(setProfile)
-      .catch(() => setProfile(null))
-      .finally(() => setProfileLoaded(true));
-  }, [user]);
-
   const isSeller = !!profile?.isSeller;
   const [viewMode, setViewMode] = useState<"seller" | "buyer">("seller");
 
@@ -65,19 +50,6 @@ export default function HomePage() {
   const favoriteListings = allListings.slice(0, 6);
   const brandListings = allListings.slice(0, 6);
   const recommendedListings = allListings.slice(0, 4);
-
-  const waitingForProfile = user && !profileLoaded;
-
-  if (waitingForProfile) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-white pb-24">
-        <div
-          className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900"
-          aria-hidden
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white pb-24">
@@ -104,7 +76,7 @@ export default function HomePage() {
           <NewReleaseSection listings={newReleases} />
           <CategoriesSection
             onCategoryClick={(fishType) =>
-              router.push(`${ROUTES.shop}?fishType=${fishType}`)
+              router.push(`${ROUTES.searchListings}?fishType=${fishType}`)
             }
           />
 

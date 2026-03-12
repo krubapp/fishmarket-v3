@@ -71,8 +71,11 @@ export default function ListingDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] items-center justify-center border-x border-slate-200 bg-white">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white">
+        <ContextTopBar backLabel="Shop" title="" onBack={() => router.back()} />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+        </div>
       </div>
     );
   }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+import { ContextTopBar } from "@/components/ContextTopBar";
 import { ListingForm } from "@/components/ListingForm";
 import { getListing } from "@/lib/firestore";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,8 +36,11 @@ export default function EditListingPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white">
+        <ContextTopBar backLabel="Back" title="Edit listing" onBack={() => router.back()} />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
+        </div>
       </div>
     );
   }
