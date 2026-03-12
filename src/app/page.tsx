@@ -76,7 +76,7 @@ export default function HomePage() {
           <NewReleaseSection listings={newReleases} />
           <CategoriesSection
             onCategoryClick={(fishType) =>
-              router.push(`${ROUTES.searchListings}?fishType=${fishType}`)
+              router.push(`${ROUTES.shop}?fishType=${fishType}`)
             }
           />
 
