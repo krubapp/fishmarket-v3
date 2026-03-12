@@ -74,6 +74,7 @@ export function FeedCard({
   onHashtagPress,
   onProductPress,
   onTaggedUserPress,
+  height,
   className = "",
 }: FeedCardProps) {
   const [expanded, setExpanded] = useState(false);
@@ -94,8 +95,9 @@ export function FeedCard({
 
   return (
     <div
-      className={`relative h-dvh w-full snap-start snap-always ${className}`}
+      className={`relative w-full snap-start snap-always ${className}`}
       style={{
+        height: height || "100dvh",
         borderColor: coverFrameColor ?? "transparent",
         borderWidth: coverFrameColor ? 3 : 0,
         borderStyle: "solid",

@@ -35,5 +35,7 @@ export type FeedCardProps = {
   onHashtagPress?: (hashtag: string) => void;
   onProductPress?: (id: string) => void;
   onTaggedUserPress?: (id: string) => void;
+  /** CSS height value for each card (default "100dvh") */
+  height?: string;
   className?: string;
 };

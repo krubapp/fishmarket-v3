@@ -28,12 +28,10 @@ export function BottomNav({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 flex justify-center px-5 pt-0 ${className}`}
-      style={{ paddingBottom: "max(20px, env(safe-area-inset-bottom))" }}
+      className={`fixed bottom-0 left-0 right-0 z-50 bg-white pb-[env(safe-area-inset-bottom)] ${className}`}
     >
       <nav
-        className="flex w-full max-w-[410px] flex-row items-stretch justify-center gap-0 rounded-full border border-grey-200 bg-white px-6 py-5 shadow-[0px_0px_4px_0px_rgba(0,0,0,0.13)]"
-        style={{ minHeight: 80 }}
+        className="flex w-full flex-row items-stretch justify-center gap-0 border-t border-grey-200 px-4 py-3"
         role="navigation"
         aria-label="Bottom navigation"
       >

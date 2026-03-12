@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { FeedCard } from "@/components/FeedCard";
 import type { FeedCardTaggedProduct, FeedCardTaggedUser } from "@/components/FeedCard";
+import { BottomNav } from "@/components/BottomNav";
 import { CommentDrawer } from "@/components/CommentDrawer";
 import { SaveDrawer } from "@/components/SaveDrawer";
 import { Icon } from "@/components/Icon";
@@ -23,6 +24,7 @@ import { ROUTES } from "@/lib/routes";
 import type { DocumentSnapshot } from "firebase/firestore";
 
 const PAGE_SIZE = 6;
+const BOTTOM_NAV_PX = 66;
 
 type ResolvedPost = Post & {
   user?: UserProfile | null;
@@ -308,6 +310,7 @@ export default function FeedPage() {
           key={post.id}
           videoUrl={post.videoUrl}
           thumbnailUrl={post.thumbnailUrl}
+          height={`calc(100dvh - ${BOTTOM_NAV_PX}px - env(safe-area-inset-bottom, 0px))`}
           caption={post.caption}
           userDisplayName={
             post.user?.displayName || post.user?.username || "Anonymous"
@@ -362,6 +365,8 @@ export default function FeedPage() {
         postId={savePostId}
         onSavedChange={handleSavedChange}
       />
+
+      <BottomNav activeItem="feed" />
     </div>
   );
 }

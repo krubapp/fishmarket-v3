@@ -18,9 +18,9 @@ alwaysApply: true
 ## BottomNav
 
 **Path**: `@/components/BottomNav`  
-**Figma**: Roy design system → bottom nav (floating bar, pill shape, bordered).
+**Figma**: Roy design system → bottom nav (edge-to-edge bar).
 
-Fixed at bottom of viewport with edge spacing and safe-area inset. Five items: first item shows **Home** for buyers and **Dashboard** for sellers (based on user profile `isSeller` from Settings → General); then Shop, Add Video, Feed, Profile. Same home icon for both; label only differs by role.
+Full-width bar fixed at bottom of viewport, flush to edges (no margin or pill shape). White background, top border (grey-200) for separation, safe-area bottom padding for notched devices. Five items: first item shows **Home** for buyers and **Dashboard** for sellers (based on user profile `isSeller` from Settings → General); then Shop, Add Video, Feed, Profile. Same home icon for both; label only differs by role.
 
 **Props**
 
