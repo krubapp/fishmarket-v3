@@ -69,7 +69,7 @@ export function Tabs({
 }: TabsProps) {
   return (
     <div
-      className={`flex flex-wrap gap-0 bg-white ${className}`}
+      className={`flex gap-0 bg-white ${className}`}
       role="tablist"
       aria-label="Tabs"
     >
