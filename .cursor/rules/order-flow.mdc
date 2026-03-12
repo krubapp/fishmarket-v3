@@ -1,3 +1,8 @@
+---
+description: Fishmarket v3 order and payment flow (Stripe Connect + Checkout)
+alwaysApply: true
+---
+
 # Fishmarket v3 – Order & Payment Flow
 
 ## Overview

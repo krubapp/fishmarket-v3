@@ -26,7 +26,7 @@ Full-width bar fixed at bottom of viewport, flush to edges (no margin or pill sh
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `activeItem` | `BottomNavItemId` | Yes | Current tab: `"home"` \| `"shop"` \| `"create"` \| `"feed"` \| `"profile"` |
+| `activeItem` | `BottomNavItemId` | Yes | Current tab: `"home"` \| `"shop"` \| `"add_video"` \| `"feed"` \| `"profile"` |
 | `onItemChange` | `(item: BottomNavItemId) => void` | No | Called when user selects a tab |
 | `className` | `string` | No | Applied to the outer wrapper (fixed container) |
 
@@ -1504,7 +1504,7 @@ import { VideoPlayer } from "@/components/VideoPlayer";
 
 **Path**: `@/components/FeedCard`
 
-Full-viewport video post card for TikTok-style feed. VideoPlayer as background, bottom-left overlay with user info (Avatar + name), tagged users, expandable caption with hashtags, right-side action column (like, save, comment, share with counts). Gradient scrim for text readability. Optional cover frame color border. Tagged products shown as a pill overlay that expands to a horizontal product carousel. Comment button hidden when `allowComments` is false.
+Video post card for TikTok-style feed. Height defaults to `100dvh` but is configurable via the `height` prop (e.g. to fit above a BottomNav). VideoPlayer as background, bottom-left overlay with user info (Avatar + name), tagged users, expandable caption with hashtags, right-side action column (like, save, comment, share with counts). Gradient scrim for text readability. Optional cover frame color border. Tagged products shown as a pill overlay that expands to a horizontal product carousel. Comment button hidden when `allowComments` is false.
 
 **Props**
 
@@ -1533,6 +1533,7 @@ Full-viewport video post card for TikTok-style feed. VideoPlayer as background, 
 | `onHashtagPress` | `(hashtag: string) => void` | No | Called when a hashtag is tapped (e.g. navigate to shop search) |
 | `onProductPress` | `(id: string) => void` | No | Called when a tagged product is tapped (e.g. navigate to listing detail) |
 | `onTaggedUserPress` | `(id: string) => void` | No | Called when a tagged user is tapped (e.g. navigate to profile) |
+| `height` | `string` | No | CSS height value for each card (default `"100dvh"`). Use to size cards above a BottomNav, e.g. `"calc(100dvh - 66px - env(safe-area-inset-bottom, 0px))"` |
 | `className` | `string` | No | Root class |
 
 **Exports**: `FeedCard`, `FeedCardProps`, `FeedCardTaggedProduct`, `FeedCardTaggedUser`.
