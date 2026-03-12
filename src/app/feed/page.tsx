@@ -2,15 +2,20 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { FeedCard } from "@/components/FeedCard";
+import type { FeedCardTaggedProduct, FeedCardTaggedUser } from "@/components/FeedCard";
+import { CommentDrawer } from "@/components/CommentDrawer";
+import { SaveDrawer } from "@/components/SaveDrawer";
 import { Icon } from "@/components/Icon";
 import {
   getFeedPosts,
+  getListingsByIds,
   getUserPostInteractions,
   getUserProfile,
+  getUserProfiles,
   togglePostLike,
-  togglePostSave,
 } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
+import type { Listing } from "@/lib/schemas/listing";
 import type { Post } from "@/lib/schemas/post";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -19,46 +24,100 @@ import type { DocumentSnapshot } from "firebase/firestore";
 
 const PAGE_SIZE = 6;
 
-type PostWithUser = Post & { user?: UserProfile | null };
+type ResolvedPost = Post & {
+  user?: UserProfile | null;
+  resolvedTaggedUsers?: FeedCardTaggedUser[];
+  resolvedTaggedProducts?: FeedCardTaggedProduct[];
+};
 
 export default function FeedPage() {
   const router = useRouter();
   const { user } = useAuth();
 
-  const [posts, setPosts] = useState<PostWithUser[]>([]);
+  const [posts, setPosts] = useState<ResolvedPost[]>([]);
   const [liked, setLiked] = useState<Set<string>>(new Set());
   const [saved, setSaved] = useState<Set<string>>(new Set());
+  const [commentPostId, setCommentPostId] = useState<string | null>(null);
+  const [savePostId, setSavePostId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const lastDocRef = useRef<DocumentSnapshot | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const loadingMore = useRef(false);
 
-  // Cache of user profiles to avoid re-fetching
   const userCache = useRef<Map<string, UserProfile | null>>(new Map());
+  const listingCache = useRef<Map<string, Listing | null>>(new Map());
 
-  const resolveUsers = useCallback(
-    async (feedPosts: Post[]): Promise<PostWithUser[]> => {
-      const uniqueIds = [
-        ...new Set(feedPosts.map((p) => p.userId).filter(Boolean)),
+  const resolvePostData = useCallback(
+    async (feedPosts: Post[]): Promise<ResolvedPost[]> => {
+      // Collect all user IDs: post authors + tagged users
+      const authorIds = feedPosts.map((p) => p.userId).filter(Boolean);
+      const taggedUserIds = feedPosts.flatMap((p) => p.taggedUserIds ?? []);
+      const allUserIds = [...new Set([...authorIds, ...taggedUserIds])];
+      const missingUserIds = allUserIds.filter((id) => !userCache.current.has(id));
+
+      // Collect all tagged listing IDs
+      const allListingIds = [
+        ...new Set(feedPosts.flatMap((p) => p.taggedListingIds ?? [])),
       ];
-      const missing = uniqueIds.filter((id) => !userCache.current.has(id));
-
-      const profiles = await Promise.all(
-        missing.map((uid) =>
-          getUserProfile(uid)
-            .then((p) => ({ uid, profile: p }))
-            .catch(() => ({ uid, profile: null })),
-        ),
-      );
-      profiles.forEach(({ uid, profile }) =>
-        userCache.current.set(uid, profile),
+      const missingListingIds = allListingIds.filter(
+        (id) => !listingCache.current.has(id),
       );
 
-      return feedPosts.map((p) => ({
-        ...p,
-        user: userCache.current.get(p.userId) ?? null,
-      }));
+      // Batch-fetch missing users and listings in parallel
+      const [userMap, listingMap] = await Promise.all([
+        missingUserIds.length > 0
+          ? getUserProfiles(missingUserIds)
+          : Promise.resolve(new Map<string, UserProfile>()),
+        missingListingIds.length > 0
+          ? getListingsByIds(missingListingIds)
+          : Promise.resolve(new Map<string, Listing>()),
+      ]);
+
+      // Also fetch authors individually if not in batch (getUserProfiles uses documentId)
+      // Since we already batch all missing via getUserProfiles, just populate the cache
+      missingUserIds.forEach((uid) => {
+        userCache.current.set(uid, userMap.get(uid) ?? null);
+      });
+      missingListingIds.forEach((lid) => {
+        listingCache.current.set(lid, listingMap.get(lid) ?? null);
+      });
+
+      return feedPosts.map((p) => {
+        const postUser = userCache.current.get(p.userId) ?? null;
+
+        const resolvedTaggedUsers: FeedCardTaggedUser[] = [];
+        for (const uid of p.taggedUserIds ?? []) {
+          const profile = userCache.current.get(uid);
+          if (profile) {
+            resolvedTaggedUsers.push({
+              id: uid,
+              displayName: profile.displayName || profile.username || uid,
+              avatarUrl: profile.avatarUrl ?? null,
+            });
+          }
+        }
+
+        const resolvedTaggedProducts: FeedCardTaggedProduct[] = [];
+        for (const lid of p.taggedListingIds ?? []) {
+          const listing = listingCache.current.get(lid);
+          if (listing) {
+            resolvedTaggedProducts.push({
+              id: lid,
+              title: listing.title,
+              imageUrl: listing.imageUrls?.[0],
+              price: `${listing.currency ?? "SEK"} ${listing.price}`,
+            });
+          }
+        }
+
+        return {
+          ...p,
+          user: postUser,
+          resolvedTaggedUsers,
+          resolvedTaggedProducts,
+        };
+      });
     },
     [],
   );
@@ -77,11 +136,10 @@ export default function FeedPage() {
         if (newPosts.length < PAGE_SIZE) setHasMore(false);
         lastDocRef.current = lastDoc;
 
-        const withUsers = await resolveUsers(newPosts);
+        const withData = await resolvePostData(newPosts);
 
-        setPosts((prev) => (initial ? withUsers : [...prev, ...withUsers]));
+        setPosts((prev) => (initial ? withData : [...prev, ...withData]));
 
-        // Batch-check interactions
         if (user) {
           const ids = newPosts
             .map((p) => p.id)
@@ -107,15 +165,13 @@ export default function FeedPage() {
         loadingMore.current = false;
       }
     },
-    [user, resolveUsers],
+    [user, resolvePostData],
   );
 
-  // Initial load
   useEffect(() => {
     loadPosts(true);
   }, [loadPosts]);
 
-  // Infinite scroll with Intersection Observer on sentinel
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !hasMore) return;
@@ -137,7 +193,6 @@ export default function FeedPage() {
       if (!user || !postId) return;
       const wasLiked = liked.has(postId);
 
-      // Optimistic update
       setLiked((prev) => {
         const next = new Set(prev);
         wasLiked ? next.delete(postId) : next.add(postId);
@@ -154,7 +209,6 @@ export default function FeedPage() {
       try {
         await togglePostLike(postId, user.uid);
       } catch {
-        // Revert on error
         setLiked((prev) => {
           const next = new Set(prev);
           wasLiked ? next.add(postId) : next.delete(postId);
@@ -172,42 +226,52 @@ export default function FeedPage() {
     [user, liked],
   );
 
-  const handleSave = useCallback(
-    async (postId: string) => {
-      if (!user || !postId) return;
-      const wasSaved = saved.has(postId);
-
+  const handleSavedChange = useCallback(
+    (postId: string, isSaved: boolean) => {
       setSaved((prev) => {
         const next = new Set(prev);
-        wasSaved ? next.delete(postId) : next.add(postId);
+        isSaved ? next.add(postId) : next.delete(postId);
         return next;
       });
       setPosts((prev) =>
-        prev.map((p) =>
-          p.id === postId
-            ? { ...p, saveCount: p.saveCount + (wasSaved ? -1 : 1) }
-            : p,
-        ),
+        prev.map((p) => {
+          if (p.id !== postId) return p;
+          const wasSaved = saved.has(postId);
+          if (isSaved && !wasSaved) {
+            return { ...p, saveCount: p.saveCount + 1 };
+          }
+          if (!isSaved && wasSaved) {
+            return { ...p, saveCount: Math.max(0, p.saveCount - 1) };
+          }
+          return p;
+        }),
       );
-
-      try {
-        await togglePostSave(postId, user.uid);
-      } catch {
-        setSaved((prev) => {
-          const next = new Set(prev);
-          wasSaved ? next.add(postId) : next.delete(postId);
-          return next;
-        });
-        setPosts((prev) =>
-          prev.map((p) =>
-            p.id === postId
-              ? { ...p, saveCount: p.saveCount + (wasSaved ? 1 : -1) }
-              : p,
-          ),
-        );
-      }
     },
-    [user, saved],
+    [saved],
+  );
+
+  const handleHashtagPress = useCallback(
+    (hashtag: string) => {
+      const q = hashtag.startsWith("#") ? hashtag.slice(1) : hashtag;
+      router.push(`${ROUTES.shop}?q=${encodeURIComponent(q)}`);
+    },
+    [router],
+  );
+
+  const handleProductPress = useCallback(
+    (id: string) => {
+      router.push(ROUTES.listingDetail(id));
+    },
+    [router],
+  );
+
+  const handleTaggedUserPress = useCallback(
+    (id: string) => {
+      const profile = userCache.current.get(id);
+      const identifier = profile?.username || id;
+      router.push(ROUTES.profileByUsername(identifier));
+    },
+    [router],
   );
 
   if (loading) {
@@ -255,16 +319,49 @@ export default function FeedPage() {
           liked={post.id ? liked.has(post.id) : false}
           saved={post.id ? saved.has(post.id) : false}
           onLike={() => post.id && handleLike(post.id)}
-          onSave={() => post.id && handleSave(post.id)}
+          onSave={() => post.id && setSavePostId(post.id)}
+          onComment={() => post.id && setCommentPostId(post.id)}
+          coverFrameColor={post.coverFrameColor}
+          hashtags={post.hashtags}
+          taggedProducts={post.resolvedTaggedProducts}
+          taggedUsers={post.resolvedTaggedUsers}
+          allowComments={post.allowComments}
+          onHashtagPress={handleHashtagPress}
+          onProductPress={handleProductPress}
+          onTaggedUserPress={handleTaggedUserPress}
         />
       ))}
 
-      {/* Sentinel for infinite scroll */}
       {hasMore && (
         <div ref={sentinelRef} className="flex h-20 items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
         </div>
       )}
+
+      <CommentDrawer
+        open={!!commentPostId}
+        onClose={() => setCommentPostId(null)}
+        postId={commentPostId}
+        commentCount={
+          posts.find((p) => p.id === commentPostId)?.commentCount ?? 0
+        }
+        onCommentCountChange={(pid, delta) => {
+          setPosts((prev) =>
+            prev.map((p) =>
+              p.id === pid
+                ? { ...p, commentCount: p.commentCount + delta }
+                : p,
+            ),
+          );
+        }}
+      />
+
+      <SaveDrawer
+        open={!!savePostId}
+        onClose={() => setSavePostId(null)}
+        postId={savePostId}
+        onSavedChange={handleSavedChange}
+      />
     </div>
   );
 }

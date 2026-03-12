@@ -23,7 +23,8 @@ import {
 import { firebaseApp } from "./firebase";
 import type { Listing } from "./schemas/listing";
 import type { Order, OrderStatus } from "./schemas/order";
-import type { Post, CreatePostInput } from "./schemas/post";
+import type { Post, CreatePostInput, PostComment } from "./schemas/post";
+import type { SaveCollection, CollectionItem } from "./schemas/collection";
 
 const db = getFirestore(firebaseApp);
 
@@ -33,6 +34,9 @@ export const ORDERS_COLLECTION = "orders";
 export const POSTS_COLLECTION = "posts";
 export const POST_LIKES_COLLECTION = "post_likes";
 export const POST_SAVES_COLLECTION = "post_saves";
+export const POST_COMMENTS_COLLECTION = "post_comments";
+export const SAVE_COLLECTIONS_COLLECTION = "save_collections";
+export const COLLECTION_ITEMS_COLLECTION = "collection_items";
 
 export type UserProfile = {
   uid: string;
@@ -252,6 +256,27 @@ export async function getUserProfiles(
   return map;
 }
 
+/** Batch-fetch listings by ID (groups of 10 for Firestore `in` limit). */
+export async function getListingsByIds(
+  ids: string[],
+): Promise<Map<string, Listing>> {
+  const map = new Map<string, Listing>();
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return map;
+
+  for (let i = 0; i < unique.length; i += 10) {
+    const batch = unique.slice(i, i + 10);
+    const q = query(
+      collection(db, LISTINGS_COLLECTION),
+      where(documentId(), "in", batch),
+    );
+    const snap = await getDocs(q);
+    snap.docs.forEach((d) => map.set(d.id, { id: d.id, ...d.data() } as Listing));
+  }
+
+  return map;
+}
+
 // ─── Orders ────────────────────────────────────────────────────────────
 
 export type CreateOrderInput = Omit<Order, "id" | "createdAt" | "updatedAt">;
@@ -455,4 +480,194 @@ export async function getUserPostInteractions(
   });
 
   return { liked, saved };
+}
+
+// ─── Comments ──────────────────────────────────────────────────────────
+
+export async function addComment(
+  postId: string,
+  userId: string,
+  text: string,
+): Promise<string> {
+  const docRef = await addDoc(collection(db, POST_COMMENTS_COLLECTION), {
+    postId,
+    userId,
+    text,
+    createdAt: serverTimestamp(),
+  });
+  await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+    commentCount: increment(1),
+  });
+  return docRef.id;
+}
+
+export async function getPostComments(
+  postId: string,
+  limitCount = 50,
+): Promise<PostComment[]> {
+  const q = query(
+    collection(db, POST_COMMENTS_COLLECTION),
+    where("postId", "==", postId),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(
+    (d) => ({ id: d.id, ...d.data() }) as PostComment,
+  );
+}
+
+export async function deleteComment(
+  commentId: string,
+  postId: string,
+): Promise<void> {
+  await deleteDoc(doc(db, POST_COMMENTS_COLLECTION, commentId));
+  await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+    commentCount: increment(-1),
+  });
+}
+
+// ─── Save Collections ──────────────────────────────────────────────────
+
+export async function createSaveCollection(
+  userId: string,
+  name: string,
+): Promise<string> {
+  const docRef = await addDoc(collection(db, SAVE_COLLECTIONS_COLLECTION), {
+    userId,
+    name,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return docRef.id;
+}
+
+export async function getUserCollections(
+  userId: string,
+): Promise<SaveCollection[]> {
+  const q = query(
+    collection(db, SAVE_COLLECTIONS_COLLECTION),
+    where("userId", "==", userId),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(
+    (d) => ({ id: d.id, ...d.data() }) as SaveCollection,
+  );
+}
+
+export async function updateSaveCollection(
+  collectionId: string,
+  data: { name?: string },
+): Promise<void> {
+  await updateDoc(doc(db, SAVE_COLLECTIONS_COLLECTION, collectionId), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteSaveCollection(
+  collectionId: string,
+): Promise<void> {
+  const itemsQuery = query(
+    collection(db, COLLECTION_ITEMS_COLLECTION),
+    where("collectionId", "==", collectionId),
+  );
+  const snap = await getDocs(itemsQuery);
+  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+  await deleteDoc(doc(db, SAVE_COLLECTIONS_COLLECTION, collectionId));
+}
+
+export async function getCollectionItems(
+  collectionId: string,
+  limitCount = 50,
+): Promise<CollectionItem[]> {
+  const q = query(
+    collection(db, COLLECTION_ITEMS_COLLECTION),
+    where("collectionId", "==", collectionId),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as CollectionItem);
+}
+
+export async function getCollectionItemPostIds(
+  collectionId: string,
+): Promise<string[]> {
+  const items = await getCollectionItems(collectionId, 500);
+  return items.map((item) => item.postId);
+}
+
+/** Returns the set of collection IDs that contain the given post for a user. */
+export async function getPostCollectionIds(
+  postId: string,
+  userId: string,
+): Promise<Set<string>> {
+  const q = query(
+    collection(db, COLLECTION_ITEMS_COLLECTION),
+    where("postId", "==", postId),
+    where("userId", "==", userId),
+  );
+  const snap = await getDocs(q);
+  return new Set(snap.docs.map((d) => (d.data() as CollectionItem).collectionId));
+}
+
+function collectionItemDocId(collectionId: string, postId: string) {
+  return `${collectionId}_${postId}`;
+}
+
+/**
+ * Save a post to a collection. Also ensures the post_saves doc exists
+ * and increments saveCount if this is the first collection for the post.
+ */
+export async function savePostToCollection(
+  postId: string,
+  collectionId: string,
+  userId: string,
+): Promise<void> {
+  const itemId = collectionItemDocId(collectionId, postId);
+  await setDoc(doc(db, COLLECTION_ITEMS_COLLECTION, itemId), {
+    collectionId,
+    postId,
+    userId,
+    createdAt: serverTimestamp(),
+  });
+
+  const saveId = postLikeDocId(postId, userId);
+  const saveRef = doc(db, POST_SAVES_COLLECTION, saveId);
+  const saveSnap = await getDoc(saveRef);
+
+  if (!saveSnap.exists()) {
+    await setDoc(saveRef, { postId, userId, createdAt: serverTimestamp() });
+    await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+      saveCount: increment(1),
+    });
+  }
+}
+
+/**
+ * Remove a post from a collection. If the post is no longer in any collection
+ * for this user, removes the post_saves doc and decrements saveCount.
+ */
+export async function removePostFromCollection(
+  postId: string,
+  collectionId: string,
+  userId: string,
+): Promise<void> {
+  const itemId = collectionItemDocId(collectionId, postId);
+  await deleteDoc(doc(db, COLLECTION_ITEMS_COLLECTION, itemId));
+
+  const remaining = await getPostCollectionIds(postId, userId);
+  if (remaining.size === 0) {
+    const saveId = postLikeDocId(postId, userId);
+    const saveRef = doc(db, POST_SAVES_COLLECTION, saveId);
+    const saveSnap = await getDoc(saveRef);
+    if (saveSnap.exists()) {
+      await deleteDoc(saveRef);
+      await updateDoc(doc(db, POSTS_COLLECTION, postId), {
+        saveCount: increment(-1),
+      });
+    }
+  }
 }

@@ -77,6 +77,7 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 - `getListingsByFishType(fishType, limitCount?)` — `src/lib/firestore.ts` — listings filtered by fish type
 - `searchListings(filters)` — `src/lib/firestore.ts` — search/filter listings. Accepts `ListingFilters`: `category`, `fishType`, `condition`, `sellerId` (Firestore `where`), plus `searchQuery`, `minPrice`, `maxPrice` (client-side). Returns `Listing[]`
 - `getUserProfiles(uids)` — `src/lib/firestore.ts` — batch-fetch user profiles by UID array (groups of 10 for Firestore `in` limit). Returns `Map<string, UserProfile>`
+- `getListingsByIds(ids)` — `src/lib/firestore.ts` — batch-fetch listings by ID array (groups of 10 for Firestore `in` limit). Returns `Map<string, Listing>`
 
 ### `orders` collection
 
@@ -159,7 +160,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 | `scheduledAt` | `number \| null` | Unix timestamp (ms) for scheduled publishing. Null = publish immediately. |
 | `likeCount` | `number` | Denormalized like count |
 | `saveCount` | `number` | Denormalized save count |
-| `commentCount` | `number` | Denormalized comment count (future) |
+| `commentCount` | `number` | Denormalized comment count |
 | `createdAt` | `Timestamp` | Server timestamp |
 
 **Constants** (in `src/lib/constants/post.ts`):
@@ -177,6 +178,9 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `togglePostLike(postId, userId)` — toggle like (add/remove `post_likes` doc, increment/decrement `likeCount`), returns new liked state
 - `togglePostSave(postId, userId)` — same for saves
 - `getUserPostInteractions(postIds, userId)` — batch check liked/saved states for feed rendering
+- `addComment(postId, userId, text)` — adds doc to `post_comments`, increments `commentCount`. Returns comment ID
+- `getPostComments(postId, limitCount?)` — query comments for a post, ordered by `createdAt` desc. Returns `PostComment[]`
+- `deleteComment(commentId, postId)` — deletes the comment doc, decrements `commentCount`
 - `searchUsers(query)` — fetch users, client-side filter by `displayName`/`username`. Used in Tag & Link step.
 - `uploadPostVideo(file, postId)` — `src/lib/storage.ts` — uploads to `posts/{postId}/video.{ext}`, returns download URL
 
@@ -199,6 +203,54 @@ Tracks which users saved which posts. Same shape as `post_likes`.
 | `postId` | `string` | Reference to post |
 | `userId` | `string` | User who saved |
 | `createdAt` | `Timestamp` | When saved |
+
+### `post_comments` collection
+
+Stores comments on posts. Document ID = auto-generated.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `postId` | `string` | Reference to post |
+| `userId` | `string` | User who commented |
+| `text` | `string` | Comment text |
+| `createdAt` | `Timestamp` | When commented |
+
+### `save_collections` collection
+
+Stores user-created save collections (folders/boards for organizing saved posts). Schema defined in `src/lib/schemas/collection.ts`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `userId` | `string` | Owner's Firebase Auth UID |
+| `name` | `string` | Collection name |
+| `createdAt` | `Timestamp` | When created |
+| `updatedAt` | `Timestamp` | When last modified |
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `createSaveCollection(userId, name)` — creates doc, returns ID
+- `getUserCollections(userId)` — query by userId, ordered by `createdAt` desc
+- `updateSaveCollection(collectionId, data)` — partial update (name)
+- `deleteSaveCollection(collectionId)` — deletes collection + all its `collection_items`
+
+### `collection_items` collection
+
+Tracks which posts are in which collections. Document ID = `{collectionId}_{postId}` (prevents duplicates).
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `collectionId` | `string` | Reference to `save_collections` doc |
+| `postId` | `string` | Reference to post |
+| `userId` | `string` | Owner (denormalized for queries) |
+| `createdAt` | `Timestamp` | When saved |
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `getCollectionItems(collectionId, limitCount?)` — items in a collection, ordered by `createdAt` desc
+- `getCollectionItemPostIds(collectionId)` — lightweight variant returning just post IDs
+- `getPostCollectionIds(postId, userId)` — which collections contain the post (for SaveDrawer checkboxes)
+- `savePostToCollection(postId, collectionId, userId)` — add to collection + ensure `post_saves` doc + increment `saveCount` if first save
+- `removePostFromCollection(postId, collectionId, userId)` — remove from collection + cleanup `post_saves` + decrement `saveCount` if no collections remain
 
 ### User profile (for Firebase Auth / Firestore)
 

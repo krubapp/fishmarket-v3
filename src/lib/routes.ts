@@ -20,6 +20,9 @@ export const ROUTES = {
   profileOrders: "/profile/orders",
   profileFavorites: "/profile/favorites",
   profileComments: "/profile/comments",
+  profileCollections: "/profile/collections",
+  profileCollectionDetail: (id: string) =>
+    `/profile/collections/${id}` as const,
   showcase: "/showcase",
   settings: "/settings",
   settingsGeneral: "/settings/general",
@@ -32,9 +35,14 @@ export const ROUTES = {
 export type RoutePath =
   | (typeof ROUTES)[Exclude<
       keyof typeof ROUTES,
-      "editListing" | "listingDetail" | "postDetail" | "profileByUsername"
+      | "editListing"
+      | "listingDetail"
+      | "postDetail"
+      | "profileByUsername"
+      | "profileCollectionDetail"
     >]
   | ReturnType<typeof ROUTES.editListing>
   | ReturnType<typeof ROUTES.listingDetail>
   | ReturnType<typeof ROUTES.postDetail>
-  | ReturnType<typeof ROUTES.profileByUsername>;
+  | ReturnType<typeof ROUTES.profileByUsername>
+  | ReturnType<typeof ROUTES.profileCollectionDetail>;

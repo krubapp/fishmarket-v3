@@ -67,3 +67,11 @@ export type PostSave = {
   userId: string;
   createdAt?: { seconds: number; nanoseconds: number };
 };
+
+export type PostComment = {
+  id?: string;
+  postId: string;
+  userId: string;
+  text: string;
+  createdAt?: { seconds: number; nanoseconds: number };
+};

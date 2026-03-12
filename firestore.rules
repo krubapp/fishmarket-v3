@@ -23,8 +23,9 @@ service cloud.firestore {
       allow read: if true;
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if request.auth != null
-                            && resource.data.userId == request.auth.uid;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
     }
 
     match /post_likes/{likeId} {
@@ -37,6 +38,30 @@ service cloud.firestore {
 
     match /post_saves/{saveId} {
       allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+    }
+
+    match /post_comments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null
+                    && resource.data.userId == request.auth.uid;
+    }
+
+    match /save_collections/{collectionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userId == request.auth.uid;
+    }
+
+    match /collection_items/{itemId} {
+      allow read: if request.auth != null;
       allow create: if request.auth != null
                     && request.resource.data.userId == request.auth.uid;
       allow delete: if request.auth != null

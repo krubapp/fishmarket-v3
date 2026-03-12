@@ -1504,7 +1504,7 @@ import { VideoPlayer } from "@/components/VideoPlayer";
 
 **Path**: `@/components/FeedCard`
 
-Full-viewport video post card for TikTok-style feed. VideoPlayer as background, bottom-left overlay with user info (Avatar + name) and expandable caption, right-side action column (like, save, comment, share with counts). Gradient scrim for text readability.
+Full-viewport video post card for TikTok-style feed. VideoPlayer as background, bottom-left overlay with user info (Avatar + name), tagged users, expandable caption with hashtags, right-side action column (like, save, comment, share with counts). Gradient scrim for text readability. Optional cover frame color border. Tagged products shown as a pill overlay that expands to a horizontal product carousel. Comment button hidden when `allowComments` is false.
 
 **Props**
 
@@ -1522,12 +1522,20 @@ Full-viewport video post card for TikTok-style feed. VideoPlayer as background, 
 | `saved` | `boolean` | Yes | Whether current user has saved |
 | `onLike` | `() => void` | Yes | Toggle like handler |
 | `onSave` | `() => void` | Yes | Toggle save handler |
-| `onComment` | `() => void` | No | Comment button handler (placeholder) |
+| `onComment` | `() => void` | No | Comment button handler |
 | `onShare` | `() => void` | No | Share button handler (placeholder) |
 | `onUserPress` | `() => void` | No | Navigate to user profile |
+| `coverFrameColor` | `string \| null` | No | Hex color for 3px border around the card |
+| `hashtags` | `string[]` | No | Hashtags displayed after caption as tappable text |
+| `taggedProducts` | `FeedCardTaggedProduct[]` | No | Tagged products shown as pill overlay + expandable carousel |
+| `taggedUsers` | `FeedCardTaggedUser[]` | No | Tagged users shown as avatar chips below author |
+| `allowComments` | `boolean` | No | When false, hides the comment action button (default true) |
+| `onHashtagPress` | `(hashtag: string) => void` | No | Called when a hashtag is tapped (e.g. navigate to shop search) |
+| `onProductPress` | `(id: string) => void` | No | Called when a tagged product is tapped (e.g. navigate to listing detail) |
+| `onTaggedUserPress` | `(id: string) => void` | No | Called when a tagged user is tapped (e.g. navigate to profile) |
 | `className` | `string` | No | Root class |
 
-**Exports**: `FeedCard`, `FeedCardProps`.
+**Exports**: `FeedCard`, `FeedCardProps`, `FeedCardTaggedProduct`, `FeedCardTaggedUser`.
 
 **Example**
 
@@ -1545,6 +1553,14 @@ import { FeedCard } from "@/components/FeedCard";
   saved={false}
   onLike={() => toggleLike(post.id)}
   onSave={() => toggleSave(post.id)}
+  coverFrameColor="#8B1A1A"
+  hashtags={["#fishing", "#viral"]}
+  taggedProducts={[{ id: "abc", title: "Lure Pack", price: "SEK 299", imageUrl: "..." }]}
+  taggedUsers={[{ id: "u1", displayName: "JohnDoe", avatarUrl: "..." }]}
+  allowComments={true}
+  onHashtagPress={(tag) => router.push(`/shop?q=${tag}`)}
+  onProductPress={(id) => router.push(`/listings/${id}`)}
+  onTaggedUserPress={(id) => router.push(`/profile/${id}`)}
 />
 ```
 
@@ -1572,6 +1588,86 @@ import { PageTransition } from "@/components/PageTransition";
 <ToastProvider>
   <PageTransition>{children}</PageTransition>
 </ToastProvider>
+```
+
+---
+
+## CommentDrawer
+
+**Path**: `@/components/CommentDrawer`
+
+Slide-in drawer for viewing and adding comments on a feed post. Uses `Drawer` (right side, 440px) + `DrawerTopBar` for header. Fetches comments via `getPostComments`, resolves user profiles with a local cache, supports adding and deleting (own) comments.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `open` | `boolean` | Yes | When true, drawer is visible |
+| `onClose` | `() => void` | Yes | Called when drawer should close |
+| `postId` | `string \| null` | Yes | Post to show comments for; null when closed |
+| `commentCount` | `number` | Yes | Current comment count (displayed in title) |
+| `onCommentCountChange` | `(postId: string, delta: number) => void` | Yes | Called after add (+1) or delete (-1) so parent can optimistically update |
+
+**Exports**: `CommentDrawer`, `CommentDrawerProps`.
+
+**Example**
+
+```tsx
+import { CommentDrawer } from "@/components/CommentDrawer";
+
+const [commentPostId, setCommentPostId] = useState<string | null>(null);
+
+<CommentDrawer
+  open={!!commentPostId}
+  onClose={() => setCommentPostId(null)}
+  postId={commentPostId}
+  commentCount={post.commentCount}
+  onCommentCountChange={(pid, delta) => {
+    setPosts(prev => prev.map(p =>
+      p.id === pid ? { ...p, commentCount: p.commentCount + delta } : p
+    ));
+  }}
+/>
+```
+
+---
+
+## SaveDrawer
+
+**Path**: `@/components/SaveDrawer`
+
+Slide-in drawer for saving a feed post to one or more user-created collections. Uses `Drawer` (right side, 440px) + `DrawerTopBar` for header. Fetches user's collections via `getUserCollections` and checks which ones contain the post via `getPostCollectionIds`. Each collection row has a `Checkbox` for toggling membership. Inline `Input` at the top for creating new collections.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `open` | `boolean` | Yes | When true, drawer is visible |
+| `onClose` | `() => void` | Yes | Called when drawer should close |
+| `postId` | `string \| null` | Yes | Post to save; null when closed |
+| `onSavedChange` | `(postId: string, isSaved: boolean) => void` | Yes | Called when post save state changes (first collection added or last removed) so parent can update bookmark icon |
+
+**Exports**: `SaveDrawer`, `SaveDrawerProps`.
+
+**Example**
+
+```tsx
+import { SaveDrawer } from "@/components/SaveDrawer";
+
+const [savePostId, setSavePostId] = useState<string | null>(null);
+
+<SaveDrawer
+  open={!!savePostId}
+  onClose={() => setSavePostId(null)}
+  postId={savePostId}
+  onSavedChange={(pid, isSaved) => {
+    setSaved(prev => {
+      const next = new Set(prev);
+      isSaved ? next.add(pid) : next.delete(pid);
+      return next;
+    });
+  }}
+/>
 ```
 
 ---

@@ -66,9 +66,18 @@ export function FeedCard({
   onComment,
   onShare,
   onUserPress,
+  coverFrameColor,
+  hashtags,
+  taggedProducts,
+  taggedUsers,
+  allowComments = true,
+  onHashtagPress,
+  onProductPress,
+  onTaggedUserPress,
   className = "",
 }: FeedCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [productsExpanded, setProductsExpanded] = useState(false);
 
   const handleCaptionToggle = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -80,9 +89,17 @@ export function FeedCard({
       ? caption.slice(0, 80) + "..."
       : caption;
 
+  const hasProducts = taggedProducts && taggedProducts.length > 0;
+  const hasTaggedUsers = taggedUsers && taggedUsers.length > 0;
+
   return (
     <div
       className={`relative h-dvh w-full snap-start snap-always ${className}`}
+      style={{
+        borderColor: coverFrameColor ?? "transparent",
+        borderWidth: coverFrameColor ? 3 : 0,
+        borderStyle: "solid",
+      }}
     >
       {/* Video background */}
       <VideoPlayer src={videoUrl} poster={thumbnailUrl} />
@@ -90,8 +107,67 @@ export function FeedCard({
       {/* Bottom gradient scrim for readability */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-linear-to-t from-black/70 to-transparent" />
 
-      {/* Bottom-left: user info + caption */}
+      {/* Tagged products pill */}
+      {hasProducts && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setProductsExpanded((prev) => !prev);
+          }}
+          className="absolute left-4 top-16 z-10 flex items-center gap-1.5 rounded-full bg-black/50 px-3 py-1.5 backdrop-blur-sm transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.95]"
+        >
+          <Icon
+            name="shopping_bag"
+            size={16}
+            className="text-white"
+          />
+          <span className="text-xs font-semibold text-white">
+            {taggedProducts!.length} {taggedProducts!.length === 1 ? "product" : "products"}
+          </span>
+        </button>
+      )}
+
+      {/* Expanded tagged products panel */}
+      {hasProducts && productsExpanded && (
+        <div className="absolute left-4 right-16 top-28 z-10 flex gap-3 overflow-x-auto rounded-xl bg-black/60 p-3 backdrop-blur-md">
+          {taggedProducts!.map((product) => (
+            <button
+              key={product.id}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onProductPress?.(product.id);
+              }}
+              className="flex shrink-0 items-center gap-2.5 rounded-lg bg-white/10 p-2 transition-colors hover:bg-white/20"
+            >
+              {product.imageUrl ? (
+                <img
+                  src={product.imageUrl}
+                  alt={product.title}
+                  className="h-10 w-10 rounded object-cover"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded bg-white/10">
+                  <Icon name="image" size={18} className="text-white/50" />
+                </div>
+              )}
+              <div className="flex flex-col items-start gap-0.5">
+                <span className="max-w-[120px] truncate text-xs font-semibold text-white">
+                  {product.title}
+                </span>
+                <span className="text-xs text-white/70">
+                  {product.price}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Bottom-left: user info + caption + hashtags */}
       <div className="absolute bottom-6 left-4 right-20 z-10 flex flex-col gap-3">
+        {/* Post author */}
         <button
           type="button"
           onClick={(e) => {
@@ -110,20 +186,63 @@ export function FeedCard({
           </span>
         </button>
 
-        {caption && (
+        {/* Tagged users */}
+        {hasTaggedUsers && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Icon name="person" size={14} className="text-white/60" />
+            {taggedUsers!.map((tu) => (
+              <button
+                key={tu.id}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTaggedUserPress?.(tu.id);
+                }}
+                className="flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 transition-colors hover:bg-white/25"
+              >
+                <Avatar src={tu.avatarUrl} size={16} alt={tu.displayName} />
+                <span className="text-xs font-medium text-white/90">
+                  @{tu.displayName}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Caption + hashtags */}
+        {(caption || (hashtags && hashtags.length > 0)) && (
           <div>
-            <p className="text-sm leading-snug text-white drop-shadow-md">
-              {truncatedCaption}
-              {caption.length > 80 && (
-                <button
-                  type="button"
-                  onClick={handleCaptionToggle}
-                  className="ml-1 font-semibold text-white/80"
-                >
-                  {expanded ? "less" : "more"}
-                </button>
-              )}
-            </p>
+            {caption && (
+              <p className="text-sm leading-snug text-white drop-shadow-md">
+                {truncatedCaption}
+                {caption.length > 80 && (
+                  <button
+                    type="button"
+                    onClick={handleCaptionToggle}
+                    className="ml-1 font-semibold text-white/80"
+                  >
+                    {expanded ? "less" : "more"}
+                  </button>
+                )}
+              </p>
+            )}
+            {hashtags && hashtags.length > 0 && (
+              <p className="mt-1 flex flex-wrap gap-x-1.5 gap-y-0.5 text-sm drop-shadow-md">
+                {hashtags.map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onHashtagPress?.(tag);
+                    }}
+                    className="font-semibold text-blue-300 transition-colors hover:text-blue-200"
+                  >
+                    {tag.startsWith("#") ? tag : `#${tag}`}
+                  </button>
+                ))}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -146,12 +265,14 @@ export function FeedCard({
           onClick={onSave}
           label={saved ? "Unsave" : "Save"}
         />
-        <ActionButton
-          icon="chat_bubble"
-          count={commentCount}
-          onClick={onComment}
-          label="Comments"
-        />
+        {allowComments && (
+          <ActionButton
+            icon="chat_bubble"
+            count={commentCount}
+            onClick={onComment}
+            label="Comments"
+          />
+        )}
         <ActionButton
           icon="send"
           count={0}
