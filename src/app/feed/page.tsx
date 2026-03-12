@@ -278,27 +278,29 @@ export default function FeedPage() {
 
   if (loading) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-black">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+      <div className="flex min-h-dvh items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
+        <BottomNav activeItem="feed" />
       </div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-black px-8 text-center">
-        <Icon name="videocam_off" size={48} className="text-white/40" />
-        <p className="text-lg font-medium text-white/70">No posts yet</p>
-        <p className="text-sm text-white/50">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
+        <Icon name="videocam_off" size={48} className="text-grey-400" />
+        <p className="text-lg font-medium text-text-default-headings">No posts yet</p>
+        <p className="text-sm text-text-default-secondary">
           Be the first to share a video!
         </p>
         <button
           type="button"
           onClick={() => router.push(ROUTES.createPost)}
-          className="mt-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97]"
+          className="mt-2 rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97]"
         >
           Create Post
         </button>
+        <BottomNav activeItem="feed" />
       </div>
     );
   }
