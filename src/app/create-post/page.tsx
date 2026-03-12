@@ -1,31 +1,53 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ContextTopBar } from "@/components/ContextTopBar";
-import { Textarea } from "@/components/Textarea";
-import { Button } from "@/components/Button";
-import { Icon } from "@/components/Icon";
+import { useForm, FormProvider } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Snackbar } from "@/components/Snackbar";
 import { createPost } from "@/lib/firestore";
 import { uploadPostVideo } from "@/lib/storage";
 import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/lib/routes";
+import {
+  createPostFormSchema,
+  type CreatePostFormData,
+} from "@/lib/schemas/post";
+
+import { StepHeader } from "./StepHeader";
+import { StepUpload } from "./StepUpload";
+import { StepPreview } from "./StepPreview";
+import { StepTagLink } from "./StepTagLink";
+import { StepSettings } from "./StepSettings";
+import type { CreatePostStep } from "./types";
 
 export default function CreatePostPage() {
   const router = useRouter();
   const { user } = useAuth();
 
+  const [step, setStep] = useState<CreatePostStep>(1);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-  const [caption, setCaption] = useState("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const methods = useForm<CreatePostFormData>({
+    resolver: zodResolver(createPostFormSchema),
+    defaultValues: {
+      caption: "",
+      hashtags: [],
+      coverFrameColor: null,
+      taggedUserIds: [],
+      taggedListingIds: [],
+      visibility: "everyone",
+      allowComments: true,
+      allowDuets: true,
+      allowDownload: false,
+      scheduledAt: null,
+    },
+  });
 
-  // Cleanup object URL on unmount or change
   useEffect(() => {
     return () => {
       if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
@@ -33,25 +55,11 @@ export default function CreatePostPage() {
   }, [videoPreviewUrl]);
 
   const handleFileSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-
-      if (!file.type.startsWith("video/")) {
-        setError("Please select a video file.");
-        return;
-      }
-
-      // 200MB limit
-      if (file.size > 200 * 1024 * 1024) {
-        setError("Video must be under 200MB.");
-        return;
-      }
-
+    (file: File) => {
       if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
       setVideoFile(file);
       setVideoPreviewUrl(URL.createObjectURL(file));
-      setError(null);
+      setUploadError(null);
     },
     [videoPreviewUrl],
   );
@@ -60,27 +68,55 @@ export default function CreatePostPage() {
     if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
     setVideoFile(null);
     setVideoPreviewUrl(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
   }, [videoPreviewUrl]);
 
-  const handleSubmit = useCallback(async () => {
+  const goBack = useCallback(() => {
+    if (step === 1) {
+      router.back();
+    } else {
+      setStep((s) => (s - 1) as CreatePostStep);
+    }
+  }, [step, router]);
+
+  const goNext = useCallback(() => {
+    setStep((s) => (s + 1) as CreatePostStep);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    router.push(ROUTES.feed);
+  }, [router]);
+
+  const handlePublish = useCallback(async () => {
     if (!user || !videoFile) return;
 
+    const isValid = await methods.trigger();
+    if (!isValid) return;
+
+    const data = methods.getValues();
     setSubmitting(true);
-    setError(null);
+    setUploadError(null);
 
     try {
-      // Create post doc first to get ID, then upload video
       const postId = await createPost({
         userId: user.uid,
         videoUrl: "",
-        caption: caption.trim(),
+        caption: data.caption,
+        hashtags: data.hashtags,
+        coverFrameColor: data.coverFrameColor,
+        taggedUserIds: data.taggedUserIds,
+        taggedListingIds: data.taggedListingIds,
+        visibility: data.visibility,
+        allowComments: data.allowComments,
+        allowDuets: data.allowDuets,
+        allowDownload: data.allowDownload,
+        scheduledAt: data.scheduledAt,
       });
 
       const videoUrl = await uploadPostVideo(videoFile, postId);
 
-      // Update post with the video URL
-      const { updateDoc, doc, getFirestore } = await import("firebase/firestore");
+      const { updateDoc, doc, getFirestore } = await import(
+        "firebase/firestore"
+      );
       const { firebaseApp } = await import("@/lib/firebase");
       const db = getFirestore(firebaseApp);
       await updateDoc(doc(db, "posts", postId), { videoUrl });
@@ -88,101 +124,65 @@ export default function CreatePostPage() {
       setShowSuccess(true);
       setTimeout(() => router.push(ROUTES.feed), 1200);
     } catch {
-      setError("Failed to create post. Please try again.");
+      setUploadError("Failed to create post. Please try again.");
     } finally {
       setSubmitting(false);
     }
-  }, [user, videoFile, caption, router]);
+  }, [user, videoFile, methods, router]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-white">
-      <ContextTopBar
-        backLabel="Feed"
-        title="New Post"
-        onBack={() => router.back()}
-      />
-
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 p-6">
-        {/* Video upload area */}
-        {videoPreviewUrl ? (
-          <div className="relative overflow-hidden rounded-xl bg-black">
-            <video
-              src={videoPreviewUrl}
-              className="max-h-[400px] w-full object-contain"
-              controls
-              playsInline
-              muted
-            />
-            <button
-              type="button"
-              onClick={handleRemoveVideo}
-              className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/60 transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9]"
-              aria-label="Remove video"
-            >
-              <Icon name="close" size={18} className="text-white" />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex min-h-[265px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-400 bg-slate-50 p-6 transition-colors hover:border-slate-500 hover:bg-slate-100 active:bg-slate-200"
-          >
-            <Icon
-              name="videocam"
-              size={42}
-              className="text-slate-400"
-            />
-            <span className="text-base font-medium text-slate-700">
-              Select a video
-            </span>
-            <span className="text-sm text-slate-500">
-              MP4, MOV, WebM - up to 200MB
-            </span>
-          </button>
-        )}
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="video/*"
-          className="hidden"
-          onChange={handleFileSelect}
+    <FormProvider {...methods}>
+      <div className="flex min-h-dvh flex-col bg-surface-page">
+        <StepHeader
+          step={step}
+          onBack={step > 1 ? goBack : undefined}
+          onClose={handleClose}
         />
 
-        {/* Caption */}
-        <Textarea
-          label="Caption"
-          placeholder="Write a caption..."
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          rows={3}
-          helperText={`${caption.length}/500`}
-          error={caption.length > 500}
-        />
-
-        {error && (
-          <p className="text-sm font-medium text-red-600">{error}</p>
+        {step === 1 && (
+          <StepUpload
+            videoFile={videoFile}
+            videoPreviewUrl={videoPreviewUrl}
+            onFileSelect={handleFileSelect}
+            onRemoveVideo={handleRemoveVideo}
+            onNext={goNext}
+            error={uploadError}
+            onError={setUploadError}
+          />
         )}
 
-        {/* Submit */}
-        <Button
-          size="large"
-          onClick={handleSubmit}
-          disabled={!videoFile || caption.length > 500}
-          loading={submitting}
-        >
-          Post
-        </Button>
+        {step === 2 && (
+          <StepPreview
+            videoFile={videoFile}
+            videoPreviewUrl={videoPreviewUrl}
+            onNext={goNext}
+          />
+        )}
+
+        {step === 3 && <StepTagLink onNext={goNext} />}
+
+        {step === 4 && (
+          <StepSettings
+            videoPreviewUrl={videoPreviewUrl}
+            onPublish={handlePublish}
+            submitting={submitting}
+          />
+        )}
+
+        {uploadError && step === 4 && (
+          <p className="px-6 pb-4 text-center text-sm font-medium text-text-error-default">
+            {uploadError}
+          </p>
+        )}
+
+        <Snackbar
+          open={showSuccess}
+          onClose={() => setShowSuccess(false)}
+          message="Post created!"
+          icon="check_circle"
+          duration={1200}
+        />
       </div>
-
-      <Snackbar
-        open={showSuccess}
-        onClose={() => setShowSuccess(false)}
-        message="Post created!"
-        icon="check_circle"
-        duration={1200}
-      />
-    </div>
+    </FormProvider>
   );
 }

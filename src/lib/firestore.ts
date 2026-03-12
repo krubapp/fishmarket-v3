@@ -319,6 +319,29 @@ export async function getOrdersByStatus(
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Order);
 }
 
+// ─── User search ────────────────────────────────────────────────────────
+
+export async function searchUsers(
+  searchQuery: string,
+  limitCount = 30,
+): Promise<UserProfile[]> {
+  const q = query(
+    collection(db, USERS_COLLECTION),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const all = snap.docs.map((d) => ({ uid: d.id, ...d.data() }) as UserProfile);
+
+  if (!searchQuery.trim()) return all;
+
+  const lower = searchQuery.toLowerCase();
+  return all.filter(
+    (u) =>
+      u.displayName?.toLowerCase().includes(lower) ||
+      u.username?.toLowerCase().includes(lower),
+  );
+}
+
 // ─── Posts ─────────────────────────────────────────────────────────────
 
 export async function createPost(data: CreatePostInput): Promise<string> {

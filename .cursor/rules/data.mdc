@@ -147,20 +147,37 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 | `userId` | `string` | Firebase Auth UID of the post creator |
 | `videoUrl` | `string` | Firebase Storage download URL (`posts/{postId}/video.{ext}`) |
 | `thumbnailUrl` | `string` | Optional thumbnail URL |
-| `caption` | `string` | Post caption (max 500 chars) |
+| `caption` | `string` | Post caption (max 300 chars) |
+| `hashtags` | `string[]` | Hashtag strings (e.g. `["#viral", "#fishing"]`). Predefined or user-entered. |
+| `coverFrameColor` | `string \| null` | Hex color for decorative border/frame around the video in the feed. Null = no frame. |
+| `taggedUserIds` | `string[]` | UIDs of tagged users (People/Creators selected in Tag & Link step). |
+| `taggedListingIds` | `string[]` | IDs of tagged product listings (Products selected in Tag & Link step). |
+| `visibility` | `string` | `"everyone"` \| `"followers"` \| `"friends"` \| `"only_me"`. Default `"everyone"`. |
+| `allowComments` | `boolean` | Whether viewers can comment (default true). |
+| `allowDuets` | `boolean` | Whether others can create duets (default true). |
+| `allowDownload` | `boolean` | Whether viewers can download the video (default false). |
+| `scheduledAt` | `number \| null` | Unix timestamp (ms) for scheduled publishing. Null = publish immediately. |
 | `likeCount` | `number` | Denormalized like count |
 | `saveCount` | `number` | Denormalized save count |
 | `commentCount` | `number` | Denormalized comment count (future) |
 | `createdAt` | `Timestamp` | Server timestamp |
 
+**Constants** (in `src/lib/constants/post.ts`):
+
+- `TRENDING_HASHTAGS` — predefined trending hashtag strings
+- `COVER_FRAME_COLORS` — predefined cover frame color options (`{ id, label, hex }`)
+- `VISIBILITY_OPTIONS` — visibility radio options (`{ id, label, description, icon, emoji }`)
+- `INTERACTION_SETTINGS` — interaction toggle options (`{ id, label, description, icon, emoji, defaultValue }`)
+
 **Helpers** (in `src/lib/firestore.ts`):
 
-- `createPost(data)` — adds doc to `posts`, returns doc id
+- `createPost(data)` — adds doc to `posts`, returns doc id. Accepts all new fields (hashtags, coverFrameColor, taggedUserIds, taggedListingIds, visibility, interaction toggles, scheduledAt).
 - `getPost(id)` — fetches a single post by ID
 - `getFeedPosts(limitCount?, afterDoc?)` — paginated feed, `createdAt` desc. Returns `{ posts, lastDoc }`
 - `togglePostLike(postId, userId)` — toggle like (add/remove `post_likes` doc, increment/decrement `likeCount`), returns new liked state
 - `togglePostSave(postId, userId)` — same for saves
 - `getUserPostInteractions(postIds, userId)` — batch check liked/saved states for feed rendering
+- `searchUsers(query)` — fetch users, client-side filter by `displayName`/`username`. Used in Tag & Link step.
 - `uploadPostVideo(file, postId)` — `src/lib/storage.ts` — uploads to `posts/{postId}/video.{ext}`, returns download URL
 
 ### `post_likes` collection
