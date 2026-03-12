@@ -89,7 +89,7 @@ export default function HomePage() {
           onFeed={() =>
             setViewMode((m) => (m === "seller" ? "buyer" : "seller"))
           }
-          onSearch={() => router.push(ROUTES.searchListings)}
+          onSearch={() => router.push(ROUTES.shop)}
           feedActive={viewMode === "buyer"}
         />
       )}
@@ -104,7 +104,7 @@ export default function HomePage() {
           <NewReleaseSection listings={newReleases} />
           <CategoriesSection
             onCategoryClick={(fishType) =>
-              router.push(`${ROUTES.searchListings}?fishType=${fishType}`)
+              router.push(`${ROUTES.shop}?fishType=${fishType}`)
             }
           />
 

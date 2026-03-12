@@ -139,7 +139,7 @@ export default function ProfileOrdersPage() {
       .finally(() => setLoading(false));
   }, [user?.uid]);
 
-  const handleGoShop = () => router.push(ROUTES.searchListings);
+  const handleGoShop = () => router.push(ROUTES.shop);
   const pagePaddingBottom =
     "pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]";
 

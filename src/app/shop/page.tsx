@@ -126,7 +126,7 @@ function SearchPageInner() {
         if (val) params.set(key, val);
         else params.delete(key);
       });
-      router.replace(`${ROUTES.searchListings}?${params.toString()}`);
+      router.replace(`${ROUTES.shop}?${params.toString()}`);
     },
     [router, searchParams],
   );

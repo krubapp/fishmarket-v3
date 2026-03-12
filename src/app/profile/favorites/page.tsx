@@ -202,7 +202,7 @@ export default function ProfileFavoritesPage() {
             size="medium"
             variant="default"
             className="w-full"
-            onClick={() => router.push(ROUTES.searchListings)}
+            onClick={() => router.push(ROUTES.shop)}
           >
             Go shop
           </Button>
