@@ -196,9 +196,7 @@ function SearchPageInner() {
   return (
     <div className="flex min-h-dvh flex-col bg-white">
       <ContextTopBar
-        backLabel="Home"
         title={title}
-        onBack={() => router.push(ROUTES.home)}
         onFilter={() => setFilterOpen(true)}
         onSearch={() => {
           setSearchInput(q);

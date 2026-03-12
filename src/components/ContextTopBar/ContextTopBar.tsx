@@ -46,7 +46,7 @@ export function ContextTopBar({
         style={{ borderBottomWidth: 1 }}
         role="banner"
       >
-        <div className="relative z-10 flex min-w-0 shrink-0 items-center gap-2">
+        {onBack && <div className="relative z-10 flex min-w-0 shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={onBack}
@@ -62,7 +62,7 @@ export function ContextTopBar({
           <span className="whitespace-nowrap font-medium leading-[1.43] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-sm)]">
             {backLabel}
           </span>
-        </div>
+        </div>}
 
         <h1 className="pointer-events-none absolute inset-0 flex items-center justify-center truncate px-6 font-semibold leading-[1.5] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-md)]">
           {title}

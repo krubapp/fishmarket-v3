@@ -4,7 +4,7 @@
  */
 
 export type ContextTopBarProps = {
-  backLabel: string;
+  backLabel?: string;
   title: string;
   onBack?: () => void;
   /** When set, shows share icon before filter/search. */
