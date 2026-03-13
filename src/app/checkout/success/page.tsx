@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import { useCartContext } from "@/contexts/CartContext";
 import { getAuthHeaders } from "@/lib/firebase";
 import { ROUTES } from "@/lib/routes";
 
@@ -18,6 +19,7 @@ type OrderDetails = {
 function CheckoutSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const cartContext = useCartContext();
   const sessionId = searchParams.get("session_id");
 
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -44,6 +46,7 @@ function CheckoutSuccessContent() {
           return;
         }
         setOrder(data);
+        cartContext?.refresh();
       } catch {
         setInvalid(true);
       } finally {
@@ -55,7 +58,7 @@ function CheckoutSuccessContent() {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] items-center justify-center border-x border-slate-200 bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] items-center justify-center border-x border-slate-200 bg-white">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
       </div>
     );
@@ -63,7 +66,7 @@ function CheckoutSuccessContent() {
 
   if (invalid) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <Icon name="error" size={32} className="text-red-700" />
         </div>
@@ -86,7 +89,7 @@ function CheckoutSuccessContent() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
       <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
         <Icon name="check_circle" size={32} className="text-green-700" />
       </div>
@@ -153,7 +156,7 @@ export default function CheckoutSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto flex min-h-dvh max-w-[440px] items-center justify-center border-x border-slate-200 bg-white">
+        <div className="mx-auto flex min-h-dvh max-w-[480px] items-center justify-center border-x border-slate-200 bg-white">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
         </div>
       }

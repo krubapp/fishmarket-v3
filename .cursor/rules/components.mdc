@@ -15,6 +15,26 @@ alwaysApply: true
 
 ---
 
+## CartFloatingButton
+
+**Path**: `@/components/CartFloatingButton`
+
+Floating basket button shown when the user has items in cart. Fixed top-right, above BottomNav (`bottom: 5rem + safe-area`). Links to `/cart`. Displays cart item count in a red badge. Rendered in root layout so it appears on all pages.
+
+**Exports**: `CartFloatingButton`.
+
+**Example**: Rendered automatically in root layout; no consumer props. Cart state from `useCartContext()` (provided by `CartProvider` in layout).
+
+---
+
+## CartProvider / useCartContext
+
+**Path**: `src/contexts/CartContext.tsx`
+
+Provides cart item count and add/refresh for the floating basket and listing detail Add to Cart. Wraps app in root layout (inside `AuthProvider`). `useCartContext()` returns `{ itemCount, refresh, addItem }` or `null`.
+
+---
+
 ## BottomNav
 
 **Path**: `@/components/BottomNav`  
@@ -1179,7 +1199,7 @@ import { CostBreakdown } from "@/components/CostBreakdown";
 **Path**: `@/components/TrackInventoryCard`  
 **Figma**: Roy design system → Track Inventory card (node 77:1368).
 
-Card for tracking product inventory: header (title, subtitle, optional action link with chevron) and content (inventory rows with progress bars). **Empty** (`items` = []): one row “Empty” / “--” with empty progress bar. **Single** (one item): one row with large progress bar (full width). **Multiple** (2+ items): 2-column grid, each item has small progress bar (183px). Card: white, border-bottom 1px #E2E8F0, padding 48px 24px, gap 24px, max-width 440px. Title medium 24px #121412; subtitle body 16px #1E201E; action link medium 16px #101828 + chevron_right 16px. Row: name + detail (semi paragraph-sm), progress bar 16px (track slate-100, fill slate-900).
+Card for tracking product inventory: header (title, subtitle, optional action link with chevron) and content (inventory rows with progress bars). **Empty** (`items` = []): one row “Empty” / “--” with empty progress bar. **Single** (one item): one row with large progress bar (full width). **Multiple** (2+ items): 2-column grid, each item has small progress bar (183px). Card: white, border-bottom 1px #E2E8F0, padding 48px 24px, gap 24px, max-width 480px. Title medium 24px #121412; subtitle body 16px #1E201E; action link medium 16px #101828 + chevron_right 16px. Row: name + detail (semi paragraph-sm), progress bar 16px (track slate-100, fill slate-900).
 
 **Props**
 
@@ -1296,7 +1316,7 @@ import { Avatar } from "@/components/Avatar";
 **Path**: `@/components/VariantDrawer` 
 **Figma**: Roy design system → variant headers flow (node 410:10870), initial drawer (node 410:10422).
 
-Drawer for creating and managing variant groups on a listing. **Single view** (no separate create vs edit screens): when no groups exist, a "Name your variant group" form with quick select is shown; once groups exist, the **active group** (first in the list) is shown at top with "Variant group: &lt;name&gt;", option list, add-option input, and "+ Add group" button. Other groups appear below as **collapsed accordions** (expand to view options). "+ Add group" is disabled until the active group has at least 2 options. Back and overlay click always close the drawer; if the active group is unfinished (fewer than 2 options), it is discarded on close. Uses `Drawer` + `DrawerTopBar` internally. Width 440px.
+Drawer for creating and managing variant groups on a listing. **Single view** (no separate create vs edit screens): when no groups exist, a "Name your variant group" form with quick select is shown; once groups exist, the **active group** (first in the list) is shown at top with "Variant group: &lt;name&gt;", option list, add-option input, and "+ Add group" button. Other groups appear below as **collapsed accordions** (expand to view options). "+ Add group" is disabled until the active group has at least 2 options. Back and overlay click always close the drawer; if the active group is unfinished (fewer than 2 options), it is discarded on close. Uses `Drawer` + `DrawerTopBar` internally. Width 480px.
 
 **Props**
 
@@ -1596,7 +1616,7 @@ import { PageTransition } from "@/components/PageTransition";
 
 **Path**: `@/components/CommentDrawer`
 
-Slide-in drawer for viewing and adding comments on a feed post. Uses `Drawer` (right side, 440px) + `DrawerTopBar` for header. Fetches comments via `getPostComments`, resolves user profiles with a local cache, supports adding and deleting (own) comments.
+Slide-in drawer for viewing and adding comments on a feed post. Uses `Drawer` (right side, 480px) + `DrawerTopBar` for header. Fetches comments via `getPostComments`, resolves user profiles with a local cache, supports adding and deleting (own) comments.
 
 **Props**
 
@@ -1636,7 +1656,7 @@ const [commentPostId, setCommentPostId] = useState<string | null>(null);
 
 **Path**: `@/components/SaveDrawer`
 
-Slide-in drawer for saving a feed post to one or more user-created collections. Uses `Drawer` (right side, 440px) + `DrawerTopBar` for header. Fetches user's collections via `getUserCollections` and checks which ones contain the post via `getPostCollectionIds`. Each collection row has a `Checkbox` for toggling membership. Inline `Input` at the top for creating new collections.
+Slide-in drawer for saving a feed post to one or more user-created collections. Uses `Drawer` (right side, 480px) + `DrawerTopBar` for header. Fetches user's collections via `getUserCollections` and checks which ones contain the post via `getPostCollectionIds`. Each collection row has a `Checkbox` for toggling membership. Inline `Input` at the top for creating new collections.
 
 **Props**
 
@@ -1677,7 +1697,7 @@ const [savePostId, setSavePostId] = useState<string | null>(null);
 **Path**: `@/components/BuyerDashboard/MapComingSoonSection`
 **Figma**: Nike Fishing Maning 2026 → Near By you / mapping area (node `964:2352`).
 
-Buyer-home teaser section for the upcoming map feature. **Layout**: (1) Top header on slate-100: eyebrow `Near you` (red), title `MAPPING AREA COMING SOON`, then Beta badge (information blue) + `Sign up for the beta`; (2) blurred map hero with gradient overlay, centered `New area found by` + single pill button `Sign up for beta` (small subtle with chevron_right); (3) bottom strip (grey-50): `People who are posting in this same location`, overlapping avatar stack + count pill (e.g. 25), `View All`. Uses project `Button` for the beta CTA. Visual-only (no click handlers).
+Buyer-home teaser section for the upcoming map feature. **Layout**: (1) Top header on slate-100: eyebrow `Near By you` (red), title `MAPPING AREA COMING SOON`, then Beta badge (information blue) + `Sign up for the beta`; (2) blurred map hero with gradient overlay, centered `New Area found by` + single pill button `Sign Up for Beta` (small subtle with chevron_right); (3) bottom strip (grey-50): `People that are posting in this same location`, overlapping avatar stack + count pill (e.g. 25), `View All`. Uses project `Button` for the beta CTA. Visual-only (no click handlers).
 
 **Props**
 

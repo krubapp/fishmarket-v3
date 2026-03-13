@@ -180,7 +180,7 @@ export default function ProfileOrdersPage() {
 
   if (authLoading || loading) {
     return (
-      <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar
           backLabel="Profile"
           title="Orders"
@@ -197,7 +197,7 @@ export default function ProfileOrdersPage() {
   const isEmpty = orders.length === 0;
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       <ContextTopBar
         backLabel="Profile"
         title="Orders"

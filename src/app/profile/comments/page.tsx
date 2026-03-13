@@ -99,7 +99,7 @@ export default function ProfileCommentsPage() {
 
   return (
     <div
-      className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
+      className={`mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
     >
       <ContextTopBar
         backLabel="Profile"

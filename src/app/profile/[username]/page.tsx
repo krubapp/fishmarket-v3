@@ -192,7 +192,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
   if (authLoading || (usernameParam && profileLoading)) {
     return (
       <div
-        className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
+        className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[480px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
       >
         <aside className="lg:w-[320px] lg:shrink-0 lg:rounded-xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
           <div className="lg:sticky lg:top-6">
@@ -257,7 +257,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
 
   if (notFound || !profile) {
     return (
-      <div className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:border-x-0 ${pagePaddingBottom}`}>
+      <div className={`mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:border-x-0 ${pagePaddingBottom}`}>
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12 sm:px-6">
           <p className="text-center font-medium text-grey-700 text-[length:var(--font-size-paragraph-md)]">
             Profile not found
@@ -451,7 +451,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
 
   return (
     <div
-      className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
+      className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[480px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
     >
       {/* Left: profile card (desktop) / full-width (mobile) */}
       <aside className="lg:w-[320px] lg:shrink-0 lg:rounded-xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">

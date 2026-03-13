@@ -256,7 +256,7 @@ function SearchPageInner() {
       </div>
 
       {/* Results grid */}
-      <div className="mx-auto w-full max-w-[440px] flex-1 pb-[120px]">
+      <div className="mx-auto w-full max-w-[480px] flex-1 pb-[120px]">
         {loading ? (
           <div className="grid grid-cols-2 gap-x-1 gap-y-2">
             {Array.from({ length: 6 }, (_, i) => (

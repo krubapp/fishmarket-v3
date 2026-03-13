@@ -42,7 +42,9 @@ export function CategoriesSection({
   className = "",
 }: CategoriesSectionProps) {
   return (
-    <section className={`flex flex-col gap-1 ${className}`}>
+    <section
+      className={`flex flex-col gap-1 border border-[#e2e8f0] border-solid ${className}`}
+    >
       {CATEGORIES.map((cat) => {
         const count = categoryCounts[cat.fishType];
 
@@ -50,7 +52,7 @@ export function CategoriesSection({
           <button
             key={cat.fishType}
             onClick={() => onCategoryClick?.(cat.fishType)}
-            className="relative flex h-[108px] w-full items-center overflow-clip border-0 bg-white px-6 py-[42px] text-left outline-none transition-[transform,opacity] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.99] disabled:active:scale-100"
+            className="relative flex h-[108px] w-full items-center overflow-clip border-0 bg-white px-[24px] py-[42px] text-left outline-none transition-[transform,opacity] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.99] disabled:active:scale-100"
           >
             <div className="pointer-events-none absolute inset-0" aria-hidden>
               <div className="absolute inset-0 z-1 bg-linear-to-r from-[rgba(255,255,255,0)] to-[rgba(10,10,10,0.3)]" />

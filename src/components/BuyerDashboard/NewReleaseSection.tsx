@@ -34,14 +34,14 @@ export function NewReleaseSection({
   if (loading) {
     return (
       <section className={`flex flex-col gap-6 ${className}`}>
-        <div className="flex flex-col gap-[5px] px-6">
+        <div className="flex flex-col gap-[5px] px-[24px]">
           <Skeleton className="h-7 w-40" />
           <Skeleton className="h-5 w-52" />
         </div>
-        <div className="px-6">
+        <div className="px-[24px]">
           <div className="flex flex-col">
             <Skeleton className="h-[170px] w-full rounded-t-[4px]" />
-            <div className="flex h-[124px] gap-6 px-6 py-4">
+            <div className="flex h-[124px] gap-6 px-[24px] py-4">
               <div className="flex min-w-0 flex-1 flex-col gap-2">
                 <Skeleton className="h-5 w-32" />
                 <Skeleton className="h-6 w-48" />
@@ -60,7 +60,7 @@ export function NewReleaseSection({
 
   return (
     <section className={`flex flex-col gap-6 ${className}`}>
-      <div className="flex flex-col gap-[5px] px-6">
+      <div className="flex flex-col gap-[5px] px-[24px]">
         <p className="font-medium text-[24px] leading-normal text-[#121212]">
           New Release
         </p>
@@ -69,7 +69,7 @@ export function NewReleaseSection({
         </p>
       </div>
 
-      <div className="overflow-hidden px-6">
+      <div className="overflow-hidden px-[24px]">
         <div
           ref={scrollRef}
           onScroll={handleScroll}
@@ -82,7 +82,7 @@ export function NewReleaseSection({
       </div>
 
       {listings.length > 1 && (
-        <div className="flex items-center justify-center gap-1 px-6 py-1">
+        <div className="flex items-center justify-center gap-1 px-[24px] py-1">
           {listings.map((_, i) => (
             <span
               key={i}
@@ -121,7 +121,7 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
           )}
         </div>
 
-        <div className="flex h-[124px] gap-6 rounded-b-[16px] px-6 py-4">
+        <div className="flex h-[124px] gap-6 rounded-b-[16px] px-[24px] py-4">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">
               <span className="font-medium text-[16px] text-[#660008] underline font-['Oswald',sans-serif]">

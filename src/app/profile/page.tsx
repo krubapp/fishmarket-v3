@@ -31,7 +31,7 @@ export default function ProfileRedirectPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-12 sm:px-6">
           <p className="text-center font-medium text-grey-700 text-[length:var(--font-size-body-md)]">
             Sign in to view your profile

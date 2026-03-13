@@ -53,7 +53,7 @@ export default function SettingsGeneralPage() {
         onBack={() => router.push(ROUTES.settings)}
       />
 
-      <div className="mx-auto flex w-full max-w-[440px] flex-col">
+      <div className="mx-auto flex w-full max-w-[480px] flex-col">
         {profileLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />

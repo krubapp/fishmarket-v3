@@ -48,7 +48,7 @@ export default function SettingsPage() {
         onBack={() => router.push(ROUTES.profile)}
       />
 
-      <div className="mx-auto flex w-full max-w-[440px] flex-col">
+      <div className="mx-auto flex w-full max-w-[480px] flex-col">
         <nav className="flex flex-col">
           {SETTINGS_ITEMS.map((item) => (
             <button

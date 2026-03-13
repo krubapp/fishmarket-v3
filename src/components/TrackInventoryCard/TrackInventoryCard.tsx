@@ -79,7 +79,7 @@ export function TrackInventoryCard({
 
   return (
     <article
-      className={`flex w-full max-w-[440px] flex-col gap-6 rounded-lg border-b border-slate-200 bg-white px-6 py-12 ${className}`}
+      className={`flex w-full max-w-[480px] flex-col gap-6 rounded-lg border-b border-slate-200 bg-white px-6 py-12 ${className}`}
     >
       <div className="flex flex-col gap-6">
         <header className="flex flex-row items-start justify-between gap-6">

@@ -38,7 +38,7 @@ function StripeConnectReturnContent() {
 
   if (isRefresh) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
         <Icon name="refresh" size={48} className="text-slate-400" />
         <h1 className="text-center text-(length:--font-size-body-lg) font-semibold text-slate-900">
           Onboarding incomplete
@@ -55,7 +55,7 @@ function StripeConnectReturnContent() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center gap-6 border-x border-slate-200 bg-white p-6">
       {status === "loading" ? (
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
       ) : status === "verified" ? (
@@ -95,7 +95,7 @@ export default function StripeConnectReturnPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto flex min-h-dvh max-w-[440px] items-center justify-center border-x border-slate-200 bg-white">
+        <div className="mx-auto flex min-h-dvh max-w-[480px] items-center justify-center border-x border-slate-200 bg-white">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
         </div>
       }

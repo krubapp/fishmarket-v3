@@ -180,7 +180,7 @@ export function VariantDrawer({
     <Drawer
       open={open}
       onClose={handleDrawerClose}
-      width={440}
+      width={480}
       aria-label="Variants"
     >
       <DrawerTopBar

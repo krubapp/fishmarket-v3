@@ -79,7 +79,7 @@ export function PromoCTASection({ className = "" }: PromoCTASectionProps) {
 }
 
 const cardClassName =
-  "flex w-full shrink-0 snap-center items-center gap-[13px] bg-[#f0f0f0] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.12)] transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.98]";
+  "flex w-[392px] min-w-[392px] shrink-0 snap-center items-center gap-[13px] rounded-[2px] bg-[#f0f0f0] shadow-[0px_0px_4px_0px_rgba(0,0,0,0.12)] transition-[transform] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.98]";
 
 function PromoCardContent({ card }: { card: PromoCard }) {
   return (

@@ -66,7 +66,7 @@ export function SearchFilterDrawer({
   )?.id;
 
   return (
-    <Drawer open={open} onClose={onClose} aria-label="Filter" width={440}>
+    <Drawer open={open} onClose={onClose} aria-label="Filter" width={480}>
       <div className="-mx-6 -mt-6 flex flex-col overflow-y-auto pb-[96px]">
         {/* Header */}
         <div className="flex h-[88px] shrink-0 items-center justify-between px-6">

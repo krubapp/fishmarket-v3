@@ -21,7 +21,7 @@ export function BrandSuggestionsSection({
   if (!loading && sellers.length === 0) return null;
 
   return (
-    <section className={`flex flex-col gap-6 px-6 ${className}`}>
+    <section className={`flex flex-col gap-6 px-[24px] ${className}`}>
       {loading ? (
         <div className="flex flex-col gap-2">
           <Skeleton className="h-7 w-48" />

@@ -13,11 +13,11 @@ export function MapComingSoonSection({
     <section
       className={`flex flex-col border border-slate-200 bg-slate-100 py-6 ${className}`}
     >
-      <div className="flex flex-col items-center gap-6 overflow-hidden px-6">
+      <div className="flex flex-col items-center gap-6 overflow-hidden px-[24px]">
         {/* Top header: eyebrow + title + beta row */}
         <div className="flex w-full max-w-[392px] flex-col gap-3 text-center">
           <p className="font-medium text-[16px] leading-normal text-[#99000c]">
-            Near you
+            Near By you
           </p>
           <div className="flex flex-col gap-1">
             <p className="font-medium text-[24px] leading-normal text-[#121212]">
@@ -49,9 +49,9 @@ export function MapComingSoonSection({
             aria-hidden
           />
 
-          <div className="relative flex flex-col items-center justify-center gap-10 px-6 text-center">
+          <div className="relative flex flex-col items-center justify-center gap-10 px-[24px] text-center">
             <p className="font-medium text-[34px] leading-normal text-white">
-              New area found by
+              New Area found by
             </p>
             <Button
               size="small"
@@ -59,17 +59,17 @@ export function MapComingSoonSection({
               trailingIcon="chevron_right"
               className="bg-slate-100 text-slate-900 hover:bg-slate-200 hover:text-slate-950"
             >
-              Sign up for beta
+              Sign Up for Beta
             </Button>
           </div>
         </div>
       </div>
 
       {/* Bottom strip: people in same location */}
-      <div className="flex items-center justify-between gap-6 rounded-b-[12px] bg-[#f0f0f0] px-6 py-6">
+      <div className="flex items-center justify-between gap-6 rounded-b-[12px] bg-[#f0f0f0] px-[24px] py-6">
         <div className="flex min-w-0 flex-1 flex-col gap-3">
           <p className="font-semibold text-[16px] leading-normal text-black">
-            People who are posting in this same location
+            People that are posting in this same location
           </p>
           <div className="flex items-center">
             <img

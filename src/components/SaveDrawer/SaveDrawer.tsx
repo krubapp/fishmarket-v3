@@ -128,7 +128,7 @@ export function SaveDrawer({
   }, [user, newName, creating]);
 
   return (
-    <Drawer open={open} onClose={onClose} width={440} aria-label="Save to collection">
+    <Drawer open={open} onClose={onClose} width={480} aria-label="Save to collection">
       <div className="-mx-6 -mt-4 -mb-4 flex min-h-full flex-col">
         <DrawerTopBar
           title="Save to collection"

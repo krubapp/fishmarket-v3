@@ -159,7 +159,7 @@ export function CommentDrawer({
     <Drawer
       open={open}
       onClose={onClose}
-      width={440}
+      width={480}
       aria-label="Comments"
     >
       <div className="-mx-6 -mt-4 -mb-4 flex min-h-full flex-col">

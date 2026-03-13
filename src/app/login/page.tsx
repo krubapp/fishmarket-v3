@@ -103,7 +103,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col items-center justify-center bg-white px-6">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col items-center justify-center bg-white px-6">
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-col gap-1">
           <h1 className="font-medium text-text-default-headings text-paragraph-xl leading-(--line-height-h6)">

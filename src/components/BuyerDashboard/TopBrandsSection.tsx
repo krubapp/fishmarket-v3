@@ -22,7 +22,7 @@ export function TopBrandsSection({
 
   return (
     <section
-      className={`flex flex-col gap-6 border-b border-[#f0f0f0] p-6 ${className}`}
+      className={`flex flex-col gap-6 border-b border-[#f0f0f0] p-[24px] ${className}`}
     >
       {loading ? (
         <Skeleton className="h-7 w-36" />
