@@ -55,7 +55,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace(ROUTES.createListing);
+      router.replace(ROUTES.home);
     }
   }, [user, authLoading, router]);
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
       } else {
         await signInWithEmailAndPassword(auth, data.email, data.password);
       }
-      router.replace(ROUTES.createListing);
+      router.replace(ROUTES.home);
     } catch (err: unknown) {
       const code =
         err instanceof Error && "code" in err
