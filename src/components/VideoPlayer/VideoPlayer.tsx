@@ -14,14 +14,10 @@ export function VideoPlayer({
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(true);
-  const [showPlayIcon, setShowPlayIcon] = useState(false);
-  const playIconTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [muted, setMuted] = useState(false);
 
   const updatePlaying = useCallback(
     (next: boolean) => {
-      setPlaying(next);
       onPlayChange?.(next);
     },
     [onPlayChange],
@@ -37,7 +33,15 @@ export function VideoPlayer({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          video.play().then(() => updatePlaying(true)).catch(() => {});
+          video
+            .play()
+            .then(() => updatePlaying(true))
+            .catch(() => {
+              // Browser may block unmuted autoplay; fallback to muted so video still plays
+              video.muted = true;
+              setMuted(true);
+              video.play().then(() => updatePlaying(true)).catch(() => {});
+            });
         } else {
           video.pause();
           updatePlaying(false);
@@ -50,25 +54,8 @@ export function VideoPlayer({
     return () => observer.disconnect();
   }, [autoPlay, visibilityThreshold, updatePlaying]);
 
-  const togglePlay = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (video.paused) {
-      video.play().then(() => updatePlaying(true)).catch(() => {});
-    } else {
-      video.pause();
-      updatePlaying(false);
-    }
-
-    // Flash the play/pause indicator
-    setShowPlayIcon(true);
-    clearTimeout(playIconTimeout.current);
-    playIconTimeout.current = setTimeout(() => setShowPlayIcon(false), 600);
-  }, [updatePlaying]);
-
-  const toggleMute = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
+  const toggleMute = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
     const video = videoRef.current;
     if (!video) return;
     video.muted = !video.muted;
@@ -79,7 +66,7 @@ export function VideoPlayer({
     <div
       ref={containerRef}
       className={`relative h-full w-full overflow-hidden bg-black ${className}`}
-      onClick={togglePlay}
+      onClick={() => toggleMute()}
     >
       <video
         ref={videoRef}
@@ -91,22 +78,6 @@ export function VideoPlayer({
         preload="metadata"
         className="h-full w-full object-cover"
       />
-
-      {/* Play/Pause flash indicator */}
-      <div
-        className={`pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-          showPlayIcon ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="rounded-full bg-black/40 p-4">
-          <Icon
-            name={playing ? "pause" : "play_arrow"}
-            size={48}
-            fill={1}
-            className="text-white"
-          />
-        </div>
-      </div>
 
       {/* Mute toggle */}
       <button
