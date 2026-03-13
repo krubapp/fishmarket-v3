@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { BottomNav } from "@/components/BottomNav";
+import { Link } from "@/components/Link";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Input } from "@/components/Input";
 import { MediaDropzone } from "@/components/MediaDropzone";
@@ -71,7 +72,7 @@ export default function SettingsAccountPage() {
     if (!user || saving) return;
     setSaving(true);
     try {
-      let avatarUrl = currentAvatarUrl;
+      let avatarUrl: string | null = currentAvatarUrl;
       if (avatarFile) {
         avatarUrl = await uploadAvatar(avatarFile, user.uid);
       }
@@ -149,6 +150,18 @@ export default function SettingsAccountPage() {
                 <span className="font-medium text-paragraph-sm text-slate-600">
                   Drop or click to upload profile photo
                 </span>
+                {(currentAvatarUrl || avatarFile) && (
+                  <Link
+                    size="small"
+                    showIcon={false}
+                    onClick={() => {
+                      setCurrentAvatarUrl(null);
+                      setAvatarFile(null);
+                    }}
+                  >
+                    Remove photo
+                  </Link>
+                )}
               </div>
             </MediaDropzone>
 
