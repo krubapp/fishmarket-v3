@@ -2,40 +2,44 @@
  * Client-side HEIC/HEIF to JPEG conversion for preview and upload.
  * Browsers cannot display HEIC in <img> or createObjectURL; converting
  * to JPEG fixes preview and ensures uploads are in a supported format.
+ * Uses heic-to (libheif 1.21+) for better support of newer iPhone HEIC.
  */
 
-import heic2any from "heic2any";
+import { heicTo, isHeic } from "heic-to";
 
-const HEIC_TYPES = ["image/heic", "image/heif"];
 const HEIC_EXT = /\.heic$/i;
+const HEIF_EXT = /\.heif$/i;
 
+/** Sync check by extension/type; for quick filtering before async isHeic. */
 export function isHeicFile(file: File): boolean {
   return (
-    HEIC_TYPES.includes(file.type) || HEIC_EXT.test(file.name)
+    file.type === "image/heic" ||
+    file.type === "image/heif" ||
+    HEIC_EXT.test(file.name) ||
+    HEIF_EXT.test(file.name)
   );
 }
 
 /**
- * Converts a HEIC/HEIF file to one or more JPEG Files. Non-HEIC files
+ * Converts a HEIC/HEIF file to a single JPEG File. Non-HEIC files
  * are returned as a single-element array unchanged.
+ * Can throw if the format is not supported (e.g. very new codec).
  */
 export async function convertHeicToJpegFiles(file: File): Promise<File[]> {
-  if (!isHeicFile(file)) {
+  const isHeicFile = await isHeic(file);
+  if (!isHeicFile) {
     return [file];
   }
 
-  const result = await heic2any({
+  const blob = await heicTo({
     blob: file,
-    toType: "image/jpeg",
+    type: "image/jpeg",
     quality: 0.92,
   });
 
-  const blobs = Array.isArray(result) ? result : [result];
-  const baseName = file.name.replace(HEIC_EXT, "").replace(/\.heif$/i, "");
-
-  return blobs.map((blob, i) => {
-    const name =
-      blobs.length > 1 ? `${baseName}-${i + 1}.jpg` : `${baseName}.jpg`;
-    return new File([blob], name, { type: "image/jpeg" });
-  });
+  const baseName = file.name
+    .replace(HEIC_EXT, "")
+    .replace(HEIF_EXT, "");
+  const name = `${baseName}.jpg`;
+  return [new File([blob], name, { type: "image/jpeg" })];
 }

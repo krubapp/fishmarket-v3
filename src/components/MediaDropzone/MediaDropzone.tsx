@@ -12,6 +12,7 @@ export function MediaDropzone({
   subtitle = "You can only add up to 10 images / videos",
   files = [],
   onFilesChange,
+  onConversionError,
   accept = "image/*,video/*,.heic,image/heic",
   maxFiles = 10,
   error = false,
@@ -50,17 +51,26 @@ export function MediaDropzone({
       setIsConverting(true);
       try {
         const added = Array.from(incoming);
-        const converted = await Promise.all(
-          added.map((f) => convertHeicToJpegFiles(f)),
-        );
-        const flat = converted.flat();
+        const flat: File[] = [];
+        const failed: File[] = [];
+        for (const f of added) {
+          try {
+            const converted = await convertHeicToJpegFiles(f);
+            flat.push(...converted);
+          } catch {
+            failed.push(f);
+          }
+        }
+        if (failed.length > 0) {
+          onConversionError?.(failed);
+        }
         const merged = [...files, ...flat].slice(0, maxFiles);
         onFilesChange(merged);
       } finally {
         setIsConverting(false);
       }
     },
-    [onFilesChange, files, maxFiles],
+    [onFilesChange, onConversionError, files, maxFiles],
   );
 
   const handleChange = useCallback(

@@ -286,6 +286,11 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
               setImageFiles(files);
               setImageError(false);
             }}
+            onConversionError={() => {
+              toastError(
+                "Some HEIC photos couldn’t be converted. Try saving as JPEG from your phone, or use different images.",
+              );
+            }}
             maxFiles={10 - existingImageUrls.length}
             error={imageError}
           />

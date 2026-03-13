@@ -14,6 +14,8 @@ export type MediaDropzoneProps = {
   files?: File[];
   /** Called when files are added (drop/click) or removed (delete button). */
   onFilesChange?: (files: File[]) => void;
+  /** Called when some HEIC files could not be converted (e.g. unsupported variant). Receives the failed files so the parent can show a message. */
+  onConversionError?: (failedFiles: File[]) => void;
   /** Accept attribute for the file input (default "image/*,video/*"). */
   accept?: string;
   /** Max number of files (default 10). */
