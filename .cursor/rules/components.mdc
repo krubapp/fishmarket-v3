@@ -1674,9 +1674,9 @@ const [savePostId, setSavePostId] = useState<string | null>(null);
 ## MapComingSoonSection
 
 **Path**: `@/components/BuyerDashboard/MapComingSoonSection`
-**Figma**: Nike Fishing Maning 2026 → home dashboard (node `798:6035`), "Near By you / MAPPING AREA COMING SOON".
+**Figma**: Nike Fishing Maning 2026 → Near By you / mapping area (node `964:2352`).
 
-Buyer-home teaser section for the upcoming map feature. Includes: eyebrow (`Near By you`), heading (`MAPPING AREA COMING SOON`), beta row (`Beta` + `Sign up for the beta`), large blurred map placeholder hero with center copy (`New Area found by`) and display-only pill (`Sign Up for Beta`), plus bottom strip (`People that are posting in this same location`, avatar stack/count, `View All`). This section is currently visual-only (no click handlers).
+Buyer-home teaser section for the upcoming map feature. **Layout**: (1) Top header on slate-100: eyebrow `Near you` (red), title `MAPPING AREA COMING SOON`, then Beta badge (information blue) + `Sign up for the beta`; (2) blurred map hero with gradient overlay, centered `New area found by` + single pill button `Sign up for beta` (small subtle with chevron_right); (3) bottom strip (grey-50): `People who are posting in this same location`, overlapping avatar stack + count pill (e.g. 25), `View All`. Uses project `Button` for the beta CTA. Visual-only (no click handlers).
 
 **Props**
 
