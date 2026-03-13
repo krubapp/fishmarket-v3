@@ -48,9 +48,9 @@ import { BottomNav } from "@/components/BottomNav";
 ## RootTopBar
 
 **Path**: `@/components/RootTopBar`  
-**Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260).
+**Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260, parent 93:2261).
 
-Horizontal bar: avatar + title on the left; optional **Sell Product** text button (small, subtle variant) and Search icon button on the right. Sell Product renders only when `onAddProduct` is set. This allows the same component to serve both seller (Sell Product + search) and buyer (avatar + search only) views. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Search icon button 40×40.
+Horizontal bar: avatar + title on the left; optional **Sell Product** text button (small, subtle variant) and Search icon button on the right. Sell Product renders only when `onAddProduct` is set (dashboard type keeps “Sell Product” label, no feed/subscriptions icon). Serves both seller (Sell Product + search) and buyer (avatar + search only). White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32, 8px gap to title. Search: IconButton large (40×40) transparent variant.
 
 **Props**
 
@@ -82,21 +82,22 @@ import { RootTopBar } from "@/components/RootTopBar";
 ## ContextTopBar
 
 **Path**: `@/components/ContextTopBar`  
-**Figma**: Roy design system → top nav bar, types=Shopping (node 496:658).
+**Figma**: Roy design system → top nav bar, types=pages (node 93:2262), types=Shopping (node 496:658).
 
-Contextual top bar: back button + section label on the left; center title (absolute-centered, always centered regardless of left/right content width); optional filter and search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Back label: medium/paragraph-sm (14px, #101828). Title: semi/body-md (16px, #121412), absolutely positioned for true centering. Back and action icons 24px and 20px in 40×40 hit areas. Filter/search buttons only render when their handlers (`onFilter`/`onSearch`) are provided.
+Contextual top bar: back button + optional section label on the left; center title (absolute-centered); optional share, filter, and search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Back row: 8px gap; back label when provided: medium/paragraph-md (16px, #101828). Title: semi/body-md (16px, #121412). Back chevron 24px in 40×40 hit area; right-side actions are IconButton large (40×40) variant neutrals. Share/filter/search only render when their handlers are provided; pages variant has no right actions.
 
 **Props**
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `backLabel` | `string` | Yes | Label next to back (e.g. "Section", "Categories") |
+| `backLabel` | `string` | No | Label next to back (e.g. "Section", "Categories"); omit for icon-only back |
 | `title` | `string` | Yes | Center title (e.g. "Perch") |
 | `onBack` | `() => void` | No | Called when back is pressed |
 | `onShare` | `() => void` | No | When set, shows share icon before filter/search (e.g. listing detail) |
 | `onFilter` | `() => void` | No | Called when filter is pressed |
 | `onSearch` | `() => void` | No | Called when search is pressed |
 | `className` | `string` | No | Applied to the root `<header>` |
+| `hidePadding` | `boolean` | No | When true, no spacer below the fixed header |
 
 **Exports**: `ContextTopBar`, `ContextTopBarProps`.
 

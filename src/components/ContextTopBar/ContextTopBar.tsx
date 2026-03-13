@@ -1,34 +1,14 @@
 "use client";
 
 import { Icon } from "@/components/Icon";
+import { IconButton } from "@/components/IconButton";
 
 import type { ContextTopBarProps } from "./types";
 
-function ActionButton({
-  icon,
-  label,
-  onClick,
-}: {
-  icon: "tune" | "search" | "share";
-  label: string;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-      aria-label={label}
-    >
-      <Icon
-        name={icon}
-        size={20}
-        className="text-[var(--color-text-default-headings)]"
-      />
-    </button>
-  );
-}
-
+/**
+ * Context top bar (Figma: top nav bar, types=pages 93:2262, types=Shopping 496:658).
+ * Back + label left; center title; optional share, filter, search icon buttons right.
+ */
 export function ContextTopBar({
   backLabel,
   title,
@@ -51,7 +31,7 @@ export function ContextTopBar({
             type="button"
             onClick={onBack}
             className="relative z-10 flex min-w-0 shrink-0 items-center gap-2 rounded-full border-none bg-transparent py-2 pr-2 pl-1 outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
-            aria-label={`Back to ${backLabel}`}
+            aria-label={backLabel !== undefined ? `Back to ${backLabel}` : "Back"}
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center">
               <Icon
@@ -60,20 +40,46 @@ export function ContextTopBar({
                 className="text-[var(--color-text-default-headings)]"
               />
             </span>
-            <span className="whitespace-nowrap font-medium leading-[1.43] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-sm)]">
-              {backLabel}
-            </span>
+            {backLabel !== undefined && (
+              <span className="whitespace-nowrap font-medium leading-[var(--line-height-paragraph-md)] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-md)]">
+                {backLabel}
+              </span>
+            )}
           </button>
         )}
 
-        <h1 className="pointer-events-none absolute inset-0 flex items-center justify-center truncate px-6 font-semibold leading-[1.5] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-md)]">
+        <h1 className="pointer-events-none absolute inset-0 flex items-center justify-center truncate px-6 font-semibold leading-[var(--line-height-paragraph-md)] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-md)]">
           {title}
         </h1>
 
         <div className="relative z-10 ml-auto flex shrink-0 items-center gap-4">
-          {onShare && <ActionButton icon="share" label="Share" onClick={onShare} />}
-          {onFilter && <ActionButton icon="tune" label="Filter" onClick={onFilter} />}
-          {onSearch && <ActionButton icon="search" label="Search" onClick={onSearch} />}
+          {onShare && (
+            <IconButton
+              name="share"
+              size="large"
+              variant="neutrals"
+              onClick={onShare}
+              aria-label="Share"
+            />
+          )}
+          {onFilter && (
+            <IconButton
+              name="tune"
+              size="large"
+              variant="neutrals"
+              onClick={onFilter}
+              aria-label="Filter"
+            />
+          )}
+          {onSearch && (
+            <IconButton
+              name="search"
+              size="large"
+              variant="neutrals"
+              onClick={onSearch}
+              aria-label="Search"
+            />
+          )}
         </div>
       </header>
       {!hidePadding && <div className="h-20" />}

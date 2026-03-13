@@ -2,41 +2,14 @@
 
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
+import { IconButton } from "@/components/IconButton";
 
 import type { RootTopBarProps } from "./types";
 
-function ActionButton({
-  icon,
-  label,
-  onClick,
-  variant = "neutral",
-  active = false,
-}: {
-  icon: "add" | "subscriptions" | "search";
-  label: string;
-  onClick?: () => void;
-  variant?: "neutral" | "subtle";
-  active?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none outline-none transition-[transform,background-color] duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
-        active ? "bg-slate-900" : variant === "subtle" ? "bg-slate-100" : "bg-transparent"
-      }`}
-      aria-label={label}
-    >
-      <Icon
-        name={icon}
-        size={20}
-        fill={1}
-        className={active ? "text-white" : "text-text-default-headings"}
-      />
-    </button>
-  );
-}
-
+/**
+ * Dashboard top bar (Figma: top nav bar, types=dashboard — node 93:2260).
+ * Avatar + title left; optional Sell Product text button + Search icon right.
+ */
 export function RootTopBar({
   title,
   avatarSrc,
@@ -47,9 +20,7 @@ export function RootTopBar({
   return (
     <header
       className={`flex h-20 w-full items-center gap-4 border-b border-slate-200 bg-white px-6 py-4 ${className}`}
-      style={{
-        borderBottomWidth: 1,
-      }}
+      style={{ borderBottomWidth: 1 }}
       role="banner"
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -65,16 +36,11 @@ export function RootTopBar({
             />
           ) : (
             <span className="flex h-full w-full items-center justify-center">
-              <Icon
-                name="person"
-                size={20}
-                className="text-grey-500"
-                fill={0}
-              />
+              <Icon name="person" size={20} className="text-grey-500" fill={0} />
             </span>
           )}
         </div>
-        <span className="truncate font-medium leading-[1.4] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-lg)]">
+        <span className="truncate font-medium leading-[var(--line-height-paragraph-lg)] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-lg)]">
           {title}
         </span>
       </div>
@@ -90,10 +56,12 @@ export function RootTopBar({
             Sell Product
           </Button>
         )}
-        <ActionButton
-          icon="search"
-          label="Search"
+        <IconButton
+          name="search"
+          size="large"
+          variant="transparent"
           onClick={onSearch}
+          aria-label="Search"
         />
       </div>
     </header>
