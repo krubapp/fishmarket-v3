@@ -137,6 +137,8 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 - `useSellerOrders(sellerId)` — fetches orders via Firestore client
 - `useSellerInventory(sellerId)` — derives inventory from `getUserListings`
 
+**Mock data** (seller dashboard): When a seller has no orders, the dashboard shows mock orders from `getMockSellerOrders(sellerId)` in `src/lib/constants/orders.ts` (Order #1001–1003, statuses delivered / pending / needs_fulfillment, matching Figma Order-cards node 340:950).
+
 ### `posts` collection
 
 Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.ts`.

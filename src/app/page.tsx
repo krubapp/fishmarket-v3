@@ -52,13 +52,7 @@ export default function HomePage() {
   }, [user?.uid]);
 
   const isSeller = !!profile?.isSeller;
-  const [viewMode, setViewMode] = useState<"seller" | "buyer">("seller");
-
-  useEffect(() => {
-    setViewMode(isSeller ? "seller" : "buyer");
-  }, [isSeller]);
-
-  const showSellerDashboard = isSeller && viewMode === "seller";
+  const showSellerDashboard = isSeller;
   const recommendedListings = allListings.slice(0, 4);
 
   return (
@@ -69,13 +63,7 @@ export default function HomePage() {
         onAddProduct={
           isSeller ? () => router.push(ROUTES.createListingForm) : undefined
         }
-        onFeed={
-          isSeller
-            ? () => setViewMode((m) => (m === "seller" ? "buyer" : "seller"))
-            : undefined
-        }
         onSearch={() => router.push(`${ROUTES.shop}?search=1`)}
-        feedActive={isSeller && viewMode === "buyer"}
       />
 
       {showSellerDashboard ? (

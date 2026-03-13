@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getNewReleases, getSellers } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
+import { getMockSellerOrders } from "@/lib/constants/orders";
 import { StripeAccountCard } from "./StripeAccountCard";
 import { EarningBalanceSection } from "./EarningBalanceSection";
 import { OrdersSection } from "./OrdersSection";
@@ -72,7 +73,13 @@ export function SellerDashboard({
         className="max-w-none"
       />
       <OrdersSection
-        orders={orders ?? []}
+        orders={
+          ordersLoading
+            ? []
+            : (orders && orders.length > 0
+                ? orders
+                : getMockSellerOrders(sellerId))
+        }
         isLoading={ordersLoading}
       />
       <SuggestedProductsSection listings={suggestedListings} />
