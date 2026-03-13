@@ -4,6 +4,7 @@ import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
+import { convertHeicToJpegFiles } from "@/lib/heic";
 import type { MediaDropzoneProps } from "./types";
 
 export function MediaDropzone({
@@ -11,7 +12,7 @@ export function MediaDropzone({
   subtitle = "You can only add up to 10 images / videos",
   files = [],
   onFilesChange,
-  accept = "image/*,video/*",
+  accept = "image/*,video/*,.heic,image/heic",
   maxFiles = 10,
   error = false,
   disabled = false,
@@ -23,6 +24,7 @@ export function MediaDropzone({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isConverting, setIsConverting] = useState(false);
 
   const previewUrls = useMemo(
     () => files.map((f) => URL.createObjectURL(f)),
@@ -43,47 +45,56 @@ export function MediaDropzone({
   const hasMultiple = files.length > 1;
 
   const handleFilesIn = useCallback(
-    (incoming: FileList | null) => {
+    async (incoming: FileList | null) => {
       if (!incoming?.length || !onFilesChange) return;
-      const added = Array.from(incoming);
-      const merged = [...files, ...added].slice(0, maxFiles);
-      onFilesChange(merged);
+      setIsConverting(true);
+      try {
+        const added = Array.from(incoming);
+        const converted = await Promise.all(
+          added.map((f) => convertHeicToJpegFiles(f)),
+        );
+        const flat = converted.flat();
+        const merged = [...files, ...flat].slice(0, maxFiles);
+        onFilesChange(merged);
+      } finally {
+        setIsConverting(false);
+      }
     },
     [onFilesChange, files, maxFiles],
   );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleFilesIn(e.target.files);
+      void handleFilesIn(e.target.files);
       e.target.value = "";
     },
     [handleFilesIn],
   );
 
   const handleClick = useCallback(() => {
-    if (disabled) return;
+    if (disabled || isConverting) return;
     inputRef.current?.click();
-  }, [disabled]);
+  }, [disabled, isConverting]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (disabled) return;
+      if (disabled || isConverting) return;
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         inputRef.current?.click();
       }
     },
-    [disabled],
+    [disabled, isConverting],
   );
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragOver(false);
-      if (disabled) return;
-      handleFilesIn(e.dataTransfer.files);
+      if (disabled || isConverting) return;
+      void handleFilesIn(e.dataTransfer.files);
     },
-    [disabled, handleFilesIn],
+    [disabled, isConverting, handleFilesIn],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -112,7 +123,8 @@ export function MediaDropzone({
   }, [files.length]);
 
   const showPlaceholder = !hasFiles && !children;
-  const isHover = isDragOver && !disabled;
+  const isHover = isDragOver && !disabled && !isConverting;
+  const isBusy = disabled || isConverting;
 
   return (
     <div className={`flex flex-col ${className}`}>
@@ -122,7 +134,7 @@ export function MediaDropzone({
         type="file"
         accept={accept}
         multiple
-        disabled={disabled}
+        disabled={disabled || isConverting}
         onChange={handleChange}
         className="sr-only"
         aria-label={title}
@@ -145,7 +157,7 @@ export function MediaDropzone({
         } ${
           showPlaceholder ? "px-6 py-6" : ""
         } ${
-          disabled
+          isBusy
             ? "cursor-not-allowed opacity-60"
             : "cursor-pointer"
         } ${
@@ -217,7 +229,14 @@ export function MediaDropzone({
             </div>
           </>
         ) : showPlaceholder ? (
-          <div className="flex flex-1 flex-row items-center gap-6">
+          <div className="relative flex flex-1 flex-row items-center gap-6">
+            {isConverting && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded bg-white/90">
+                <span className="text-paragraph-md font-medium text-slate-700">
+                  Converting…
+                </span>
+              </div>
+            )}
             <Icon
               name="add_photo_alternate"
               size={42}
