@@ -41,9 +41,7 @@ export function RootTopBar({
   title,
   avatarSrc,
   onAddProduct,
-  onFeed,
   onSearch,
-  feedActive = false,
   className = "",
 }: RootTopBarProps) {
   return (
@@ -91,15 +89,6 @@ export function RootTopBar({
           >
             Sell Product
           </Button>
-        )}
-        {onFeed && (
-          <ActionButton
-            icon="subscriptions"
-            label="Feed"
-            onClick={onFeed}
-            variant="subtle"
-            active={feedActive}
-          />
         )}
         <ActionButton
           icon="search"

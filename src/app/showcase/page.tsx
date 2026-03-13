@@ -92,7 +92,6 @@ export default function Showcase() {
             title="TheLifeoftoy"
             avatarSrc={null}
             onAddProduct={() => {}}
-            onFeed={() => {}}
             onSearch={() => {}}
           />
         </section>

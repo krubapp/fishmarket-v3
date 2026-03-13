@@ -50,7 +50,7 @@ import { BottomNav } from "@/components/BottomNav";
 **Path**: `@/components/RootTopBar`  
 **Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260).
 
-Horizontal bar: avatar + title on the left; optional **Sell Product** text button (small, subtle variant), optional Feed icon button, and Search icon button on the right. Sell Product renders only when `onAddProduct` is set; Feed renders only when `onFeed` is set. This allows the same component to serve both seller (all actions) and buyer (avatar + search only) views. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Feed/Search icon buttons 40×40.
+Horizontal bar: avatar + title on the left; optional **Sell Product** text button (small, subtle variant) and Search icon button on the right. Sell Product renders only when `onAddProduct` is set. This allows the same component to serve both seller (Sell Product + search) and buyer (avatar + search only) views. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Search icon button 40×40.
 
 **Props**
 
@@ -59,9 +59,7 @@ Horizontal bar: avatar + title on the left; optional **Sell Product** text butto
 | `title` | `string` | Yes | Display name or screen title |
 | `avatarSrc` | `string \| null` | No | Avatar image URL; omit for placeholder |
 | `onAddProduct` | `() => void` | No | Called when Sell Product button is pressed |
-| `onFeed` | `() => void` | No | Called when Feed is pressed |
 | `onSearch` | `() => void` | No | Called when Search is pressed |
-| `feedActive` | `boolean` | No | When true, the Feed button shows an active/highlighted state (default false) |
 | `className` | `string` | No | Applied to the root `<header>` |
 
 **Exports**: `RootTopBar`, `RootTopBarProps`.
@@ -75,7 +73,6 @@ import { RootTopBar } from "@/components/RootTopBar";
   title="TheLifeoftoy"
   avatarSrc={user.avatarUrl}
   onAddProduct={() => openAddProduct()}
-  onFeed={() => goToFeed()}
   onSearch={() => openSearch()}
 />
 ```
