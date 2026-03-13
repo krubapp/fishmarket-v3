@@ -187,10 +187,64 @@ export default function ProfileByUsernamePage() {
 
   if (authLoading || (usernameParam && profileLoading)) {
     return (
-      <div className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:border-x-0 ${pagePaddingBottom}`}>
-        <div className="flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
-        </div>
+      <div
+        className={`mx-auto flex min-h-dvh w-full min-w-0 max-w-[440px] flex-col border-x border-slate-200 bg-white lg:max-w-6xl lg:flex-row lg:gap-8 lg:border-x-0 lg:px-8 ${pagePaddingBottom}`}
+      >
+        <aside className="lg:w-[320px] lg:shrink-0 lg:rounded-xl lg:border lg:border-slate-200 lg:bg-white lg:p-6 lg:shadow-sm">
+          <div className="lg:sticky lg:top-6">
+            <section className="flex flex-col items-center px-4 py-4 sm:px-6 sm:py-6 lg:items-start lg:border-0 lg:px-0 lg:py-0">
+              <div className="flex w-full max-w-[360px] flex-col items-center gap-3 sm:gap-4 lg:max-w-none lg:items-start">
+                <Skeleton className="h-20 w-20 rounded-full" />
+                <div className="flex flex-col items-center gap-1 lg:items-start">
+                  <Skeleton className="h-6 w-40" />
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <div className="flex w-full flex-col gap-1.5">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-5 w-28" />
+                </div>
+                <div className="flex items-center gap-6">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+              </div>
+            </section>
+            <section className="border-y border-slate-200 px-4 py-[10px] sm:px-6 lg:border-y-0 lg:border-t lg:px-0 lg:pt-6">
+              <TabsBox
+                tabs={PROFILE_SECTION_TABS}
+                value=""
+                className="w-full justify-center lg:justify-start"
+              />
+            </section>
+          </div>
+        </aside>
+
+        <main className="flex min-w-0 flex-1 flex-col">
+          <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
+            <div className="overflow-x-auto overflow-y-hidden">
+              <Tabs
+                tabs={CONTENT_TABS}
+                value="my-videos"
+                onValueChange={() => {}}
+                className="!flex-nowrap shrink-0 px-4 sm:px-6 lg:px-0"
+              />
+            </div>
+          </section>
+          <section className="flex-1 py-0.5">
+            <div className="grid grid-cols-3 gap-1">
+              {Array.from({ length: 6 }, (_, i) => (
+                <Skeleton key={i} className="aspect-4/5 w-full rounded-[2px]" />
+              ))}
+            </div>
+          </section>
+        </main>
+
         <BottomNav activeItem="profile" />
       </div>
     );
