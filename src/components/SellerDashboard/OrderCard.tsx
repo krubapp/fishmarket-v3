@@ -170,7 +170,7 @@ export function OrderCard({
             <p className="text-paragraph-md font-semibold leading-normal text-[#121412]">
               Products in order
             </p>
-            <div className="-mx-6 flex gap-4 overflow-x-auto px-6 pb-2">
+            <div className="-mx-6 flex gap-4 overflow-x-auto scrollbar-none px-6 pb-2">
               <div className="flex shrink-0 flex-col gap-2">
                 <ImageBlock
                   size="medium"

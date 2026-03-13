@@ -236,7 +236,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
 
         <main className="flex min-w-0 flex-1 flex-col">
           <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
-            <div className="overflow-x-auto overflow-y-hidden">
+            <div className="overflow-x-auto overflow-y-hidden scrollbar-none">
               <Tabs
                 tabs={getContentTabs(false)}
                 value="my-videos"
@@ -447,7 +447,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
       {/* Right: content tabs + video area */}
       <main className="flex min-w-0 flex-1 flex-col">
         <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
-          <div className="overflow-x-auto overflow-y-hidden">
+          <div className="overflow-x-auto overflow-y-hidden scrollbar-none">
             <Tabs
               tabs={getContentTabs(isOwnProfile)}
               value={contentTab}

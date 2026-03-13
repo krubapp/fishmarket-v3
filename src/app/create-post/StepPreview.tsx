@@ -121,7 +121,7 @@ export function StepPreview({
             <label className="text-[11px] font-semibold uppercase tracking-wider text-text-default-secondary">
               Cover Frame
             </label>
-            <div className="flex gap-3 overflow-x-auto p-2">
+            <div className="flex gap-3 overflow-x-auto scrollbar-none p-2">
               {COVER_FRAME_COLORS.map((c) => {
                 const isSelected = field.value === c.hex;
                 return (

@@ -234,7 +234,7 @@ function SearchPageInner() {
       />
 
       {/* Fish type tabs */}
-      <div className="overflow-x-auto bg-white p-1">
+      <div className="overflow-x-auto scrollbar-none bg-white p-1">
         <Tabs
           tabs={FISH_TYPE_TABS}
           value={fishType}

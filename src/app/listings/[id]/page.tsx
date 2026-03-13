@@ -413,7 +413,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
           )}
         </div>
         {displayImages.length > 0 && (
-          <div className="flex gap-1 overflow-x-auto px-6 pb-2">
+          <div className="flex gap-1 overflow-x-auto scrollbar-none px-6 pb-2">
             {displayImages.map((url, i) => (
               <ImageButton
                 key={i}
@@ -548,7 +548,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
                 Community posts that tagged this listing
               </p>
             </div>
-            <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2">
               {taggedPosts.map((post) => {
                 const creator = post.userId
                   ? taggedPostCreators.get(post.userId)

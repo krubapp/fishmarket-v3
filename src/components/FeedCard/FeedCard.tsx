@@ -132,7 +132,7 @@ export function FeedCard({
 
       {/* Expanded tagged products panel */}
       {hasProducts && productsExpanded && (
-        <div className="absolute left-4 right-16 top-28 z-10 flex gap-3 overflow-x-auto rounded-xl bg-black/60 p-3 backdrop-blur-md">
+        <div className="absolute left-4 right-16 top-28 z-10 flex gap-3 overflow-x-auto scrollbar-none rounded-xl bg-black/60 p-3 backdrop-blur-md">
           {taggedProducts!.map((product) => (
             <button
               key={product.id}

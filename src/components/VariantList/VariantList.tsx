@@ -138,7 +138,7 @@ export function VariantList({
         onChange={handleFileChange}
       />
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto scrollbar-none">
         <div className="min-w-max">
           {/* Table header */}
           <div
