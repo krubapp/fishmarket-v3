@@ -49,7 +49,6 @@ export default function HomePage() {
 
   const showSellerDashboard = isSeller && viewMode === "seller";
   const favoriteListings = allListings.slice(0, 6);
-  const brandListings = allListings.slice(0, 6);
   const recommendedListings = allListings.slice(0, 4);
 
   return (
@@ -89,7 +88,7 @@ export default function HomePage() {
           </div>
 
           <MapComingSoonSection />
-          <BrandSuggestionsSection listings={brandListings} />
+          <BrandSuggestionsSection sellers={sellers} />
           <BecauseYouLikeSection listings={recommendedListings} />
         </div>
       )}
