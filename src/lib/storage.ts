@@ -54,3 +54,14 @@ export async function uploadPostVideo(
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);
 }
+
+/** Upload a post thumbnail image. Returns the download URL. */
+export async function uploadPostThumbnail(
+  blob: Blob,
+  postId: string
+): Promise<string> {
+  const path = `posts/${postId}/thumbnail.jpg`;
+  const storageRef = ref(storage, path);
+  await uploadBytes(storageRef, blob);
+  return getDownloadURL(storageRef);
+}

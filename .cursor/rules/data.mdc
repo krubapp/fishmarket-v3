@@ -147,7 +147,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 |-------|------|-------------|
 | `userId` | `string` | Firebase Auth UID of the post creator |
 | `videoUrl` | `string` | Firebase Storage download URL (`posts/{postId}/video.{ext}`) |
-| `thumbnailUrl` | `string` | Optional thumbnail URL |
+| `thumbnailUrl` | `string` | Thumbnail JPEG URL (Firebase Storage `posts/{postId}/thumbnail.jpg`). Generated client-side from the video during post creation. |
 | `caption` | `string` | Post caption (max 300 chars) |
 | `hashtags` | `string[]` | Hashtag strings (e.g. `["#viral", "#fishing"]`). Predefined or user-entered. |
 | `coverFrameColor` | `string \| null` | Hex color for decorative border/frame around the video in the feed. Null = no frame. |
@@ -188,6 +188,8 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `deleteComment(commentId, postId)` — deletes the comment doc, decrements `commentCount`
 - `searchUsers(query)` — fetch users, client-side filter by `displayName`/`username`. Used in Tag & Link step.
 - `uploadPostVideo(file, postId)` — `src/lib/storage.ts` — uploads to `posts/{postId}/video.{ext}`, returns download URL
+- `uploadPostThumbnail(blob, postId)` — `src/lib/storage.ts` — uploads a JPEG Blob to `posts/{postId}/thumbnail.jpg`, returns download URL
+- `generateVideoThumbnail(file)` — `src/lib/video.ts` — captures a frame from a video File via off-screen `<video>` + `<canvas>`, returns a JPEG Blob (480px wide, aspect-ratio preserved)
 
 ### `post_likes` collection
 

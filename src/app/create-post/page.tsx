@@ -6,7 +6,8 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Snackbar } from "@/components/Snackbar";
 import { createPost } from "@/lib/firestore";
-import { uploadPostVideo } from "@/lib/storage";
+import { uploadPostVideo, uploadPostThumbnail } from "@/lib/storage";
+import { generateVideoThumbnail } from "@/lib/video";
 import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -112,14 +113,19 @@ export default function CreatePostPage() {
         scheduledAt: data.scheduledAt,
       });
 
-      const videoUrl = await uploadPostVideo(videoFile, postId);
+      const [videoUrl, thumbnailUrl] = await Promise.all([
+        uploadPostVideo(videoFile, postId),
+        generateVideoThumbnail(videoFile).then((blob) =>
+          uploadPostThumbnail(blob, postId),
+        ),
+      ]);
 
       const { updateDoc, doc, getFirestore } = await import(
         "firebase/firestore"
       );
       const { firebaseApp } = await import("@/lib/firebase");
       const db = getFirestore(firebaseApp);
-      await updateDoc(doc(db, "posts", postId), { videoUrl });
+      await updateDoc(doc(db, "posts", postId), { videoUrl, thumbnailUrl });
 
       setShowSuccess(true);
       setTimeout(() => router.push(ROUTES.feed), 1200);
