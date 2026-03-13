@@ -33,6 +33,7 @@ import type { ListingReview } from "@/lib/schemas/listing-review";
 import type { Post } from "@/lib/schemas/post";
 import { VideoThumbnailCard } from "@/components/VideoThumbnailCard";
 import { useAuth } from "@/hooks/useAuth";
+import { useCartContext } from "@/contexts/CartContext";
 import { getAuthHeaders } from "@/lib/firebase";
 import { ROUTES } from "@/lib/routes";
 
@@ -53,6 +54,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const { id: listingId } = use(params);
   const router = useRouter();
   const { user, profile: authProfile } = useAuth();
+  const cartContext = useCartContext();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<UserProfile | null>(null);
@@ -85,6 +87,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSnackbarOpen, setReviewSnackbarOpen] = useState(false);
   const [reviewErrorSnackbarOpen, setReviewErrorSnackbarOpen] = useState(false);
+  const [addToCartSnackbarOpen, setAddToCartSnackbarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -178,7 +181,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
         <ContextTopBar backLabel="Shop" title="" onBack={() => router.back()} />
         <div className="flex flex-1 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
@@ -189,7 +192,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   if (error || !listing) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
         <ContextTopBar
           backLabel="Back"
           title="Not Found"
@@ -234,6 +237,28 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   const buyDisabled =
     !user || (hasVariants && !allGroupsSelected) || outOfStock || purchasing;
 
+  const addToCartDisabled =
+    !user || (hasVariants && !allGroupsSelected) || outOfStock;
+
+  async function handleAddToCart() {
+    if (!user || !listing || addToCartDisabled) return;
+    const item = {
+      listingId,
+      quantity: 1,
+      ...(hasVariants &&
+        allGroupsSelected && {
+          variantValueId:
+            selectedVariants[listing.variants![listing.variants!.length - 1].id],
+        }),
+    };
+    try {
+      await cartContext?.addItem(item);
+      setAddToCartSnackbarOpen(true);
+    } catch {
+      setCheckoutError("Failed to add to cart");
+    }
+  }
+
   // Image: use variant image if selected and available
   const variantImage =
     hasVariants && Object.values(selectedVariants).length > 0
@@ -254,7 +279,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
     setPurchasing(true);
     try {
       const body: Record<string, unknown> = {
-        listingId: listing.id,
+        listingId,
         buyerId: user.uid,
       };
       if (hasVariants && allGroupsSelected) {
@@ -373,7 +398,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col border-x border-slate-200 bg-white">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
       <ContextTopBar
         backLabel={listing.category || "Back"}
         title={listing.title}
@@ -527,8 +552,8 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
           <button
             type="button"
             className="inline-flex w-full items-center justify-center gap-2 rounded-full border-0 bg-transparent py-3 outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97] focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
-            onClick={() => {}}
-            disabled={!user}
+            onClick={handleAddToCart}
+            disabled={addToCartDisabled}
           >
             <span className="font-medium leading-[1.5] text-[length:var(--font-size-body-md)] text-slate-900">
               Add to Cart
@@ -703,7 +728,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
           setReviewFormText("");
         }}
         title="Add a Review"
-        width={440}
+        width={480}
       >
         <div className="flex flex-col gap-6">
           <div>
@@ -755,6 +780,13 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
         message="Couldn’t submit review. Try again."
         icon="error"
         duration={5000}
+      />
+      <Snackbar
+        open={addToCartSnackbarOpen}
+        onClose={() => setAddToCartSnackbarOpen(false)}
+        message="Added to cart"
+        icon="check_circle"
+        duration={3000}
       />
       <Snackbar
         open={!!checkoutError}

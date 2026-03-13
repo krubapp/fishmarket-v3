@@ -4,7 +4,9 @@ import "material-symbols";
 import "./globals.css";
 import { AuthGuard } from "@/components/AuthGuard";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { PageTransition } from "@/components/PageTransition";
+import { CartFloatingButton } from "@/components/CartFloatingButton";
 import { ToastProvider } from "@/hooks/useToast";
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -35,11 +37,16 @@ export default function RootLayout({
       >
 <QueryProvider>
           <AuthProvider>
-            <AuthGuard>
-              <ToastProvider>
-                <PageTransition>{children}</PageTransition>
+            <CartProvider>
+              <AuthGuard>
+<ToastProvider>
+                <PageTransition>
+                  {children}
+                  <CartFloatingButton />
+                </PageTransition>
               </ToastProvider>
-            </AuthGuard>
+              </AuthGuard>
+            </CartProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

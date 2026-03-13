@@ -238,7 +238,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
   };
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[440px] flex-col bg-white">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col bg-white">
       <ContextTopBar
         backLabel="Section"
         title={isEdit ? "Edit listing" : "Advance listing"}

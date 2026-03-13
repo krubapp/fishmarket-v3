@@ -26,6 +26,7 @@ import type { Order, OrderStatus } from "./schemas/order";
 import type { Post, CreatePostInput, PostComment } from "./schemas/post";
 import type { SaveCollection, CollectionItem } from "./schemas/collection";
 import type { ListingReview, CreateListingReviewInput } from "./schemas/listing-review";
+import type { Cart, CartItem } from "./schemas/cart";
 
 const db = getFirestore(firebaseApp);
 
@@ -38,6 +39,7 @@ export const POST_SAVES_COLLECTION = "post_saves";
 export const POST_COMMENTS_COLLECTION = "post_comments";
 export const SAVE_COLLECTIONS_COLLECTION = "save_collections";
 export const COLLECTION_ITEMS_COLLECTION = "collection_items";
+export const USER_CARTS_COLLECTION = "user_carts";
 
 export type UserProfile = {
   uid: string;
@@ -129,6 +131,65 @@ export async function updateUserProfile(
   await updateDoc(doc(db, USERS_COLLECTION, uid), omitUndefined(data as Record<string, unknown>));
 }
 
+// --- User cart (basket) ---
+
+export async function getCart(uid: string): Promise<Cart> {
+  const snap = await getDoc(doc(db, USER_CARTS_COLLECTION, uid));
+  if (!snap.exists()) return { items: [] };
+  const data = snap.data();
+  return { items: (data?.items ?? []) as CartItem[], updatedAt: data?.updatedAt };
+}
+
+/** Add or merge item into user cart (same listing + variant increases quantity). */
+export async function addCartItem(
+  uid: string,
+  item: CartItem,
+): Promise<Cart> {
+  const cart = await getCart(uid);
+  const existingIdx = cart.items.findIndex(
+    (i) =>
+      i.listingId === item.listingId &&
+      (i.variantValueId ?? "") === (item.variantValueId ?? ""),
+  );
+  const nextItems =
+    existingIdx >= 0
+      ? cart.items.map((i, idx) =>
+          idx === existingIdx
+            ? { ...i, quantity: i.quantity + item.quantity }
+            : i,
+        )
+      : [...cart.items, item];
+  await setDoc(doc(db, USER_CARTS_COLLECTION, uid), {
+    items: nextItems,
+    updatedAt: serverTimestamp(),
+  });
+  return { items: nextItems, updatedAt: undefined };
+}
+
+export async function setCart(uid: string, items: CartItem[]): Promise<void> {
+  await setDoc(doc(db, USER_CARTS_COLLECTION, uid), {
+    items,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function removeCartItem(
+  uid: string,
+  listingId: string,
+  variantValueId?: string,
+): Promise<Cart> {
+  const cart = await getCart(uid);
+  const nextItems = cart.items.filter(
+    (i) =>
+      !(i.listingId === listingId && (i.variantValueId ?? "") === (variantValueId ?? "")),
+  );
+  await setDoc(doc(db, USER_CARTS_COLLECTION, uid), {
+    items: nextItems,
+    updatedAt: serverTimestamp(),
+  });
+  return { items: nextItems, updatedAt: undefined };
+}
+
 export type CreateListingInput = Omit<Listing, "id" | "createdAt">;
 
 export type CreateListingInputInitial = Omit<CreateListingInput, "imageUrls"> & {
@@ -158,7 +219,7 @@ export async function updateListing(
 export async function getListing(id: string): Promise<Listing | null> {
   const snap = await getDoc(doc(db, LISTINGS_COLLECTION, id));
   if (!snap.exists()) return null;
-  return { id: snap.id, ...snap.data() } as Listing;
+  return { ...snap.data(), id: snap.id } as Listing;
 }
 
 export async function getListings(): Promise<Listing[]> {
@@ -291,7 +352,7 @@ export async function getListingsByIds(
       where(documentId(), "in", batch),
     );
     const snap = await getDocs(q);
-    snap.docs.forEach((d) => map.set(d.id, { id: d.id, ...d.data() } as Listing));
+    snap.docs.forEach((d) => map.set(d.id, { ...d.data(), id: d.id } as Listing));
   }
 
   return map;

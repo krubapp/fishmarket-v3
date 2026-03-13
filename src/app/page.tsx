@@ -67,11 +67,11 @@ export default function HomePage() {
       />
 
       {showSellerDashboard ? (
-        <div className="mx-auto w-full max-w-[440px]">
+        <div className="mx-auto w-full max-w-[480px]">
           <SellerDashboard sellerId={user!.uid} />
         </div>
       ) : (
-        <div className="mx-auto flex w-full max-w-[440px] flex-col gap-6">
+        <div className="mx-auto flex w-full max-w-[480px] flex-col gap-6">
           <TopBrandsSection sellers={sellers} loading={loading} />
           <NewReleaseSection listings={newReleases} loading={loading} />
           <CategoriesSection
@@ -80,8 +80,12 @@ export default function HomePage() {
             }
           />
 
-          <div className="flex flex-col gap-[54px] px-6">
-            <FavoritesSection listings={favoriteListings} loading={loading} />
+          <div className="flex flex-col gap-[54px] border-b border-[#e2e8f0] px-[24px]">
+            <FavoritesSection
+              listings={favoriteListings}
+              loading={loading}
+              onViewAll={() => router.push(ROUTES.profileFavorites)}
+            />
             <PromoCTASection />
           </div>
 

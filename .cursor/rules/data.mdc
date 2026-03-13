@@ -147,7 +147,7 @@ Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created wh
 - `GET /api/seller/analytics?sellerId=...` — server-side aggregation via Firebase Admin SDK. Returns `SellerAnalytics`: `earningBalance`, `lifetimeEarning`, `lastPayout`, `nextPayout`, `currency`, `totalOrders`, `shippedOrders`, `pendingOrders`.
 - `POST /api/stripe/connect/onboard` — creates Stripe Connect Express account + Account Link URL for seller onboarding
 - `GET /api/stripe/connect/status?uid=...` — checks Stripe Connect account verification status
-- `POST /api/stripe/checkout` — creates Stripe Checkout Session with destination charge for buyer purchase
+- `POST /api/stripe/checkout` — creates Stripe Checkout Session. Single item: body `{ listingId, buyerId, variantValueId?, quantity }`. Cart: body `{ buyerId, cart: true, sellerId }`; loads user cart, builds line items for that seller, writes `pending_cart_checkouts/{sessionId}`, returns session URL. One checkout per seller (Stripe single destination per session).
 - `POST /api/stripe/webhook` — handles Stripe webhook events (order creation, status updates, stock deduction)
 
 **React Query hooks** (in `src/hooks/`):
@@ -260,6 +260,35 @@ Tracks which users have favorited which listings. Document ID = `{listingId}_{us
 - `isListingFavorited(listingId, userId)` — check if a single doc exists, returns boolean
 - `getUserFavoriteListingIds(userId, limitCount?)` — query by userId, returns array of listing IDs
 - `getUserFavoriteListings(userId, limitCount?)` — calls `getUserFavoriteListingIds`, batch-fetches listings via `getListingsByIds`. Returns `Listing[]`
+
+### `user_carts` collection
+
+Stores the buyer's basket (cart). One document per user; document ID = `userId`. Updated when user adds/removes items; cleared by webhook after successful cart checkout.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `items` | `CartItem[]` | Array of `{ listingId, quantity, variantValueId? }`. Same listing + variant merges quantity. |
+| `updatedAt` | `Timestamp` | Server timestamp |
+
+Schema: `src/lib/schemas/cart.ts` (`Cart`, `CartItem`).
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `getCart(uid)` — returns `Cart` (items array; empty if no doc)
+- `addCartItem(uid, item)` — add or merge item (same listing + variant increments quantity)
+- `setCart(uid, items)` — replace cart items
+- `removeCartItem(uid, listingId, variantValueId?)` — remove one line
+
+**Context**: `CartProvider` and `useCartContext()` in `src/contexts/CartContext.tsx` provide `itemCount`, `refresh()`, and `addItem(item)` for the floating basket and listing detail Add to Cart.
+
+### `pending_cart_checkouts` collection
+
+Server-only. Document ID = Stripe Checkout Session ID. Written by `POST /api/stripe/checkout` when `cart: true` and `sellerId`; read by webhook on `checkout.session.completed` to create multiple orders and clear purchased items from user cart; then deleted.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `buyerId` | `string` | Buyer UID |
+| `items` | `array` | Per-item data for order creation: `listingId`, `quantity`, `variantValueId?`, `sellerId`, `unitPrice`, `shippingCost`, `variantLabel`, `listingTitle`, `currency` |
 
 ### `counters` collection
 

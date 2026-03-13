@@ -28,6 +28,7 @@ export const ROUTES = {
   settingsGeneral: "/settings/general",
   settingsAccount: "/settings/account",
   listingDetail: (id: string) => `/listings/${id}` as const,
+  cart: "/cart",
   checkoutSuccess: "/checkout/success",
   stripeConnectReturn: "/stripe/connect/return",
 } as const;

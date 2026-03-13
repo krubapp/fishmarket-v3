@@ -93,6 +93,123 @@ export async function POST(request: Request) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const meta = session.metadata || {};
+  const db = getDb();
+
+  // Cart checkout: multiple orders from pending_cart_checkouts
+  if (meta.cartCheckout === "true" && meta.buyerId) {
+    const pendingRef = db.collection("pending_cart_checkouts").doc(session.id);
+    const pendingSnap = await pendingRef.get();
+    if (!pendingSnap.exists) {
+      console.error("Missing pending_cart_checkouts for session", session.id);
+      return;
+    }
+    const { buyerId, items } = pendingSnap.data()! as {
+      buyerId: string;
+      items: Array<{
+        listingId: string;
+        quantity: number;
+        variantValueId?: string;
+        sellerId: string;
+        unitPrice: number;
+        shippingCost: number;
+        variantLabel: string;
+        listingTitle: string;
+        currency: string;
+      }>;
+    };
+
+    const existingOrder = await db
+      .collection("orders")
+      .where("stripeCheckoutSessionId", "==", session.id)
+      .limit(1)
+      .get();
+    if (!existingOrder.empty) {
+      await pendingRef.delete();
+      return;
+    }
+
+    const buyerDoc = await db.collection("users").doc(buyerId).get();
+    const buyerData = buyerDoc.exists ? buyerDoc.data()! : {};
+    const paymentIntentId =
+      typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id || "";
+
+    const counterRef = db.collection("counters").doc("orders");
+    let lastOrderNumber = 1000;
+
+    for (const it of items) {
+      lastOrderNumber = await db.runTransaction(async (tx) => {
+        const counterSnap = await tx.get(counterRef);
+        const current = counterSnap.exists
+          ? (counterSnap.data()!.lastOrderNumber as number)
+          : 1000;
+        const next = current + 1;
+        tx.set(counterRef, { lastOrderNumber: next }, { merge: true });
+        return next;
+      });
+
+      const totalAmount = it.unitPrice * it.quantity + it.shippingCost;
+      const orderRef = await db.collection("orders").add({
+        orderNumber: lastOrderNumber,
+        sellerId: it.sellerId,
+        buyerId,
+        buyerName:
+          (buyerData.displayName as string) ||
+          (buyerData.username as string) ||
+          "Buyer",
+        buyerEmail: (buyerData.email as string) || "",
+        listingId: it.listingId,
+        listingTitle: it.listingTitle,
+        quantity: it.quantity,
+        unitPrice: it.unitPrice,
+        totalAmount,
+        currency: it.currency,
+        status: "pending",
+        stripeCheckoutSessionId: session.id,
+        stripePaymentIntentId: paymentIntentId,
+        selectedVariantValueId: it.variantValueId || "",
+        selectedVariantLabel: it.variantLabel || "",
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+
+      if (it.variantValueId && it.listingId) {
+        const deducted = await deductStock(
+          it.listingId,
+          it.variantValueId,
+          it.quantity,
+        );
+        if (!deducted) {
+          await orderRef.update({
+            status: "cancelled",
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+        }
+      }
+    }
+
+    // Remove purchased items from user cart and delete pending doc
+    const cartRef = db.collection("user_carts").doc(buyerId);
+    const cartSnap = await cartRef.get();
+    const cartData = cartSnap.exists ? cartSnap.data() : null;
+    const cartItems = (cartData?.items ?? []) as Array<{
+      listingId: string;
+      quantity: number;
+      variantValueId?: string;
+    }>;
+    const purchasedKeys = new Set(
+      items.map((i) => `${i.listingId}:${i.variantValueId ?? ""}`),
+    );
+    const remaining = cartItems.filter(
+      (i) => !purchasedKeys.has(`${i.listingId}:${i.variantValueId ?? ""}`),
+    );
+    await cartRef.set({ items: remaining, updatedAt: FieldValue.serverTimestamp() });
+    await pendingRef.delete();
+    return;
+  }
+
+  // Single-item checkout
   const {
     listingId,
     buyerId,
@@ -109,9 +226,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  const db = getDb();
-
-  // Idempotency: skip if an order for this session already exists
   const existingOrder = await db
     .collection("orders")
     .where("stripeCheckoutSessionId", "==", session.id)
@@ -126,11 +240,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const buyerDoc = await db.collection("users").doc(buyerId).get();
   const buyerData = buyerDoc.exists ? buyerDoc.data()! : {};
 
-  // Fetch listing title
   const listingDoc = await db.collection("listings").doc(listingId).get();
   const listingData = listingDoc.exists ? listingDoc.data()! : {};
 
-  // Atomic order number via counter document
   const counterRef = db.collection("counters").doc("orders");
   const orderNumber = await db.runTransaction(async (tx) => {
     const counterSnap = await tx.get(counterRef);
@@ -169,7 +281,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     updatedAt: FieldValue.serverTimestamp(),
   });
 
-  // Deduct variant stock atomically — if insufficient, cancel the order
   if (variantValueId && listingId) {
     const deducted = await deductStock(listingId, variantValueId, quantity);
     if (!deducted) {
@@ -189,21 +300,21 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntent.id)
-    .limit(1)
     .get();
 
   if (ordersSnap.empty) return;
 
-  const orderDoc = ordersSnap.docs[0];
-  const orderData = orderDoc.data();
-
-  // Idempotency: only transition from pending
-  if (orderData.status !== "pending") return;
-
-  await orderDoc.ref.update({
-    status: "confirmed",
-    updatedAt: FieldValue.serverTimestamp(),
-  });
+  const batch = db.batch();
+  for (const orderDoc of ordersSnap.docs) {
+    const orderData = orderDoc.data();
+    if (orderData.status === "pending") {
+      batch.update(orderDoc.ref, {
+        status: "confirmed",
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
+  }
+  await batch.commit();
 }
 
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
@@ -211,29 +322,25 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntent.id)
-    .limit(1)
     .get();
 
   if (ordersSnap.empty) return;
 
-  const orderDoc = ordersSnap.docs[0];
-  const orderData = orderDoc.data();
+  for (const orderDoc of ordersSnap.docs) {
+    const orderData = orderDoc.data();
+    if (orderData.status === "cancelled") continue;
 
-  // Idempotency: only cancel if not already cancelled
-  if (orderData.status === "cancelled") return;
+    await orderDoc.ref.update({
+      status: "cancelled",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 
-  await orderDoc.ref.update({
-    status: "cancelled",
-    updatedAt: FieldValue.serverTimestamp(),
-  });
-
-  // Restore stock
-  const variantValueId = orderData.selectedVariantValueId as string;
-  const listingId = orderData.listingId as string;
-  const quantity = (orderData.quantity as number) || 1;
-
-  if (variantValueId && listingId) {
-    await restoreStock(listingId, variantValueId, quantity);
+    const variantValueId = orderData.selectedVariantValueId as string;
+    const listingId = orderData.listingId as string;
+    const quantity = (orderData.quantity as number) || 1;
+    if (variantValueId && listingId) {
+      await restoreStock(listingId, variantValueId, quantity);
+    }
   }
 }
 
@@ -242,27 +349,25 @@ async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntent.id)
-    .limit(1)
     .get();
 
   if (ordersSnap.empty) return;
 
-  const orderDoc = ordersSnap.docs[0];
-  const orderData = orderDoc.data();
+  for (const orderDoc of ordersSnap.docs) {
+    const orderData = orderDoc.data();
+    if (orderData.status === "cancelled") continue;
 
-  if (orderData.status === "cancelled") return;
+    await orderDoc.ref.update({
+      status: "cancelled",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 
-  await orderDoc.ref.update({
-    status: "cancelled",
-    updatedAt: FieldValue.serverTimestamp(),
-  });
-
-  const variantValueId = orderData.selectedVariantValueId as string;
-  const listingId = orderData.listingId as string;
-  const quantity = (orderData.quantity as number) || 1;
-
-  if (variantValueId && listingId) {
-    await restoreStock(listingId, variantValueId, quantity);
+    const variantValueId = orderData.selectedVariantValueId as string;
+    const listingId = orderData.listingId as string;
+    const quantity = (orderData.quantity as number) || 1;
+    if (variantValueId && listingId) {
+      await restoreStock(listingId, variantValueId, quantity);
+    }
   }
 }
 
@@ -278,27 +383,25 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntentId)
-    .limit(1)
     .get();
 
   if (ordersSnap.empty) return;
 
-  const orderDoc = ordersSnap.docs[0];
-  const orderData = orderDoc.data();
+  for (const orderDoc of ordersSnap.docs) {
+    const orderData = orderDoc.data();
+    if (orderData.status === "returned") continue;
 
-  if (orderData.status === "returned") return;
+    await orderDoc.ref.update({
+      status: "returned",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
 
-  await orderDoc.ref.update({
-    status: "returned",
-    updatedAt: FieldValue.serverTimestamp(),
-  });
-
-  const variantValueId = orderData.selectedVariantValueId as string;
-  const listingId = orderData.listingId as string;
-  const quantity = (orderData.quantity as number) || 1;
-
-  if (variantValueId && listingId) {
-    await restoreStock(listingId, variantValueId, quantity);
+    const variantValueId = orderData.selectedVariantValueId as string;
+    const listingId = orderData.listingId as string;
+    const quantity = (orderData.quantity as number) || 1;
+    if (variantValueId && listingId) {
+      await restoreStock(listingId, variantValueId, quantity);
+    }
   }
 }
 
@@ -314,15 +417,18 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
   const ordersSnap = await db
     .collection("orders")
     .where("stripePaymentIntentId", "==", paymentIntentId)
-    .limit(1)
     .get();
 
   if (ordersSnap.empty) return;
 
-  await ordersSnap.docs[0].ref.update({
-    status: "return_requested",
-    updatedAt: FieldValue.serverTimestamp(),
-  });
+  const batch = db.batch();
+  for (const orderDoc of ordersSnap.docs) {
+    batch.update(orderDoc.ref, {
+      status: "return_requested",
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+  }
+  await batch.commit();
 }
 
 async function handleAccountUpdated(account: Stripe.Account) {

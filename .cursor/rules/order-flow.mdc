@@ -63,11 +63,19 @@ The `SellerDashboard` reads `stripeOnboardingComplete` from the auth context pro
    - `payment_intent.canceled` webhook → same as failed
 9. Buyer is redirected to `/checkout/success?session_id=...`. The success page validates the session via `GET /api/stripe/session?session_id=...` (auth required) and displays order details (item, quantity, total). Invalid sessions show an error state.
 
+### Cart (basket) checkout
+
+- Basket is stored per user in Firestore `user_carts/{uid}` (see **Data** rule). Add to Cart on listing detail adds/merges items; floating basket (top right, above BottomNav) shows when cart has items and links to `/cart`.
+- Cart page (`/cart`) lists items grouped by seller. Because Stripe Checkout allows one destination per session, there is one **Checkout** button per seller; clicking it calls `POST /api/stripe/checkout` with `{ buyerId, cart: true, sellerId }`.
+- API loads user cart, keeps only items for that seller, validates stock, builds line items and one session, writes `pending_cart_checkouts/{sessionId}`, returns session URL.
+- On `checkout.session.completed`, if metadata `cartCheckout === "true"`, webhook reads `pending_cart_checkouts`, creates one order per item (same `stripePaymentIntentId`), deducts stock, removes those items from user cart, deletes pending doc.
+- `handlePaymentSucceeded` / `handlePaymentFailed` / `handlePaymentCanceled` / `handleChargeRefunded` / `handleDisputeCreated` update or restore **all** orders with that payment intent (cart checkout creates multiple orders per session).
+
 ## Webhook Events Handled
 
 | Event | Handler | Action |
 |-------|---------|--------|
-| `checkout.session.completed` | `handleCheckoutCompleted` | Creates order, deducts stock (cancels if insufficient) |
+| `checkout.session.completed` | `handleCheckoutCompleted` | Single: creates order, deducts stock. Cart: creates order per item from `pending_cart_checkouts`, deducts stock, clears cart items, deletes pending doc. |
 | `payment_intent.succeeded` | `handlePaymentSucceeded` | Updates order to `confirmed` |
 | `payment_intent.payment_failed` | `handlePaymentFailed` | Cancels order, restores stock |
 | `payment_intent.canceled` | `handlePaymentCanceled` | Cancels order, restores stock |
