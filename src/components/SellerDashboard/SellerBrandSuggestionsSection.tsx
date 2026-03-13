@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
 import { Link } from "@/components/Link";
 import type { UserProfile } from "@/lib/firestore";
+import { ROUTES } from "@/lib/routes";
 
 export type SellerBrandSuggestionsSectionProps = {
   sellers: UserProfile[];
@@ -15,7 +17,14 @@ export function SellerBrandSuggestionsSection({
   onViewMore,
   className = "",
 }: SellerBrandSuggestionsSectionProps) {
+  const router = useRouter();
+
   if (sellers.length === 0) return null;
+
+  const handleSellerClick = (seller: UserProfile) => {
+    const slug = seller.username && seller.username.trim().length > 0 ? seller.username : seller.uid;
+    router.push(ROUTES.profileByUsername(slug));
+  };
 
   return (
     <section
@@ -25,7 +34,7 @@ export function SellerBrandSuggestionsSection({
       <div className="flex items-start gap-6">
         <div className="flex flex-1 flex-col">
           <p className="text-[24px] font-medium leading-[32px] text-[#121412]">
-            Suggested products
+            Suggested brands
           </p>
           <p className="text-paragraph-md font-normal leading-normal text-[#1e201e]">
             Lure anglers are loving right now
@@ -41,12 +50,18 @@ export function SellerBrandSuggestionsSection({
       {/* Horizontal scroll of brand avatars */}
       <div className="flex gap-1 overflow-x-auto scrollbar-none">
         {sellers.map((seller) => (
-          <Avatar
+          <button
             key={seller.uid}
-            size={80}
-            src={seller.avatarUrl}
-            label={seller.displayName ?? "Seller"}
-          />
+            type="button"
+            onClick={() => handleSellerClick(seller)}
+            className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 outline-none"
+          >
+            <Avatar
+              size={80}
+              src={seller.avatarUrl}
+              label={seller.displayName ?? "Seller"}
+            />
+          </button>
         ))}
       </div>
     </section>
