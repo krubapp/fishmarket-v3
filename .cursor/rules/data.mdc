@@ -188,13 +188,12 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 **Constants** (in `src/lib/constants/post.ts`):
 
 - `TRENDING_HASHTAGS` — predefined trending hashtag strings
-- `COVER_FRAME_COLORS` — predefined cover frame color options (`{ id, label, hex }`)
 - `VISIBILITY_OPTIONS` — visibility radio options (`{ id, label, description, icon, emoji }`)
 - `INTERACTION_SETTINGS` — interaction toggle options (`{ id, label, description, icon, emoji, defaultValue }`)
 
 **Helpers** (in `src/lib/firestore.ts`):
 
-- `createPost(data)` — adds doc to `posts`, returns doc id. Accepts all new fields (hashtags, coverFrameColor, taggedUserIds, taggedListingIds, visibility, interaction toggles, scheduledAt).
+- `createPost(data)` — adds doc to `posts`, returns doc id. Accepts all new fields (hashtags, taggedUserIds, taggedListingIds, visibility, interaction toggles, scheduledAt).
 - `getPost(id)` — fetches a single post by ID
 - `getFeedPosts(limitCount?, afterDoc?)` — paginated feed, `createdAt` desc. Returns `{ posts, lastDoc }`
 - `togglePostLike(postId, userId)` — toggle like (add/remove `post_likes` doc, increment/decrement `likeCount`), returns new liked state
