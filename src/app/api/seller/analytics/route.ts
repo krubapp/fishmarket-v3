@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase-admin";
+import { verifyAuthToken } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,10 @@ export type SellerAnalytics = {
 const COMPLETED_STATUSES = ["shipped", "delivered"];
 
 export async function GET(request: Request) {
+  const authResult = await verifyAuthToken(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const authenticatedUid = authResult.uid;
+
   const { searchParams } = new URL(request.url);
   const sellerId = searchParams.get("sellerId");
 
@@ -25,6 +30,13 @@ export async function GET(request: Request) {
     return NextResponse.json(
       { error: "sellerId is required" },
       { status: 400 },
+    );
+  }
+
+  if (sellerId !== authenticatedUid) {
+    return NextResponse.json(
+      { error: "sellerId does not match authenticated user" },
+      { status: 403 },
     );
   }
 

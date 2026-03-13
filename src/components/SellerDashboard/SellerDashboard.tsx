@@ -5,7 +5,8 @@ import { TrackInventoryCard } from "@/components/TrackInventoryCard";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { useSellerOrders } from "@/hooks/useSellerOrders";
 import { useSellerInventory } from "@/hooks/useSellerInventory";
-import { getNewReleases, getSellers, getUserProfile } from "@/lib/firestore";
+import { useAuth } from "@/hooks/useAuth";
+import { getNewReleases, getSellers } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
 import { StripeAccountCard } from "./StripeAccountCard";
@@ -23,6 +24,7 @@ export function SellerDashboard({
   sellerId,
   className = "",
 }: SellerDashboardProps) {
+  const { profile, refreshProfile } = useAuth();
   const {
     data: analytics,
     isLoading: analyticsLoading,
@@ -40,24 +42,19 @@ export function SellerDashboard({
 
   const [suggestedListings, setSuggestedListings] = useState<Listing[]>([]);
   const [sellers, setSellers] = useState<UserProfile[]>([]);
-  const [stripeOnboardingComplete, setStripeOnboardingComplete] =
-    useState(false);
 
+  // Refetch profile on mount to pick up Stripe onboarding changes
   useEffect(() => {
+    refreshProfile();
     getNewReleases(10)
       .then(setSuggestedListings)
       .catch(() => {});
     getSellers(10)
       .then(setSellers)
       .catch(() => {});
-    getUserProfile(sellerId)
-      .then((profile) => {
-        if (profile?.stripeOnboardingComplete) {
-          setStripeOnboardingComplete(true);
-        }
-      })
-      .catch(() => {});
-  }, [sellerId]);
+  }, [sellerId, refreshProfile]);
+
+  const stripeOnboardingComplete = profile?.stripeOnboardingComplete ?? false;
 
   return (
     <div className={`flex flex-col ${className}`}>

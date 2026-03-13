@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/Icon";
+import { getAuthHeaders } from "@/lib/firebase";
 
 export type StripeAccountCardProps = {
   uid?: string;
@@ -15,22 +16,26 @@ export function StripeAccountCard({
   className = "",
 }: StripeAccountCardProps) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleConnect() {
     if (!uid || loading) return;
     setLoading(true);
+    setError(null);
     try {
+      const authHeaders = await getAuthHeaders();
       const res = await fetch("/api/stripe/connect/onboard", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid }),
+        headers: authHeaders,
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        setError(data.error || "Failed to start onboarding");
       }
     } catch {
-      // Silently fail — user can retry
+      setError("Connection failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -81,24 +86,29 @@ export function StripeAccountCard({
           )}
         </div>
         {!stripeOnboardingComplete && (
-          <button
-            className="flex items-center gap-1 self-start disabled:opacity-50"
-            onClick={handleConnect}
-            disabled={loading || !uid}
-          >
-            <span className="text-[14px] font-normal text-[#0c0c0c]">
-              {loading
-                ? "Connecting..."
-                : "Connect to your payment account"}
-            </span>
-            {!loading && (
-              <Icon
-                name="arrow_forward_ios"
-                size={20}
-                className="text-[#0c0c0c]"
-              />
+          <>
+            <button
+              className="flex items-center gap-1 self-start disabled:opacity-50"
+              onClick={handleConnect}
+              disabled={loading || !uid}
+            >
+              <span className="text-[14px] font-normal text-[#0c0c0c]">
+                {loading
+                  ? "Connecting..."
+                  : "Connect to your payment account"}
+              </span>
+              {!loading && (
+                <Icon
+                  name="arrow_forward_ios"
+                  size={20}
+                  className="text-[#0c0c0c]"
+                />
+              )}
+            </button>
+            {error && (
+              <p className="text-[13px] font-medium text-red-600">{error}</p>
             )}
-          </button>
+          </>
         )}
       </div>
     </section>

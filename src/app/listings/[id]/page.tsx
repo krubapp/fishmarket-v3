@@ -16,6 +16,7 @@ import { getListing, getUserProfile } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing, VariantGroup, VariantValue } from "@/lib/schemas/listing";
 import { useAuth } from "@/hooks/useAuth";
+import { getAuthHeaders } from "@/lib/firebase";
 import { ROUTES } from "@/lib/routes";
 
 function findVariantValue(
@@ -46,6 +47,7 @@ export default function ListingDetailPage() {
   >({});
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -154,19 +156,20 @@ export default function ListingDetailPage() {
         const lastGroup = listing.variants![listing.variants!.length - 1];
         body.variantValueId = selectedVariants[lastGroup.id];
       }
+      const authHeaders = await getAuthHeaders();
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders },
         body: JSON.stringify(body),
       });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert(data.error || "Failed to start checkout");
+        setCheckoutError(data.error || "Failed to start checkout");
       }
     } catch {
-      alert("Failed to start checkout");
+      setCheckoutError("Failed to start checkout");
     } finally {
       setPurchasing(false);
     }
@@ -430,6 +433,13 @@ export default function ListingDetailPage() {
         message="Link copied"
         icon="link"
         duration={3000}
+      />
+      <Snackbar
+        open={!!checkoutError}
+        onClose={() => setCheckoutError(null)}
+        message={checkoutError || ""}
+        icon="error"
+        duration={5000}
       />
     </div>
   );

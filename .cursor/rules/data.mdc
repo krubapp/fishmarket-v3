@@ -223,6 +223,14 @@ Stores comments on posts. Document ID = auto-generated.
 | `text` | `string` | Comment text |
 | `createdAt` | `Timestamp` | When commented |
 
+### `counters` collection
+
+Internal counter documents for atomic ID generation. Used by server-side webhook handlers.
+
+| Document | Field | Type | Description |
+|----------|-------|------|-------------|
+| `orders` | `lastOrderNumber` | `number` | Last assigned order number (starts at 1000). Incremented atomically in a Firestore transaction when creating new orders. |
+
 ### `save_collections` collection
 
 Stores user-created save collections (folders/boards for organizing saved posts). Schema defined in `src/lib/schemas/collection.ts`.

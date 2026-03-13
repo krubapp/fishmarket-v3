@@ -10,8 +10,10 @@ export type EarningBalanceSectionProps = {
 };
 
 function formatBalance(amount: number): string {
-  const parts = amount.toFixed(2).split(".");
-  return `${parts[0]}.${parts[1].substring(0, 2)}.00`;
+  return new Intl.NumberFormat("sv-SE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
 }
 
 function formatCompact(amount: number): string {

@@ -2,12 +2,18 @@ import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase-admin";
 import { getStripe } from "@/lib/stripe";
+import { verifyAuthToken } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  const authResult = await verifyAuthToken(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const authenticatedUid = authResult.uid;
+
   const db = getFirestore(getAdminApp());
   const stripe = getStripe();
+
   try {
     const { listingId, buyerId, variantValueId, quantity = 1 } = await request.json();
 
@@ -18,7 +24,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Fetch listing
+    if (buyerId !== authenticatedUid) {
+      return NextResponse.json(
+        { error: "buyerId does not match authenticated user" },
+        { status: 403 },
+      );
+    }
+
     const listingDoc = await db.collection("listings").doc(listingId).get();
     if (!listingDoc.exists) {
       return NextResponse.json(
@@ -28,7 +40,6 @@ export async function POST(request: Request) {
     }
     const listing = listingDoc.data()!;
 
-    // Fetch seller
     const sellerId = listing.sellerId as string;
     if (!sellerId) {
       return NextResponse.json(
@@ -53,7 +64,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Resolve price from variant or base listing
     let unitPrice = listing.price as number;
     let variantLabel = "";
     if (variantValueId && listing.variants) {
@@ -93,7 +103,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Ensure buyer has a Stripe customer ID
     const buyerDoc = await db.collection("users").doc(buyerId).get();
     const buyerData = buyerDoc.exists ? buyerDoc.data()! : {};
     let stripeCustomerId = buyerData.stripeCustomerId as string | undefined;

@@ -57,6 +57,22 @@ export async function POST(request: Request) {
         );
         break;
 
+      case "payment_intent.canceled":
+        await handlePaymentCanceled(
+          event.data.object as Stripe.PaymentIntent,
+        );
+        break;
+
+      case "charge.refunded":
+        await handleChargeRefunded(event.data.object as Stripe.Charge);
+        break;
+
+      case "charge.dispute.created":
+        await handleDisputeCreated(
+          event.data.object as Stripe.Dispute,
+        );
+        break;
+
       case "account.updated":
         await handleAccountUpdated(event.data.object as Stripe.Account);
         break;
@@ -93,13 +109,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
+  const db = getDb();
+
+  // Idempotency: skip if an order for this session already exists
+  const existingOrder = await db
+    .collection("orders")
+    .where("stripeCheckoutSessionId", "==", session.id)
+    .limit(1)
+    .get();
+  if (!existingOrder.empty) return;
+
   const quantity = parseInt(quantityStr || "1", 10);
   const unitPrice = parseFloat(unitPriceStr || "0");
   const shippingCost = parseFloat(shippingCostStr || "0");
   const totalAmount = unitPrice * quantity + shippingCost;
-
-  // Fetch buyer info for denormalized fields
-  const db = getDb();
   const buyerDoc = await db.collection("users").doc(buyerId).get();
   const buyerData = buyerDoc.exists ? buyerDoc.data()! : {};
 
@@ -107,18 +130,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const listingDoc = await db.collection("listings").doc(listingId).get();
   const listingData = listingDoc.exists ? listingDoc.data()! : {};
 
-  // Generate sequential order number
-  const ordersSnap = await db
-    .collection("orders")
-    .orderBy("orderNumber", "desc")
-    .limit(1)
-    .get();
-  const lastOrderNumber = ordersSnap.empty
-    ? 1000
-    : (ordersSnap.docs[0].data().orderNumber as number);
+  // Atomic order number via counter document
+  const counterRef = db.collection("counters").doc("orders");
+  const orderNumber = await db.runTransaction(async (tx) => {
+    const counterSnap = await tx.get(counterRef);
+    const current = counterSnap.exists
+      ? (counterSnap.data()!.lastOrderNumber as number)
+      : 1000;
+    const next = current + 1;
+    tx.set(counterRef, { lastOrderNumber: next }, { merge: true });
+    return next;
+  });
 
-  await db.collection("orders").add({
-    orderNumber: lastOrderNumber + 1,
+  const orderRef = await db.collection("orders").add({
+    orderNumber,
     sellerId,
     buyerId,
     buyerName:
@@ -144,9 +169,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     updatedAt: FieldValue.serverTimestamp(),
   });
 
-  // Deduct variant stock atomically
+  // Deduct variant stock atomically — if insufficient, cancel the order
   if (variantValueId && listingId) {
-    await deductStock(listingId, variantValueId, quantity);
+    const deducted = await deductStock(listingId, variantValueId, quantity);
+    if (!deducted) {
+      await orderRef.update({
+        status: "cancelled",
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      console.error(
+        `Insufficient stock for variant ${variantValueId} on listing ${listingId}, order cancelled`,
+      );
+    }
   }
 }
 
@@ -161,6 +195,11 @@ async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   if (ordersSnap.empty) return;
 
   const orderDoc = ordersSnap.docs[0];
+  const orderData = orderDoc.data();
+
+  // Idempotency: only transition from pending
+  if (orderData.status !== "pending") return;
+
   await orderDoc.ref.update({
     status: "confirmed",
     updatedAt: FieldValue.serverTimestamp(),
@@ -180,6 +219,9 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   const orderDoc = ordersSnap.docs[0];
   const orderData = orderDoc.data();
 
+  // Idempotency: only cancel if not already cancelled
+  if (orderData.status === "cancelled") return;
+
   await orderDoc.ref.update({
     status: "cancelled",
     updatedAt: FieldValue.serverTimestamp(),
@@ -195,9 +237,95 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
   }
 }
 
-async function handleAccountUpdated(account: Stripe.Account) {
-  if (!account.charges_enabled || !account.details_submitted) return;
+async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
+  const db = getDb();
+  const ordersSnap = await db
+    .collection("orders")
+    .where("stripePaymentIntentId", "==", paymentIntent.id)
+    .limit(1)
+    .get();
 
+  if (ordersSnap.empty) return;
+
+  const orderDoc = ordersSnap.docs[0];
+  const orderData = orderDoc.data();
+
+  if (orderData.status === "cancelled") return;
+
+  await orderDoc.ref.update({
+    status: "cancelled",
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  const variantValueId = orderData.selectedVariantValueId as string;
+  const listingId = orderData.listingId as string;
+  const quantity = (orderData.quantity as number) || 1;
+
+  if (variantValueId && listingId) {
+    await restoreStock(listingId, variantValueId, quantity);
+  }
+}
+
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  const paymentIntentId =
+    typeof charge.payment_intent === "string"
+      ? charge.payment_intent
+      : charge.payment_intent?.id;
+
+  if (!paymentIntentId) return;
+
+  const db = getDb();
+  const ordersSnap = await db
+    .collection("orders")
+    .where("stripePaymentIntentId", "==", paymentIntentId)
+    .limit(1)
+    .get();
+
+  if (ordersSnap.empty) return;
+
+  const orderDoc = ordersSnap.docs[0];
+  const orderData = orderDoc.data();
+
+  if (orderData.status === "returned") return;
+
+  await orderDoc.ref.update({
+    status: "returned",
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  const variantValueId = orderData.selectedVariantValueId as string;
+  const listingId = orderData.listingId as string;
+  const quantity = (orderData.quantity as number) || 1;
+
+  if (variantValueId && listingId) {
+    await restoreStock(listingId, variantValueId, quantity);
+  }
+}
+
+async function handleDisputeCreated(dispute: Stripe.Dispute) {
+  const paymentIntentId =
+    typeof dispute.payment_intent === "string"
+      ? dispute.payment_intent
+      : dispute.payment_intent?.id;
+
+  if (!paymentIntentId) return;
+
+  const db = getDb();
+  const ordersSnap = await db
+    .collection("orders")
+    .where("stripePaymentIntentId", "==", paymentIntentId)
+    .limit(1)
+    .get();
+
+  if (ordersSnap.empty) return;
+
+  await ordersSnap.docs[0].ref.update({
+    status: "return_requested",
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+async function handleAccountUpdated(account: Stripe.Account) {
   const db = getDb();
   const usersSnap = await db
     .collection("users")
@@ -207,22 +335,24 @@ async function handleAccountUpdated(account: Stripe.Account) {
 
   if (usersSnap.empty) return;
 
+  const verified = account.charges_enabled && account.details_submitted;
   await usersSnap.docs[0].ref.update({
-    stripeOnboardingComplete: true,
+    stripeOnboardingComplete: !!verified,
   });
 }
 
+/** Returns true if stock was successfully deducted, false if insufficient. */
 async function deductStock(
   listingId: string,
   variantValueId: string,
   quantity: number,
-) {
+): Promise<boolean> {
   const db = getDb();
   const listingRef = db.collection("listings").doc(listingId);
 
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const snap = await tx.get(listingRef);
-    if (!snap.exists) return;
+    if (!snap.exists) return false;
 
     const data = snap.data()!;
     const variants = data.variants as Array<{
@@ -236,17 +366,18 @@ async function deductStock(
         imageUrl?: string;
       }>;
     }>;
-    if (!variants) return;
+    if (!variants) return false;
 
     for (const group of variants) {
       const val = group.values.find((v) => v.id === variantValueId);
       if (val) {
-        val.available = Math.max(0, val.available - quantity);
-        break;
+        if (val.available < quantity) return false;
+        val.available -= quantity;
+        tx.update(listingRef, { variants });
+        return true;
       }
     }
-
-    tx.update(listingRef, { variants });
+    return false;
   });
 }
 

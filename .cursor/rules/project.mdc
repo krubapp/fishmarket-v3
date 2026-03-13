@@ -22,8 +22,9 @@ alwaysApply: true
 - CSS variables: `--background` and `--foreground` for theming; dark mode via `prefers-color-scheme`
 - Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing), `animations.css` (duration/easing tokens + keyframes). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`. Animations: `var(--duration-press)`, `var(--ease-spring)`, etc. See `.cursor/rules/animations.mdc`
 - **Lib**: Shared utilities and SDK singletons live in `src/lib/`. Key modules:
-  - `firebase.ts` — Firebase client SDK singleton (uses `NEXT_PUBLIC_*` env vars, safe for client and server)
+  - `firebase.ts` — Firebase client SDK singleton (uses `NEXT_PUBLIC_*` env vars, safe for client and server). Also exports `getAuthHeaders()` for authenticated API calls.
   - `firebase-admin.ts` — Firebase Admin SDK singleton (server-only, uses `FIREBASE_ADMIN_*` env vars)
+  - `auth.ts` — Server-side auth helper (`verifyAuthToken`) for API route authentication. Verifies Firebase ID tokens from the `Authorization: Bearer` header.
   - `firestore.ts` — Firestore helpers (`createListing`, `updateListing`)
   - `storage.ts` — Firebase Storage helpers (`uploadListingImages`, `uploadVariantImage`, `uploadAvatar`, `uploadPostVideo`, `uploadPostThumbnail`)
  - `video.ts` — Client-side video utilities (`generateVideoThumbnail` — captures a JPEG frame from a video File)

@@ -2,22 +2,18 @@ import { NextResponse } from "next/server";
 import { getFirestore } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase-admin";
 import { getStripe } from "@/lib/stripe";
+import { verifyAuthToken } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const uid = searchParams.get("uid");
-
-  if (!uid) {
-    return NextResponse.json(
-      { error: "uid is required" },
-      { status: 400 },
-    );
-  }
+  const authResult = await verifyAuthToken(request);
+  if (authResult instanceof NextResponse) return authResult;
+  const uid = authResult.uid;
 
   const db = getFirestore(getAdminApp());
   const stripe = getStripe();
+
   try {
     const userDoc = await db.collection("users").doc(uid).get();
     if (!userDoc.exists) {

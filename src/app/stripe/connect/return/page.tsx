@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Icon } from "@/components/Icon";
 import { useAuth } from "@/hooks/useAuth";
+import { getAuthHeaders } from "@/lib/firebase";
 import { ROUTES } from "@/lib/routes";
 
 function StripeConnectReturnContent() {
@@ -22,9 +23,10 @@ function StripeConnectReturnContent() {
 
     async function checkStatus() {
       try {
-        const res = await fetch(
-          `/api/stripe/connect/status?uid=${user!.uid}`,
-        );
+        const authHeaders = await getAuthHeaders();
+        const res = await fetch("/api/stripe/connect/status", {
+          headers: authHeaders,
+        });
         const data = await res.json();
         setStatus(data.verified ? "verified" : "pending");
       } catch {
