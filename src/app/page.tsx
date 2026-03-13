@@ -15,7 +15,7 @@ import {
   BecauseYouLikeSection,
 } from "@/components/BuyerDashboard";
 import { SellerDashboard } from "@/components/SellerDashboard";
-import { getSellers, getNewReleases } from "@/lib/firestore";
+import { getSellers, getNewReleases, getUserFavoriteListings } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
 import { useAuth } from "@/hooks/useAuth";
@@ -27,6 +27,7 @@ export default function HomePage() {
   const [sellers, setSellers] = useState<UserProfile[]>([]);
   const [newReleases, setNewReleases] = useState<Listing[]>([]);
   const [allListings, setAllListings] = useState<Listing[]>([]);
+  const [favoriteListings, setFavoriteListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +44,13 @@ export default function HomePage() {
     ]).finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!user?.uid) return;
+    getUserFavoriteListings(user.uid, 6)
+      .then(setFavoriteListings)
+      .catch(() => {});
+  }, [user?.uid]);
+
   const isSeller = !!profile?.isSeller;
   const [viewMode, setViewMode] = useState<"seller" | "buyer">("seller");
 
@@ -51,7 +59,6 @@ export default function HomePage() {
   }, [isSeller]);
 
   const showSellerDashboard = isSeller && viewMode === "seller";
-  const favoriteListings = allListings.slice(0, 6);
   const recommendedListings = allListings.slice(0, 4);
 
   return (

@@ -12,7 +12,7 @@ import { Icon } from "@/components/Icon";
 import { Rating } from "@/components/Rating";
 import { IconButton } from "@/components/IconButton";
 import { Snackbar } from "@/components/Snackbar";
-import { getListing, getUserProfile } from "@/lib/firestore";
+import { getListing, getUserProfile, isListingFavorited, toggleListingFavorite } from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing, VariantGroup, VariantValue } from "@/lib/schemas/listing";
 import { useAuth } from "@/hooks/useAuth";
@@ -46,6 +46,8 @@ export default function ListingDetailPage() {
     Record<string, string>
   >({});
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [favorited, setFavorited] = useState(false);
+  const [togglingFavorite, setTogglingFavorite] = useState(false);
   const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
@@ -70,6 +72,25 @@ export default function ListingDetailPage() {
     }
     load();
   }, [listingId]);
+
+  useEffect(() => {
+    if (!user?.uid || !listingId) return;
+    isListingFavorited(listingId, user.uid).then(setFavorited).catch(() => {});
+  }, [listingId, user?.uid]);
+
+  async function handleToggleFavorite() {
+    if (!user?.uid || togglingFavorite) return;
+    setTogglingFavorite(true);
+    setFavorited((prev) => !prev);
+    try {
+      const nowFavorited = await toggleListingFavorite(listingId, user.uid);
+      setFavorited(nowFavorited);
+    } catch {
+      setFavorited((prev) => !prev);
+    } finally {
+      setTogglingFavorite(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -221,6 +242,22 @@ export default function ListingDetailPage() {
             <div className="flex h-full w-full items-center justify-center text-grey-500">
               No image
             </div>
+          )}
+          {user && (
+            <button
+              type="button"
+              onClick={handleToggleFavorite}
+              disabled={togglingFavorite}
+              aria-label={favorited ? "Remove from favorites" : "Add to favorites"}
+              className="absolute right-[24px] top-[24px] flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] disabled:pointer-events-none"
+            >
+              <Icon
+                name="favorite"
+                size={20}
+                fill={favorited ? 1 : 0}
+                className={favorited ? "text-red-500" : "text-slate-900"}
+              />
+            </button>
           )}
         </div>
         {displayImages.length > 0 && (

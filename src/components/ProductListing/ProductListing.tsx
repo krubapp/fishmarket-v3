@@ -17,6 +17,7 @@ export function ProductListing({
   sellerAvatarSrc,
   sellerName,
   onLike,
+  liked,
   contentPosition = "below",
   trailingContent,
   onClick,
@@ -91,6 +92,7 @@ export function ProductListing({
         src={imageSrc}
         alt={imageAlt}
         onAction={onLike}
+        actionFilled={liked}
         rounded={false}
       />
       {contentPanel}

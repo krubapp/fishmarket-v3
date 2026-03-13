@@ -14,6 +14,7 @@ export function ImageBlock({
   size = "medium",
   onAdd,
   onAction,
+  actionFilled = false,
   rounded = true,
   className = "",
 }: ImageBlockProps) {
@@ -93,7 +94,7 @@ export function ImageBlock({
           }}
           aria-label="Like"
         >
-          <Icon name="favorite" size={20} fill={0} />
+          <Icon name="favorite" size={20} fill={actionFilled ? 1 : 0} className={actionFilled ? "text-red-500" : ""} />
         </button>
       )}
     </div>

@@ -223,6 +223,23 @@ Stores comments on posts. Document ID = auto-generated.
 | `text` | `string` | Comment text |
 | `createdAt` | `Timestamp` | When commented |
 
+### `listing_favorites` collection
+
+Tracks which users have favorited which listings. Document ID = `{listingId}_{userId}`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `listingId` | `string` | Reference to listing |
+| `userId` | `string` | User who favorited |
+| `createdAt` | `Timestamp` | When favorited |
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `toggleListingFavorite(listingId, userId)` — toggle favorite (add/remove doc), returns `true` if now favorited, `false` if removed
+- `isListingFavorited(listingId, userId)` — check if a single doc exists, returns boolean
+- `getUserFavoriteListingIds(userId, limitCount?)` — query by userId, returns array of listing IDs
+- `getUserFavoriteListings(userId, limitCount?)` — calls `getUserFavoriteListingIds`, batch-fetches listings via `getListingsByIds`. Returns `Listing[]`
+
 ### `counters` collection
 
 Internal counter documents for atomic ID generation. Used by server-side webhook handlers.

@@ -7,7 +7,9 @@ import { Button } from "@/components/Button";
 import { ProductListing } from "@/components/ProductListing";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  getUserFavoriteListings,
   getUserProfiles,
+  toggleListingFavorite,
   type UserProfile,
 } from "@/lib/firestore";
 import type { Listing } from "@/lib/schemas/listing";
@@ -87,6 +89,7 @@ function FavoriteCard({
       sellerName={sellerName}
       contentPosition="below"
       onLike={onRemove}
+      liked
       onClick={() => item.id && router.push(ROUTES.listingDetail(item.id))}
     />
   );
@@ -104,28 +107,15 @@ export default function ProfileFavoritesPage() {
       setLoading(false);
       return;
     }
-    // TODO: Replace with getFavoriteListings(user.uid) when favorites collection exists.
-    const favoriteListingIds: string[] = [];
-    if (favoriteListingIds.length === 0) {
-      setFavorites([]);
-      setLoading(false);
-      return;
-    }
-    Promise.all(
-      favoriteListingIds.map(async (id) => {
-        const { getListing } = await import("@/lib/firestore");
-        return getListing(id);
-      })
-    )
+    getUserFavoriteListings(user.uid)
       .then((listings) => {
-        const valid = listings.filter((l): l is Listing => l != null);
-        const sellerIds = [...new Set(valid.map((l) => l.sellerId).filter(Boolean) as string[])];
+        const sellerIds = [...new Set(listings.map((l) => l.sellerId).filter(Boolean) as string[])];
         return Promise.all([
-          Promise.resolve(valid),
-          getUserProfiles(sellerIds),
+          Promise.resolve(listings),
+          sellerIds.length > 0 ? getUserProfiles(sellerIds) : Promise.resolve(new Map<string, UserProfile>()),
         ] as const);
       })
-      .then(([listings, profilesMap]: [Listing[], Map<string, UserProfile>]) => {
+      .then(([listings, profilesMap]) => {
         const withSellers: FavoriteWithSeller[] = listings.map((listing) => ({
           ...listing,
           sellerProfile: listing.sellerId
@@ -143,9 +133,19 @@ export default function ProfileFavoritesPage() {
   const pagePaddingBottom =
     "pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]";
 
-  const handleRemoveFavorite = (listingId: string) => {
+  const handleRemoveFavorite = async (listingId: string) => {
     setFavorites((prev) => prev.filter((f) => f.id !== listingId));
-    // TODO: Remove from Firestore favorites when collection exists
+    if (user?.uid) {
+      try {
+        await toggleListingFavorite(listingId, user.uid);
+      } catch {
+        getUserFavoriteListings(user.uid)
+          .then((listings) =>
+            setFavorites(listings.map((l) => ({ ...l, sellerProfile: null }))),
+          )
+          .catch(() => {});
+      }
+    }
   };
 
   if (loading) {

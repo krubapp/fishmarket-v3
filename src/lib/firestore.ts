@@ -277,6 +277,67 @@ export async function getListingsByIds(
   return map;
 }
 
+// ─── Listing Favorites ──────────────────────────────────────────────────
+
+export const LISTING_FAVORITES_COLLECTION = "listing_favorites";
+
+function listingFavoriteDocId(listingId: string, userId: string) {
+  return `${listingId}_${userId}`;
+}
+
+/** Toggle listing favorite — returns true if now favorited, false if removed. */
+export async function toggleListingFavorite(
+  listingId: string,
+  userId: string,
+): Promise<boolean> {
+  const favId = listingFavoriteDocId(listingId, userId);
+  const favRef = doc(db, LISTING_FAVORITES_COLLECTION, favId);
+  const snap = await getDoc(favRef);
+
+  if (snap.exists()) {
+    await deleteDoc(favRef);
+    return false;
+  }
+
+  await setDoc(favRef, { listingId, userId, createdAt: serverTimestamp() });
+  return true;
+}
+
+/** Check if a listing is favorited by a user. */
+export async function isListingFavorited(
+  listingId: string,
+  userId: string,
+): Promise<boolean> {
+  const favId = listingFavoriteDocId(listingId, userId);
+  const snap = await getDoc(doc(db, LISTING_FAVORITES_COLLECTION, favId));
+  return snap.exists();
+}
+
+/** Get IDs of listings a user has favorited. */
+export async function getUserFavoriteListingIds(
+  userId: string,
+  limitCount = 50,
+): Promise<string[]> {
+  const q = query(
+    collection(db, LISTING_FAVORITES_COLLECTION),
+    where("userId", "==", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data().listingId as string);
+}
+
+/** Get listings a user has favorited, fully hydrated. */
+export async function getUserFavoriteListings(
+  userId: string,
+  limitCount = 50,
+): Promise<Listing[]> {
+  const ids = await getUserFavoriteListingIds(userId, limitCount);
+  if (ids.length === 0) return [];
+  const map = await getListingsByIds(ids);
+  return ids.map((id) => map.get(id)).filter((l): l is Listing => l != null);
+}
+
 // ─── Orders ────────────────────────────────────────────────────────────
 
 export type CreateOrderInput = Omit<Order, "id" | "createdAt" | "updatedAt">;

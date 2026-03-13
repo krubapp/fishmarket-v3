@@ -29,6 +29,8 @@ export type ProductListingProps = {
   sellerName: string;
   /** Called when like/favorite on image is clicked. */
   onLike?: () => void;
+  /** When true, the heart icon on the image renders filled (red). */
+  liked?: boolean;
   /** Content layout: "below" (column) or "right" (row, image left). Default "below". */
   contentPosition?: ProductListingContentPosition;
   /** Optional node rendered after seller row (e.g. "Buy again" button). */
