@@ -23,15 +23,24 @@ import {
 import type { Listing } from "@/lib/schemas/listing";
 import { FISH_TYPES } from "@/lib/schemas/listing";
 import type { SearchBarResult } from "@/components/SearchBar";
+import {
+  SearchFilterDrawer,
+  type SearchFilters,
+} from "./SearchFilterDrawer";
 
 const FISH_TYPE_TABS = [
   { id: "", label: "All" },
   ...FISH_TYPES.map((ft) => ({ id: ft, label: ft })),
 ];
-import {
-  SearchFilterDrawer,
-  type SearchFilters,
-} from "./SearchFilterDrawer";
+
+/** If any word in the search string matches a fish type (case-insensitive), return that fish type. */
+function fishTypeFromSearchQuery(query: string): string | undefined {
+  if (!query.trim()) return undefined;
+  const words = query.trim().toLowerCase().split(/\s+/);
+  return FISH_TYPES.find((ft) =>
+    words.some((w) => w === ft.toLowerCase()),
+  );
+}
 
 function SearchPageInner() {
   const router = useRouter();
@@ -156,9 +165,13 @@ function SearchPageInner() {
   const handleSearchSubmit = useCallback(
     (value: string) => {
       setIsSearching(false);
-      pushParams({ q: value || undefined });
+      const autoFishType = fishTypeFromSearchQuery(value);
+      pushParams({
+        q: value || undefined,
+        fishType: autoFishType ?? (fishType || undefined),
+      });
     },
-    [pushParams],
+    [pushParams, fishType],
   );
 
   const handleResultSelect = useCallback(

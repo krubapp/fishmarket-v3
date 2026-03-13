@@ -18,6 +18,7 @@ alwaysApply: true
 
 - Use the App Router: `src/app/` for routes, layouts, and global styles
 - Use path alias `@/` for imports under `src/`
+- **Imports**: Put all `import` statements at the top of the file (after any `"use client"` or similar directive). Do not place imports in the middle of the file or after constants/functions.
 - Prefer the shared `Icon` component for Material Symbols; icon names match [fonts.google.com/icons](https://fonts.google.com/icons) (e.g. `home`, `settings`, `favorite`)
 - CSS variables: `--background` and `--foreground` for theming; dark mode via `prefers-color-scheme`
 - Theme (Figma): `src/app/theme/` — `colors.css`, `aliases.css`, `borders.css`, `mapped.css` (surface/text/icons), `responsive.css` (typography + layout spacing), `animations.css` (duration/easing tokens + keyframes). Typography: `text-hero`, `leading-h1`, `var(--paragraph-spacing-h1)`. Layout: `p-layout-md`, `gap-layout-lg`, `var(--spacing-layout-*)`. Animations: `var(--duration-press)`, `var(--ease-spring)`, etc. See `.cursor/rules/animations.mdc`
