@@ -5,9 +5,7 @@ import { Drawer } from "@/components/Drawer";
 import { IconButton } from "@/components/IconButton";
 import { Radio } from "@/components/Radio";
 import { Checkbox } from "@/components/Checkbox";
-import { ColorBlock } from "@/components/ColorBlock";
 import { Button } from "@/components/Button";
-import type { ColorBlockColor } from "@/components/ColorBlock";
 import type { UserProfile } from "@/lib/firestore";
 import { LISTING_CONDITIONS } from "@/lib/schemas/listing";
 
@@ -23,16 +21,6 @@ const PRICE_RANGES = [
   { id: "100-200", label: "100 SEK - 200 SEK", min: 100, max: 200 },
   { id: "200+", label: "200 SEK +", min: 200, max: undefined },
 ] as const;
-
-const COLORS: { color: ColorBlockColor; label: string }[] = [
-  { color: "white", label: "White" },
-  { color: "red", label: "Red" },
-  { color: "green", label: "Green" },
-  { color: "black", label: "Black" },
-  { color: "silver", label: "Silver" },
-  { color: "yellow", label: "Yellow" },
-  { color: "blue", label: "Blue" },
-];
 
 export type SearchFilters = {
   condition?: string;
@@ -149,22 +137,6 @@ export function SearchFilterDrawer({
             ))}
           </FilterSection>
         )}
-
-        {/* Colors (decorative) */}
-        <div className="flex flex-col gap-4 p-6">
-          <span className="font-semibold text-paragraph-lg leading-[1.4] text-black">
-            Colors
-          </span>
-          <div className="flex flex-wrap gap-1">
-            {COLORS.map((c) => (
-              <ColorBlock
-                key={c.color}
-                color={c.color}
-                label={c.label}
-              />
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Bottom bar */}
