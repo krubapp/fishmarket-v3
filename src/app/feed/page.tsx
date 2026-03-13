@@ -307,17 +307,17 @@ export default function FeedPage() {
 
   return (
     <div className="h-dvh snap-y snap-mandatory overflow-y-scroll bg-black">
-      {posts.map((post) => (
+      {posts.filter((p) => p.videoUrl).map((post) => (
         <FeedCard
           key={post.id}
           videoUrl={post.videoUrl}
-          thumbnailUrl={post.thumbnailUrl}
+          thumbnailUrl={post.thumbnailUrl || undefined}
           height={`calc(100dvh - ${BOTTOM_NAV_PX}px - env(safe-area-inset-bottom, 0px))`}
           caption={post.caption}
           userDisplayName={
             post.user?.displayName || post.user?.username || "Anonymous"
           }
-          userAvatarUrl={post.user?.avatarUrl}
+          userAvatarUrl={post.user?.avatarUrl || undefined}
           likeCount={post.likeCount}
           saveCount={post.saveCount}
           commentCount={post.commentCount}

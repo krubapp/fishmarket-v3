@@ -185,6 +185,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `getUserSavedPosts(userId, limitCount?)` — query `post_saves` by userId, batch-fetch corresponding posts. Used in profile "Favorites" tab
 - `addComment(postId, userId, text)` — adds doc to `post_comments`, increments `commentCount`. Returns comment ID
 - `getPostComments(postId, limitCount?)` — query comments for a post, ordered by `createdAt` desc. Returns `PostComment[]`
+- `getUserComments(userId, limitCount?)` — query comments by userId, ordered by `createdAt` desc. Returns `PostComment[]`. Used in profile comments page
 - `deleteComment(commentId, postId)` — deletes the comment doc, decrements `commentCount`
 - `searchUsers(query)` — fetch users, client-side filter by `displayName`/`username`. Used in Tag & Link step.
 - `uploadPostVideo(file, postId)` — `src/lib/storage.ts` — uploads to `posts/{postId}/video.{ext}`, returns download URL

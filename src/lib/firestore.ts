@@ -594,6 +594,22 @@ export async function getPostComments(
   );
 }
 
+export async function getUserComments(
+  userId: string,
+  limitCount = 50,
+): Promise<PostComment[]> {
+  const q = query(
+    collection(db, POST_COMMENTS_COLLECTION),
+    where("userId", "==", userId),
+  );
+  const snap = await getDocs(q);
+  const comments = snap.docs.map(
+    (d) => ({ id: d.id, ...d.data() }) as PostComment,
+  );
+  comments.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+  return comments.slice(0, limitCount);
+}
+
 export async function deleteComment(
   commentId: string,
   postId: string,

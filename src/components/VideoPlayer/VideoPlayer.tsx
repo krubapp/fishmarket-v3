@@ -83,8 +83,8 @@ export function VideoPlayer({
     >
       <video
         ref={videoRef}
-        src={src}
-        poster={poster}
+        src={src || undefined}
+        poster={poster || undefined}
         muted={muted}
         loop
         playsInline
