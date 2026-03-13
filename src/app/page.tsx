@@ -27,17 +27,20 @@ export default function HomePage() {
   const [sellers, setSellers] = useState<UserProfile[]>([]);
   const [newReleases, setNewReleases] = useState<Listing[]>([]);
   const [allListings, setAllListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getSellers(20)
-      .then(setSellers)
-      .catch(() => {});
-    getNewReleases(10)
-      .then((listings) => {
-        setNewReleases(listings);
-        setAllListings(listings);
-      })
-      .catch(() => {});
+    Promise.all([
+      getSellers(20)
+        .then(setSellers)
+        .catch(() => {}),
+      getNewReleases(10)
+        .then((listings) => {
+          setNewReleases(listings);
+          setAllListings(listings);
+        })
+        .catch(() => {}),
+    ]).finally(() => setLoading(false));
   }, []);
 
   const isSeller = !!profile?.isSeller;
@@ -74,8 +77,8 @@ export default function HomePage() {
         </div>
       ) : (
         <div className="mx-auto flex w-full max-w-[440px] flex-col gap-6">
-          <TopBrandsSection sellers={sellers} />
-          <NewReleaseSection listings={newReleases} />
+          <TopBrandsSection sellers={sellers} loading={loading} />
+          <NewReleaseSection listings={newReleases} loading={loading} />
           <CategoriesSection
             onCategoryClick={(fishType) =>
               router.push(`${ROUTES.shop}?fishType=${fishType}`)
@@ -83,13 +86,13 @@ export default function HomePage() {
           />
 
           <div className="flex flex-col gap-[54px] px-6">
-            <FavoritesSection listings={favoriteListings} />
+            <FavoritesSection listings={favoriteListings} loading={loading} />
             <PromoCTASection />
           </div>
 
           <MapComingSoonSection />
-          <BrandSuggestionsSection sellers={sellers} />
-          <BecauseYouLikeSection listings={recommendedListings} />
+          <BrandSuggestionsSection sellers={sellers} loading={loading} />
+          <BecauseYouLikeSection listings={recommendedListings} loading={loading} />
         </div>
       )}
 

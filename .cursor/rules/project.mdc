@@ -33,6 +33,14 @@ alwaysApply: true
 - **Responsive UI**: All UI must be responsive for both mobile and desktop. Use theme breakpoints and layout tokens (`responsive.css`, `var(--spacing-layout-*)`) so layouts, typography, and spacing adapt across viewport sizes. Test key flows at narrow (mobile) and wide (desktop) viewports.
 - **Comments**: Comment only where it adds value — e.g. above a function, util, or non-obvious/complex logic. Avoid over-commenting; prefer clear names and structure over inline noise.
 
+## Loading Strategy
+
+- **Skeleton loading**: Data-dependent sections accept an optional `loading?: boolean` prop. When `true`, render skeleton placeholders matching the section's real layout (same dimensions, spacing, and element count). When `false` or omitted, render normally (return `null` when data is empty).
+- **Skeleton component**: Use the shared `Skeleton` primitive (`@/components/Skeleton`) — a single `div` with `animate-pulse rounded bg-slate-100`. Consumers pass Tailwind dimension/shape classes (e.g. `h-20 w-20 rounded-full` for avatar circles, `h-[194px] w-full` for image blocks).
+- **When to use**: Any section or page that depends on async data and would otherwise show nothing (return `null` or blank) during fetch. Skeleton shapes should match the real content's layout so the page doesn't shift when data arrives.
+- **Page-level loading state**: Pages that fetch multiple data sources (e.g. homepage with `getSellers` + `getNewReleases`) should track a single `loading` boolean via `Promise.all(...).finally(() => setLoading(false))` and pass it to all data-dependent children.
+- **Route-level loading**: Full-page spinners (e.g. `AuthGuard`, `shop/page.tsx` Suspense fallback) are still appropriate for route-level loading. Skeleton loading is for **section-level** content within an already-rendered page.
+
 ## Rules and skills
 
 - **Keep rules and skills in sync (mandatory)**: Before finishing any change that does any of the following, you **must** update the relevant `.cursor/rules/*.mdc` (and skills if applicable) in the same change — do not leave rule updates for later or skip them.

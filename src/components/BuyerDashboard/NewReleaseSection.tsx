@@ -3,16 +3,19 @@
 import { useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
+import { Skeleton } from "@/components/Skeleton";
 import type { Listing } from "@/lib/schemas/listing";
 import { ROUTES } from "@/lib/routes";
 
 export type NewReleaseSectionProps = {
   listings: Listing[];
+  loading?: boolean;
   className?: string;
 };
 
 export function NewReleaseSection({
   listings,
+  loading,
   className = "",
 }: NewReleaseSectionProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,7 +29,34 @@ export function NewReleaseSection({
     setActiveIndex(Math.round(scrollLeft / cardWidth));
   }, [listings.length]);
 
-  if (listings.length === 0) return null;
+  if (!loading && listings.length === 0) return null;
+
+  if (loading) {
+    return (
+      <section className={`flex flex-col gap-6 ${className}`}>
+        <div className="flex flex-col gap-[5px] px-6">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-5 w-52" />
+        </div>
+        <div className="px-6">
+          <div className="flex flex-col">
+            <Skeleton className="h-[170px] w-full rounded-t-[4px]" />
+            <div className="flex h-[124px] gap-6 px-6 py-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-6 w-48" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              </div>
+              <Skeleton className="h-6 w-24 shrink-0" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className={`flex flex-col gap-6 ${className}`}>
@@ -78,7 +108,6 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
       role="link"
     >
       <div className="flex flex-col">
-        {/* Blurred background image */}
         <div className="relative h-[170px] w-full overflow-hidden rounded-t-[4px] bg-slate-100">
           {imageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -92,7 +121,6 @@ function NewReleaseCard({ listing }: { listing: Listing }) {
           )}
         </div>
 
-        {/* Info panel */}
         <div className="flex h-[124px] gap-6 rounded-b-[16px] px-6 py-4">
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div className="flex items-center gap-4">

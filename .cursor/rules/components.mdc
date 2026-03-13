@@ -1698,4 +1698,44 @@ import { MapComingSoonSection } from "@/components/BuyerDashboard";
 
 ---
 
+## Skeleton
+
+**Path**: `@/components/Skeleton`
+
+Reusable animated placeholder block for skeleton loading states. A single `div` with `animate-pulse rounded bg-slate-100`. Consumers control dimensions and shape via Tailwind classes.
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `className` | `string` | No | Tailwind dimension/shape classes (e.g. `h-20 w-20 rounded-full`, `h-[194px] w-full`) |
+
+**Exports**: `Skeleton`, `SkeletonProps`.
+
+**Example**
+
+```tsx
+import { Skeleton } from "@/components/Skeleton";
+
+<Skeleton className="h-7 w-36" />
+<Skeleton className="h-20 w-20 rounded-full" />
+<Skeleton className="h-[194px] w-full rounded-[4px]" />
+```
+
+---
+
+## Dashboard Section `loading` Prop
+
+The following buyer dashboard sections support an optional `loading?: boolean` prop. When `true`, they render skeleton placeholders matching their real layout. When `false` or omitted, they render normally (and return `null` when data is empty):
+
+- **TopBrandsSection** — 5 circle avatars (80px) with label skeletons
+- **NewReleaseSection** — 1 card skeleton (image + info panel)
+- **FavoritesSection** — 3 horizontal card skeletons (180x82)
+- **BrandSuggestionsSection** — 4 seller card skeletons in 2-col grid
+- **BecauseYouLikeSection** — 4 product card skeletons in 2-col grid
+
+See `project.mdc` **Loading Strategy** for conventions on when and how to use skeleton loading.
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

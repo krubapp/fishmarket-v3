@@ -2,36 +2,62 @@
 
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
+import { Skeleton } from "@/components/Skeleton";
 import { SectionHeader } from "./SectionHeader";
 import type { Listing } from "@/lib/schemas/listing";
 import { ROUTES } from "@/lib/routes";
 
 export type FavoritesSectionProps = {
   listings: Listing[];
+  loading?: boolean;
   onViewAll?: () => void;
   className?: string;
 };
 
 export function FavoritesSection({
   listings,
+  loading,
   onViewAll,
   className = "",
 }: FavoritesSectionProps) {
-  if (listings.length === 0) return null;
+  if (!loading && listings.length === 0) return null;
 
   return (
     <section className={`flex flex-col gap-[21px] ${className}`}>
-      <SectionHeader
-        title="Favorites"
-        subtitle="Don't forget the items you like"
-        onViewAll={onViewAll}
-        className="py-[10px]"
-      />
+      {loading ? (
+        <div className="flex flex-col gap-2 py-[10px]">
+          <Skeleton className="h-7 w-32" />
+          <Skeleton className="h-5 w-52" />
+        </div>
+      ) : (
+        <SectionHeader
+          title="Favorites"
+          subtitle="Don't forget the items you like"
+          onViewAll={onViewAll}
+          className="py-[10px]"
+        />
+      )}
 
       <div className="flex gap-[21px] overflow-x-auto scrollbar-none">
-        {listings.map((listing) => (
-          <FavoriteCard key={listing.id} listing={listing} />
-        ))}
+        {loading
+          ? Array.from({ length: 3 }, (_, i) => (
+              <div key={i} className="flex shrink-0 flex-col gap-2">
+                <Skeleton className="h-[82px] w-[180px] rounded-[4px]" />
+                <div className="flex w-[180px] flex-col gap-3">
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-5 w-28" />
+                    <Skeleton className="h-5 w-20" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                </div>
+              </div>
+            ))
+          : listings.map((listing) => (
+              <FavoriteCard key={listing.id} listing={listing} />
+            ))}
       </div>
     </section>
   );
@@ -47,7 +73,6 @@ function FavoriteCard({ listing }: { listing: Listing }) {
       onClick={() => listing.id && router.push(ROUTES.listingDetail(listing.id))}
       role="link"
     >
-      {/* Thumbnail */}
       <div className="h-[82px] w-[180px] overflow-hidden rounded-[4px] bg-slate-100">
         {imageUrl && (
           // eslint-disable-next-line @next/next/no-img-element

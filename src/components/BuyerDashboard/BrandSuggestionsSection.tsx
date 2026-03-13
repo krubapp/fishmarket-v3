@@ -2,32 +2,55 @@
 
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/Avatar";
+import { Skeleton } from "@/components/Skeleton";
 import { SectionHeader } from "./SectionHeader";
 import type { UserProfile } from "@/lib/firestore";
 import { ROUTES } from "@/lib/routes";
 
 export type BrandSuggestionsSectionProps = {
   sellers: UserProfile[];
+  loading?: boolean;
   className?: string;
 };
 
 export function BrandSuggestionsSection({
   sellers,
+  loading,
   className = "",
 }: BrandSuggestionsSectionProps) {
-  if (sellers.length === 0) return null;
+  if (!loading && sellers.length === 0) return null;
 
   return (
     <section className={`flex flex-col gap-6 px-6 ${className}`}>
-      <SectionHeader
-        title="Brand suggestions"
-        subtitle="Discover top brands other anglers trust."
-      />
+      {loading ? (
+        <div className="flex flex-col gap-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-5 w-64" />
+        </div>
+      ) : (
+        <SectionHeader
+          title="Brand suggestions"
+          subtitle="Discover top brands other anglers trust."
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-4">
-        {sellers.map((seller) => (
-          <SellerCard key={seller.uid} seller={seller} />
-        ))}
+        {loading
+          ? Array.from({ length: 4 }, (_, i) => (
+              <div
+                key={i}
+                className="flex flex-col items-center gap-3 rounded-[8px] border border-[#E2E8F0] px-4 py-5"
+              >
+                <Skeleton className="h-20 w-20 rounded-full" />
+                <div className="flex w-full flex-col items-center gap-1">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-3.5 w-16" />
+                </div>
+              </div>
+            ))
+          : sellers.map((seller) => (
+              <SellerCard key={seller.uid} seller={seller} />
+            ))}
       </div>
     </section>
   );
