@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed-listing-weights": "node scripts/seed-listing-weights.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
