@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { SearchBar } from "@/components/SearchBar";
@@ -14,6 +15,7 @@ import {
   searchListings,
   getUserProfiles,
   getSellers,
+  getNewReleases,
   type UserProfile,
   type ListingFilters,
 } from "@/lib/firestore";
@@ -54,11 +56,28 @@ function SearchPageInner() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(q);
   const [suggestions, setSuggestions] = useState<SearchBarResult[]>([]);
+  const [topSuggestions, setTopSuggestions] = useState<SearchBarResult[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Fetch sellers for filter drawer
   useEffect(() => {
     getSellers(50).then(setSellers);
+  }, []);
+
+  // Fetch top suggestions (newest listings) on mount
+  useEffect(() => {
+    getNewReleases(8).then(async (results) => {
+      const uids = [...new Set(results.map((l) => l.sellerId).filter(Boolean) as string[])];
+      const profiles = uids.length > 0 ? await getUserProfiles(uids) : new Map<string, UserProfile>();
+      setTopSuggestions(
+        results.map((l) => ({
+          id: l.id!,
+          title: l.title,
+          sellerName: profiles.get(l.sellerId!)?.displayName ?? "Unknown",
+          sellerAvatarSrc: profiles.get(l.sellerId!)?.avatarUrl,
+        })),
+      );
+    });
   }, []);
 
   // Fetch listings when params change
@@ -178,25 +197,32 @@ function SearchPageInner() {
     [condition, minPrice, maxPrice, sellerId],
   );
 
-  // Search overlay
-  if (isSearching) {
-    return (
-      <div className="flex min-h-dvh flex-col bg-white">
-        <SearchBar
-          value={searchInput}
-          onValueChange={handleSearchInput}
-          onSubmit={handleSearchSubmit}
-          onCancel={() => setIsSearching(false)}
-          results={suggestions}
-          onResultSelect={handleResultSelect}
-          placeholder="Search"
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex min-h-dvh flex-col bg-white">
+    <div className="relative flex min-h-dvh flex-col bg-white">
+      {/* Search overlay */}
+      <AnimatePresence>
+        {isSearching && (
+          <motion.div
+            className="fixed inset-0 z-[60] flex flex-col bg-white"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.15, ease: [0.33, 1, 0.68, 1] }}
+          >
+            <SearchBar
+              value={searchInput}
+              onValueChange={handleSearchInput}
+              onSubmit={handleSearchSubmit}
+              onCancel={() => setIsSearching(false)}
+              results={searchInput.trim() ? suggestions : topSuggestions}
+              onResultSelect={handleResultSelect}
+              placeholder="Search"
+              autoFocus
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <ContextTopBar
         title={title}
         onFilter={() => setFilterOpen(true)}

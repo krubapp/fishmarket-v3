@@ -21,5 +21,6 @@ export type SearchBarProps = {
   showCancel?: boolean;
   results?: SearchBarResult[];
   onResultSelect?: (result: SearchBarResult) => void;
+  autoFocus?: boolean;
   className?: string;
 };

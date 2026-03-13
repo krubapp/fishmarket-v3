@@ -54,8 +54,7 @@ function SearchResultsPanel({
 }) {
   return (
     <div
-      className="flex flex-col gap-6 border-b border-slate-200 bg-white px-6 py-6 shadow-[0_4px_6px_-1_rgba(0,0,0,0.08)]"
-      style={{ borderBottomWidth: 1 }}
+      className="flex flex-col gap-6 bg-white px-6 py-6"
       role="listbox"
       aria-label="Search suggestions"
     >
@@ -85,6 +84,7 @@ export function SearchBar({
   showCancel = true,
   results,
   onResultSelect,
+  autoFocus,
   className = "",
 }: SearchBarProps) {
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
@@ -140,6 +140,7 @@ export function SearchBar({
             onChange={handleChange}
             placeholder={placeholder}
             className="min-w-0 flex-1 border-none bg-transparent text-[length:var(--font-size-paragraph-md)] leading-[1.5] text-[var(--color-text-default-headings)] placeholder:text-grey-500 outline-none"
+            autoFocus={autoFocus}
             autoComplete="off"
             aria-label={placeholder}
             aria-expanded={showResults}
