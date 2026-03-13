@@ -1738,4 +1738,45 @@ See `project.mdc` **Loading Strategy** for conventions on when and how to use sk
 
 ---
 
+## VideoThumbnailCard
+
+**Path**: `@/components/VideoThumbnailCard`
+**Figma**: Roy design system → video sizes (node 731:3753), Video-feedgroup (node 731:3767).
+
+Video thumbnail card for grids (profile tabs, collections). Aspect ratio 4:5, 2px border-radius, object-cover thumbnail. Centered play button (40×40 circle, subtle bg, shadow). Bottom-right: play_circle icon + formatted view count (white, text-shadow). Optional bottom-left: 16px avatar + creator name (white, text-shadow).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `thumbnailUrl` | `string \| null` | Yes | Poster image; null for placeholder |
+| `viewCount` | `number` | Yes | Displayed as "2k view", "50k view" etc. |
+| `creatorAvatarUrl` | `string \| null` | No | Optional 16px avatar, bottom-left |
+| `creatorName` | `string` | No | Shown next to avatar |
+| `onClick` | `() => void` | No | Click handler (e.g. navigate to post) |
+| `className` | `string` | No | Root class |
+
+**Exports**: `VideoThumbnailCard`, `VideoThumbnailCardProps`.
+
+**Example**
+
+```tsx
+import { VideoThumbnailCard } from "@/components/VideoThumbnailCard";
+
+<VideoThumbnailCard
+  thumbnailUrl={post.thumbnailUrl}
+  viewCount={post.viewCount ?? 0}
+  onClick={() => router.push(`/feed/${post.id}`)}
+/>
+<VideoThumbnailCard
+  thumbnailUrl={post.thumbnailUrl}
+  viewCount={post.viewCount ?? 0}
+  creatorAvatarUrl={creator.avatarUrl}
+  creatorName={creator.displayName}
+  onClick={() => router.push(`/feed/${post.id}`)}
+/>
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

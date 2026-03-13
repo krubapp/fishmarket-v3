@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
@@ -11,14 +11,22 @@ import { BottomNav } from "@/components/BottomNav";
 import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { Link } from "@/components/Link";
+import { Skeleton } from "@/components/Skeleton";
 import { Snackbar } from "@/components/Snackbar";
 import { Tabs } from "@/components/Tabs";
 import { TabsBox } from "@/components/Tabs";
+import { VideoThumbnailCard } from "@/components/VideoThumbnailCard";
 import { useAuth } from "@/hooks/useAuth";
 import {
   getUserProfileByUsernameOrId,
+  getUserPosts,
+  getTaggedPosts,
+  getUserLikedPosts,
+  getUserSavedPosts,
+  getUserProfiles,
   type UserProfile,
 } from "@/lib/firestore";
+import type { Post } from "@/lib/schemas/post";
 import { ROUTES } from "@/lib/routes";
 
 const QR_CODE_SIZE = 200;
@@ -97,8 +105,53 @@ export default function ProfileByUsernamePage() {
   const [notFound, setNotFound] = useState(false);
   const pathname = usePathname();
   const [contentTab, setContentTab] = useState("my-videos");
+  const [tabPosts, setTabPosts] = useState<Post[]>([]);
+  const [tabLoading, setTabLoading] = useState(false);
+  const [creatorProfiles, setCreatorProfiles] = useState<Map<string, UserProfile>>(new Map());
   const [qrPopupOpen, setQrPopupOpen] = useState(false);
   const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
+
+  const fetchTabData = useCallback(async (tab: string, uid: string) => {
+    setTabLoading(true);
+    setTabPosts([]);
+    try {
+      let posts: Post[] = [];
+      switch (tab) {
+        case "my-videos":
+          posts = await getUserPosts(uid);
+          break;
+        case "tagged":
+          posts = await getTaggedPosts(uid);
+          break;
+        case "favorites":
+          posts = await getUserSavedPosts(uid);
+          break;
+        case "like":
+          posts = await getUserLikedPosts(uid);
+          break;
+        case "repost":
+          posts = [];
+          break;
+      }
+      setTabPosts(posts);
+
+      const uniqueUserIds = [...new Set(posts.map((p) => p.userId))];
+      if (uniqueUserIds.length > 0) {
+        const profiles = await getUserProfiles(uniqueUserIds);
+        setCreatorProfiles(profiles);
+      }
+    } catch (err) {
+      console.error("Failed to fetch tab data:", err);
+      setTabPosts([]);
+    } finally {
+      setTabLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!profile?.uid) return;
+    fetchTabData(contentTab, profile.uid);
+  }, [contentTab, profile?.uid, fetchTabData]);
 
   useEffect(() => {
     if (!qrPopupOpen) return;
@@ -341,13 +394,50 @@ export default function ProfileByUsernamePage() {
           </div>
         </section>
 
-        <section className="flex flex-1 flex-col items-center justify-start px-4 py-6 sm:px-6 sm:py-8 lg:items-start lg:px-0 lg:pt-6">
-          <div className="flex h-[180px] w-[144px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-slate-100 lg:h-[200px] lg:w-[160px]">
-            <Icon name="videocam" size={40} className="text-grey-400" fill={0} />
-          </div>
-          <p className="mt-4 text-center font-medium text-grey-600 text-[length:var(--font-size-paragraph-sm)] lg:text-left">
-            No videos yet
-          </p>
+        <section className="flex-1 py-0.5">
+          {tabLoading ? (
+            <div className="grid grid-cols-3 gap-1">
+              {Array.from({ length: 6 }, (_, i) => (
+                <Skeleton key={i} className="aspect-4/5 w-full rounded-[2px]" />
+              ))}
+            </div>
+          ) : contentTab === "repost" ? (
+            <div className="flex flex-col items-center justify-center gap-3 px-4 py-16">
+              <Icon name="repeat" size={40} className="text-grey-400" fill={0} />
+              <p className="text-center font-medium text-grey-600 text-paragraph-sm">
+                Coming soon
+              </p>
+            </div>
+          ) : tabPosts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 px-4 py-16">
+              <Icon
+                name={contentTab === "my-videos" ? "videocam" : contentTab === "tagged" ? "sell" : contentTab === "favorites" ? "bookmark" : "favorite"}
+                size={40}
+                className="text-grey-400"
+                fill={0}
+              />
+              <p className="text-center font-medium text-grey-600 text-paragraph-sm">
+                {contentTab === "my-videos" ? "No videos yet" : contentTab === "tagged" ? "No tagged posts" : contentTab === "favorites" ? "No saved posts" : "No liked posts"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-1">
+              {tabPosts.map((post) => {
+                const creator = creatorProfiles.get(post.userId);
+                const showCreator = contentTab !== "my-videos";
+                return (
+                  <VideoThumbnailCard
+                    key={post.id}
+                    thumbnailUrl={post.thumbnailUrl ?? null}
+                    viewCount={post.viewCount ?? post.likeCount ?? 0}
+                    creatorAvatarUrl={showCreator ? (creator?.avatarUrl ?? null) : undefined}
+                    creatorName={showCreator ? (creator?.displayName ?? undefined) : undefined}
+                    onClick={() => post.id && router.push(ROUTES.postDetail(post.id))}
+                  />
+                );
+              })}
+            </div>
+          )}
         </section>
       </main>
 

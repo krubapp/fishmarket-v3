@@ -161,6 +161,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 | `likeCount` | `number` | Denormalized like count |
 | `saveCount` | `number` | Denormalized save count |
 | `commentCount` | `number` | Denormalized comment count |
+| `viewCount` | `number` | Denormalized view count (default 0, for future view tracking) |
 | `createdAt` | `Timestamp` | Server timestamp |
 
 **Constants** (in `src/lib/constants/post.ts`):
@@ -178,6 +179,10 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `togglePostLike(postId, userId)` — toggle like (add/remove `post_likes` doc, increment/decrement `likeCount`), returns new liked state
 - `togglePostSave(postId, userId)` — same for saves
 - `getUserPostInteractions(postIds, userId)` — batch check liked/saved states for feed rendering
+- `getUserPosts(userId, limitCount?)` — query posts by userId, ordered by `createdAt` desc. Used in profile "My videos" tab
+- `getTaggedPosts(userId, limitCount?)` — query posts where `taggedUserIds` array-contains userId, ordered by `createdAt` desc. Used in profile "Tagged" tab
+- `getUserLikedPosts(userId, limitCount?)` — query `post_likes` by userId, batch-fetch corresponding posts. Used in profile "Like" tab
+- `getUserSavedPosts(userId, limitCount?)` — query `post_saves` by userId, batch-fetch corresponding posts. Used in profile "Favorites" tab
 - `addComment(postId, userId, text)` — adds doc to `post_comments`, increments `commentCount`. Returns comment ID
 - `getPostComments(postId, limitCount?)` — query comments for a post, ordered by `createdAt` desc. Returns `PostComment[]`
 - `deleteComment(commentId, postId)` — deletes the comment doc, decrements `commentCount`

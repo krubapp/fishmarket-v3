@@ -75,7 +75,7 @@ export async function createUserProfile(
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const snap = await getDoc(doc(db, USERS_COLLECTION, uid));
   if (!snap.exists()) return null;
-  return snap.data() as UserProfile;
+  return { uid: snap.id, ...snap.data() } as UserProfile;
 }
 
 /**
@@ -86,7 +86,7 @@ export async function getUserProfileByUsernameOrId(
   usernameOrId: string,
 ): Promise<UserProfile | null> {
   const byId = await getDoc(doc(db, USERS_COLLECTION, usernameOrId));
-  if (byId.exists()) return byId.data() as UserProfile;
+  if (byId.exists()) return { uid: byId.id, ...byId.data() } as UserProfile;
   const q = query(
     collection(db, USERS_COLLECTION),
     where("username", "==", usernameOrId),
@@ -375,6 +375,7 @@ export async function createPost(data: CreatePostInput): Promise<string> {
     likeCount: 0,
     saveCount: 0,
     commentCount: 0,
+    viewCount: 0,
     createdAt: serverTimestamp(),
   });
   return docRef.id;
@@ -400,6 +401,82 @@ export async function getPost(id: string): Promise<Post | null> {
   const snap = await getDoc(doc(db, POSTS_COLLECTION, id));
   if (!snap.exists()) return null;
   return { id: snap.id, ...snap.data() } as Post;
+}
+
+export async function getUserPosts(
+  userId: string,
+  limitCount = 30,
+): Promise<Post[]> {
+  const q = query(
+    collection(db, POSTS_COLLECTION),
+    where("userId", "==", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Post);
+  return posts.sort(
+    (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+  );
+}
+
+export async function getTaggedPosts(
+  userId: string,
+  limitCount = 30,
+): Promise<Post[]> {
+  const q = query(
+    collection(db, POSTS_COLLECTION),
+    where("taggedUserIds", "array-contains", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Post);
+  return posts.sort(
+    (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+  );
+}
+
+export async function getUserLikedPosts(
+  userId: string,
+  limitCount = 30,
+): Promise<Post[]> {
+  const q = query(
+    collection(db, POST_LIKES_COLLECTION),
+    where("userId", "==", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const postIds = snap.docs.map((d) => d.data().postId as string);
+  if (postIds.length === 0) return [];
+  const posts: Post[] = [];
+  for (const pid of postIds) {
+    const p = await getPost(pid);
+    if (p) posts.push(p);
+  }
+  return posts.sort(
+    (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+  );
+}
+
+export async function getUserSavedPosts(
+  userId: string,
+  limitCount = 30,
+): Promise<Post[]> {
+  const q = query(
+    collection(db, POST_SAVES_COLLECTION),
+    where("userId", "==", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const postIds = snap.docs.map((d) => d.data().postId as string);
+  if (postIds.length === 0) return [];
+  const posts: Post[] = [];
+  for (const pid of postIds) {
+    const p = await getPost(pid);
+    if (p) posts.push(p);
+  }
+  return posts.sort(
+    (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+  );
 }
 
 function postLikeDocId(postId: string, userId: string) {

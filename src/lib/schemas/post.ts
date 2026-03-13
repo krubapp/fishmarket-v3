@@ -26,6 +26,7 @@ export const postSchema = z.object({
   likeCount: z.number().int().min(0).default(0),
   saveCount: z.number().int().min(0).default(0),
   commentCount: z.number().int().min(0).default(0),
+  viewCount: z.number().int().min(0).default(0),
 });
 
 export type PostFormData = z.infer<typeof postSchema>;
@@ -37,7 +38,7 @@ export type Post = PostFormData & {
 
 export type CreatePostInput = Omit<
   Post,
-  "id" | "createdAt" | "likeCount" | "saveCount" | "commentCount"
+  "id" | "createdAt" | "likeCount" | "saveCount" | "commentCount" | "viewCount"
 >;
 
 /** Zod schema for the multi-step create-post wizard form. */
