@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { ContextTopBar } from "@/components/ContextTopBar";
-import { Icon } from "@/components/Icon";
 import { Input } from "@/components/Input";
+import { MediaDropzone } from "@/components/MediaDropzone";
 import { Snackbar } from "@/components/Snackbar";
 import { Textarea } from "@/components/Textarea";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,7 +20,6 @@ import { uploadAvatar } from "@/lib/storage";
 export default function SettingsAccountPage() {
   const { user, profile, profileLoading, refreshProfile } = useAuth();
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const formInitialized = useRef(false);
 
   const [saving, setSaving] = useState(false);
@@ -28,7 +27,6 @@ export default function SettingsAccountPage() {
     profile?.avatarUrl ?? null,
   );
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -68,21 +66,6 @@ export default function SettingsAccountPage() {
     setCurrentAvatarUrl(profile.avatarUrl ?? null);
   }, [profile, reset]);
 
-  useEffect(() => {
-    if (!avatarFile) {
-      setAvatarPreview(null);
-      return;
-    }
-    const url = URL.createObjectURL(avatarFile);
-    setAvatarPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [avatarFile]);
-
-  function handleAvatarSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) setAvatarFile(file);
-  }
-
   async function onSubmit(data: ProfileForm) {
     if (!user || saving) return;
     setSaving(true);
@@ -120,8 +103,6 @@ export default function SettingsAccountPage() {
     }
   }
 
-  const displayedAvatar = avatarPreview ?? currentAvatarUrl;
-
   return (
     <div className="flex min-h-screen flex-col bg-white">
       <ContextTopBar
@@ -141,34 +122,34 @@ export default function SettingsAccountPage() {
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            {/* Avatar */}
-            <div className="flex flex-col items-center gap-3">
-              <button
-                type="button"
-                className="group relative cursor-pointer rounded-full transition-opacity duration-(--duration-press) ease-(--ease-spring) active:scale-[0.95]"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Change profile photo"
-              >
-                <Avatar src={displayedAvatar} alt="Profile photo" size={80} />
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-(--duration-fast) group-hover:opacity-100">
-                  <Icon name="photo_camera" size={28} className="text-white" />
+            {/* Profile photo dropzone */}
+            <MediaDropzone
+              title="Profile photo"
+              subtitle="Drop or click to upload a photo"
+              files={avatarFile ? [avatarFile] : []}
+              onFilesChange={(files) => setAvatarFile(files[0] ?? null)}
+              onConversionError={() => {
+                setSnackbar({
+                  open: true,
+                  message: "Could not convert some images. Try a JPEG or PNG.",
+                  icon: "error",
+                });
+              }}
+              accept="image/*,.heic,image/heic,.dng,image/x-adobe-dng"
+              maxFiles={1}
+              className="rounded-lg"
+            >
+              <div className="flex flex-col items-center justify-center gap-3 py-4">
+                <Avatar
+                  src={currentAvatarUrl}
+                  alt="Profile photo"
+                  size={80}
+                />
+                <span className="font-medium text-paragraph-sm text-slate-600">
+                  Drop or click to upload profile photo
                 </span>
-              </button>
-              <button
-                type="button"
-                className="font-medium text-paragraph-sm text-slate-900 transition-colors hover:text-slate-950"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Change photo
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarSelect}
-              />
-            </div>
+              </div>
+            </MediaDropzone>
 
             {/* Form fields */}
             <div className="flex flex-col gap-4">
