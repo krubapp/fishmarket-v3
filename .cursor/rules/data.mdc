@@ -203,7 +203,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `getTaggedPosts(userId, limitCount?)` — query posts where `taggedUserIds` array-contains userId, ordered by `createdAt` desc. Used in profile "Tagged" tab
 - `getPostsByTaggedListingId(listingId, limitCount?)` — query posts where `taggedListingIds` array-contains listingId, ordered by `createdAt` desc. Used in listing detail "Tag videos" section
 - `getUserLikedPosts(userId, limitCount?)` — query `post_likes` by userId, batch-fetch corresponding posts. Used in profile "Like" tab
-- `getUserSavedPosts(userId, limitCount?)` — query `post_saves` by userId, batch-fetch corresponding posts. Used in profile "Favorites" tab
+- `getUserSavedPosts(userId, limitCount?)` — query `post_saves` by userId, batch-fetch corresponding posts. Used when displaying a user's saved posts (e.g. collection contents).
 - `addComment(postId, userId, text)` — adds doc to `post_comments`, increments `commentCount`. Returns comment ID
 - `getPostComments(postId, limitCount?)` — query comments for a post, ordered by `createdAt` desc. Returns `PostComment[]`
 - `getUserComments(userId, limitCount?)` — query comments by userId, ordered by `createdAt` desc. Returns `PostComment[]`. Used in profile comments page

@@ -102,6 +102,7 @@ export default function CreatePostPage() {
         videoUrl: "",
         caption: data.caption,
         hashtags: data.hashtags,
+        coverFrameColor: null,
         taggedUserIds: data.taggedUserIds,
         taggedListingIds: data.taggedListingIds,
         visibility: data.visibility,

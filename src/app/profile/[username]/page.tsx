@@ -22,7 +22,6 @@ import {
   getUserPosts,
   getTaggedPosts,
   getUserLikedPosts,
-  getUserSavedPosts,
   getUserProfiles,
   type UserProfile,
 } from "@/lib/firestore";
@@ -40,6 +39,7 @@ function getProfileUrl(usernameOrId: string): string {
 const PROFILE_SECTION_TABS = [
   { id: "order", label: "Order", icon: "receipt_long" as const, href: ROUTES.profileOrders },
   { id: "favorites", label: "Favorites", icon: "favorite" as const, href: ROUTES.profileFavorites },
+  { id: "collections", label: "Collections", icon: "folder" as const, href: ROUTES.profileCollections },
   { id: "comments", label: "Comments", icon: "chat" as const, href: ROUTES.profileComments },
   { id: "settings", label: "Settings", icon: "settings" as const, href: ROUTES.settings },
 ];
@@ -48,7 +48,6 @@ const CONTENT_TABS_BASE = [
   { id: "my-videos", labelOwn: "My videos", labelOther: "Videos" },
   { id: "tagged", label: "Tagged" },
   { id: "repost", label: "Repost" },
-  { id: "favorites", label: "Favorites" },
   { id: "like", label: "Like" },
 ] as const;
 
@@ -131,9 +130,6 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
           break;
         case "tagged":
           posts = await getTaggedPosts(uid);
-          break;
-        case "favorites":
-          posts = await getUserSavedPosts(uid);
           break;
         case "like":
           posts = await getUserLikedPosts(uid);
@@ -474,7 +470,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
           ) : tabPosts.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-3 px-4 py-16">
               <Icon
-                name={contentTab === "my-videos" ? "videocam" : contentTab === "tagged" ? "sell" : contentTab === "favorites" ? "bookmark" : "favorite"}
+                name={contentTab === "my-videos" ? "videocam" : contentTab === "tagged" ? "sell" : "favorite"}
                 size={40}
                 className="text-grey-400"
                 fill={0}
@@ -486,9 +482,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                     : "No videos"
                   : contentTab === "tagged"
                     ? "No tagged posts"
-                    : contentTab === "favorites"
-                      ? "No saved posts"
-                      : "No liked posts"}
+                    : "No liked posts"}
               </p>
             </div>
           ) : (

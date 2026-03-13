@@ -28,7 +28,7 @@ type CollectionWithCover = SaveCollection & {
 
 export default function ProfileCollectionsPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [collections, setCollections] = useState<CollectionWithCover[]>([]);
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState("");
@@ -37,7 +37,10 @@ export default function ProfileCollectionsPage() {
   const [editName, setEditName] = useState("");
 
   const loadCollections = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const cols = await getUserCollections(user.uid);
@@ -46,7 +49,6 @@ export default function ProfileCollectionsPage() {
         cols.map(async (col) => {
           const items = await getCollectionItems(col.id!, 1);
           let coverThumbnail: string | null = null;
-          const postCount = items.length;
 
           if (items.length > 0) {
             const post = await getPost(items[0].postId);
@@ -72,8 +74,9 @@ export default function ProfileCollectionsPage() {
   }, [user]);
 
   useEffect(() => {
+    if (authLoading) return;
     loadCollections();
-  }, [loadCollections]);
+  }, [authLoading, loadCollections]);
 
   const handleCreate = useCallback(async () => {
     if (!user || !newName.trim() || creating) return;
@@ -133,7 +136,7 @@ export default function ProfileCollectionsPage() {
   const pagePaddingBottom =
     "pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]";
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div
         className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
