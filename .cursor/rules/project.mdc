@@ -28,7 +28,9 @@ alwaysApply: true
   - `firestore.ts` — Firestore helpers (`createListing`, `updateListing`)
   - `storage.ts` — Firebase Storage helpers (`uploadListingImages`, `uploadVariantImage`, `uploadAvatar`, `uploadPostVideo`, `uploadPostThumbnail`)
  - `video.ts` — Client-side video utilities (`generateVideoThumbnail` — captures a JPEG frame from a video File)
-  - `heic.ts` — Client-side HEIC/HEIF to JPEG conversion (`convertHeicToJpegFiles`, `isHeicFile`) via the `heic-to` library; used by MediaDropzone.
+  - `heic.ts` — Client-side HEIC/HEIF to JPEG conversion (`convertHeicToJpegFiles`, `isHeicFile`) via the `heic-to` library.
+  - `dng.ts` — Client-side DNG to JPEG conversion (`convertDngToJpegFiles`, `isDngFile`) via the `utif` library.
+  - `image-upload.ts` — Unified `convertToJpegForUpload(file)` for MediaDropzone: HEIC and DNG are converted to JPEG; other files pass through.
   - `routes.ts` — Centralized `ROUTES` constant (all app paths in one place). Always import from here instead of hardcoding path strings. See `.cursor/rules/routes.mdc`.
   - `schemas/` — Zod schemas (e.g. `listing.ts`, `post.ts`, `collection.ts`). See `.cursor/rules/forms.mdc` and `data.mdc`.
   - `constants/` — Domain constants (e.g. `post.ts` — `TRENDING_HASHTAGS`, `COVER_FRAME_COLORS`, `VISIBILITY_OPTIONS`, `INTERACTION_SETTINGS`).

@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import { IconButton } from "@/components/IconButton";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
-import { convertHeicToJpegFiles } from "@/lib/heic";
+import { convertToJpegForUpload } from "@/lib/image-upload";
 import type { MediaDropzoneProps } from "./types";
 
 export function MediaDropzone({
@@ -13,7 +13,7 @@ export function MediaDropzone({
   files = [],
   onFilesChange,
   onConversionError,
-  accept = "image/*,video/*,.heic,image/heic",
+  accept = "image/*,video/*,.heic,image/heic,.dng,image/x-adobe-dng",
   maxFiles = 10,
   error = false,
   disabled = false,
@@ -55,7 +55,7 @@ export function MediaDropzone({
         const failed: File[] = [];
         for (const f of added) {
           try {
-            const converted = await convertHeicToJpegFiles(f);
+            const converted = await convertToJpegForUpload(f);
             flat.push(...converted);
           } catch {
             failed.push(f);
