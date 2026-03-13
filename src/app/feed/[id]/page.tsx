@@ -89,7 +89,7 @@ export default function PostDetailPage() {
               avatarUrl: profile.avatarUrl ?? null,
             };
           })
-          .filter((u): u is FeedCardTaggedUser => u != null);
+          .filter((u): u is NonNullable<typeof u> => u != null) as FeedCardTaggedUser[];
         const resolvedProducts: FeedCardTaggedProduct[] = taggedListingIds
           .map((lid) => {
             const listing = listingMap.get(lid);
@@ -101,7 +101,7 @@ export default function PostDetailPage() {
               price: `${listing.currency ?? "SEK"} ${listing.price}`,
             };
           })
-          .filter((p): p is FeedCardTaggedProduct => p != null);
+          .filter((p): p is NonNullable<typeof p> => p != null) as FeedCardTaggedProduct[];
         setTaggedUsers(resolvedUsers);
         setTaggedProducts(resolvedProducts);
       })
