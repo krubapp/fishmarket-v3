@@ -53,18 +53,20 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white pb-24">
-      {isSeller && (
-        <RootTopBar
-          title={profile?.displayName ?? "Seller"}
-          avatarSrc={profile?.avatarUrl}
-          onAddProduct={() => router.push(ROUTES.createListingForm)}
-          onFeed={() =>
-            setViewMode((m) => (m === "seller" ? "buyer" : "seller"))
-          }
-          onSearch={() => router.push(ROUTES.shop)}
-          feedActive={viewMode === "buyer"}
-        />
-      )}
+      <RootTopBar
+        title={profile?.displayName ?? (isSeller ? "Seller" : "Home")}
+        avatarSrc={profile?.avatarUrl}
+        onAddProduct={
+          isSeller ? () => router.push(ROUTES.createListingForm) : undefined
+        }
+        onFeed={
+          isSeller
+            ? () => setViewMode((m) => (m === "seller" ? "buyer" : "seller"))
+            : undefined
+        }
+        onSearch={() => router.push(`${ROUTES.shop}?search=1`)}
+        feedActive={isSeller && viewMode === "buyer"}
+      />
 
       {showSellerDashboard ? (
         <div className="mx-auto w-full max-w-[440px]">

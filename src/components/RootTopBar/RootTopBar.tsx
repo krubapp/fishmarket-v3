@@ -92,13 +92,15 @@ export function RootTopBar({
             Sell Product
           </Button>
         )}
-        <ActionButton
-          icon="subscriptions"
-          label="Feed"
-          onClick={onFeed}
-          variant="subtle"
-          active={feedActive}
-        />
+        {onFeed && (
+          <ActionButton
+            icon="subscriptions"
+            label="Feed"
+            onClick={onFeed}
+            variant="subtle"
+            active={feedActive}
+          />
+        )}
         <ActionButton
           icon="search"
           label="Search"

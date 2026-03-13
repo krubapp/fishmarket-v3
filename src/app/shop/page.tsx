@@ -48,7 +48,9 @@ function SearchPageInner() {
   );
   const [sellers, setSellers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isSearching, setIsSearching] = useState(false);
+  const [isSearching, setIsSearching] = useState(
+    searchParams.get("search") === "1",
+  );
   const [filterOpen, setFilterOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(q);
   const [suggestions, setSuggestions] = useState<SearchBarResult[]>([]);

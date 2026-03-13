@@ -50,7 +50,7 @@ import { BottomNav } from "@/components/BottomNav";
 **Path**: `@/components/RootTopBar`  
 **Figma**: Roy design system → top nav bar, types=dashboard (node 93:2260).
 
-Horizontal bar: avatar + title on the left; **Sell Product** text button (small, default variant), Feed and Search icon buttons on the right. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Feed/Search icon buttons 40×40.
+Horizontal bar: avatar + title on the left; optional **Sell Product** text button (small, subtle variant), optional Feed icon button, and Search icon button on the right. Sell Product renders only when `onAddProduct` is set; Feed renders only when `onFeed` is set. This allows the same component to serve both seller (all actions) and buyer (avatar + search only) views. White background, bottom border. Padding 16px 24px, height 80px, gap 16px. Title: medium/body-lg (20px, #121412). Avatar 32×32; Feed/Search icon buttons 40×40.
 
 **Props**
 
