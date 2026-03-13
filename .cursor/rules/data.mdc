@@ -59,7 +59,8 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 | `condition` | `"new" \| "used" \| "refurbished"` | Product condition |
 | `category` | `string` | Category (e.g. Lures, Rods) |
 | `fishType` | `string` | Fish type (e.g. Perch, Pike) |
-| `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, and optional `imageUrl` |
+| `weight` | `number` | Optional. Product weight in grams. Used when listing has no variants; otherwise use per-variant weight. |
+| `variants` | `VariantGroup[]` | Optional variant groups. Each group has `values: VariantValue[]` where each value has `id`, `name`, `price`, `available`, optional `imageUrl`, and optional `weight` (grams) |
 | `imageUrls` | `string[]` | URLs from Firebase Storage |
 | `createdAt` | `Timestamp` | Server timestamp |
 | `sellerId` | `string` | Firebase Auth UID of the listing creator |

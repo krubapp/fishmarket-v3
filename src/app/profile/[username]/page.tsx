@@ -44,13 +44,21 @@ const PROFILE_SECTION_TABS = [
   { id: "settings", label: "Settings", icon: "settings" as const, href: ROUTES.settings },
 ];
 
-const CONTENT_TABS = [
-  { id: "my-videos", label: "My videos" },
+const CONTENT_TABS_BASE = [
+  { id: "my-videos", labelOwn: "My videos", labelOther: "Videos" },
   { id: "tagged", label: "Tagged" },
   { id: "repost", label: "Repost" },
   { id: "favorites", label: "Favorites" },
   { id: "like", label: "Like" },
-];
+] as const;
+
+function getContentTabs(isOwnProfile: boolean) {
+  return CONTENT_TABS_BASE.map((tab) =>
+    "labelOwn" in tab
+      ? { id: tab.id, label: isOwnProfile ? tab.labelOwn : tab.labelOther }
+      : { id: tab.id, label: tab.label },
+  );
+}
 
 function formatFollowerCount(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M Follower`;
@@ -230,7 +238,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
           <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
             <div className="overflow-x-auto overflow-y-hidden">
               <Tabs
-                tabs={CONTENT_TABS}
+                tabs={getContentTabs(false)}
                 value="my-videos"
                 onValueChange={() => {}}
                 className="!flex-nowrap shrink-0 px-4 sm:px-6 lg:px-0"
@@ -441,7 +449,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
         <section className="border-t border-slate-200 bg-white py-3 lg:border-t-0">
           <div className="overflow-x-auto overflow-y-hidden">
             <Tabs
-              tabs={CONTENT_TABS}
+              tabs={getContentTabs(isOwnProfile)}
               value={contentTab}
               onValueChange={setContentTab}
               className="!flex-nowrap shrink-0 px-4 sm:px-6 lg:px-0"
@@ -472,7 +480,15 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 fill={0}
               />
               <p className="text-center font-medium text-grey-600 text-paragraph-sm">
-                {contentTab === "my-videos" ? "No videos yet" : contentTab === "tagged" ? "No tagged posts" : contentTab === "favorites" ? "No saved posts" : "No liked posts"}
+                {contentTab === "my-videos"
+                  ? isOwnProfile
+                    ? "No videos yet"
+                    : "No videos"
+                  : contentTab === "tagged"
+                    ? "No tagged posts"
+                    : contentTab === "favorites"
+                      ? "No saved posts"
+                      : "No liked posts"}
               </p>
             </div>
           ) : (

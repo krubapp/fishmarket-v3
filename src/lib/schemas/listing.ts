@@ -28,6 +28,8 @@ export const variantValueSchema = z.object({
   price: z.number().min(0).default(0),
   available: z.number().int().min(0).default(0),
   imageUrl: z.url().optional(),
+  /** Weight in grams. Optional; used for shipping when product has variants. */
+  weight: z.number().min(0).optional(),
 });
 
 export type VariantValue = z.infer<typeof variantValueSchema>;
@@ -54,6 +56,8 @@ export const listingFormSchema = z.object({
   ]),
   category: z.string().min(1, "Category is required"),
   fishType: z.string().min(1, "Fish type is required"),
+  /** Weight in grams. Used when listing has no variants; otherwise use per-variant weight. */
+  weight: z.number().min(0, "Weight cannot be negative").optional(),
   variants: z.array(variantGroupSchema).optional(),
 });
 

@@ -106,6 +106,22 @@ function omitUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
   ) as Partial<T>;
 }
 
+/** Sanitize listing payload for Firestore: strip undefined at top level and in variant values. */
+function sanitizeListingPayload(
+  data: Record<string, unknown>,
+): Record<string, unknown> {
+  const out = omitUndefined(data);
+  if (Array.isArray(out.variants)) {
+    out.variants = (out.variants as Array<{ values?: Array<Record<string, unknown>> }>).map(
+      (group) => ({
+        ...group,
+        values: (group.values ?? []).map((v) => omitUndefined(v)),
+      }),
+    );
+  }
+  return out;
+}
+
 export async function updateUserProfile(
   uid: string,
   data: Partial<Omit<UserProfile, "uid">>,
@@ -123,7 +139,7 @@ export async function createListing(
   data: CreateListingInput | CreateListingInputInitial
 ): Promise<string> {
   const docRef = await addDoc(collection(db, LISTINGS_COLLECTION), {
-    ...data,
+    ...sanitizeListingPayload(data as Record<string, unknown>),
     createdAt: serverTimestamp(),
   });
   return docRef.id;
@@ -133,7 +149,10 @@ export async function updateListing(
   listingId: string,
   data: Partial<CreateListingInput>
 ): Promise<void> {
-  await updateDoc(doc(db, LISTINGS_COLLECTION, listingId), data);
+  await updateDoc(
+    doc(db, LISTINGS_COLLECTION, listingId),
+    sanitizeListingPayload(data as Record<string, unknown>),
+  );
 }
 
 export async function getListing(id: string): Promise<Listing | null> {

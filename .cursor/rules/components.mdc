@@ -1334,7 +1334,7 @@ const [open, setOpen] = useState(false);
 **Path**: `@/components/VariantList` 
 **Figma**: Nike Fishing Maning 2026 → variant table (node 443:1585).
 
-Table display of variant groups on the create-listing form. Each group is a collapsible section: group header row (name, value count, expand/collapse chevron) followed by indented value rows. Header row with "Variant - Expand all / Collapse all" toggle, Price and Available column headers. Value rows: 48×48 image upload button, name, price input (92px), available input (92px). Groups start expanded. "Add variants" button at the bottom opens the variant drawer.
+Table display of variant groups on the create-listing form. Each group is a collapsible section: group header row (name, value count, expand/collapse chevron) followed by indented value rows. Header row with "Variant - Expand all / Collapse all" toggle, Price, **Weight (g)**, and Available column headers. Value rows: 48×48 image upload button, name, price input, weight input (grams), available input. Groups start expanded. "Add variants" button at the bottom opens the variant drawer.
 
 **Props**
 
@@ -1440,7 +1440,7 @@ const [open, setOpen] = useState(false);
 
 **Path**: `@/components/ListingForm`
 
-Shared form component used by both the create and edit listing pages. Renders the full listing form: product images, item details (title, category, condition, description, specs), pricing, and variants. Handles image uploads, variant image uploads, and submission to Firestore.
+Shared form component used by both the create and edit listing pages. Renders the full listing form: product images, item details (title, category, condition, description, specs), pricing (including optional product **weight (g)** when the listing has no variants), and variants. Handles image uploads, variant image uploads, and submission to Firestore.
 
 **Props**
 

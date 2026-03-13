@@ -126,21 +126,23 @@ export function VariantList({
   const cellBorder = "border-b border-slate-200";
   const colPrice = "w-[92px] shrink-0";
   const colAvailable = "w-[92px] shrink-0";
+  const colWeight = "w-[80px] shrink-0";
 
   return (
-    <div className="-mx-6 flex flex-col border border-slate-200 bg-white">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+    <div className="-mx-6 min-w-0 overflow-x-auto">
+      <div className="flex min-w-[420px] flex-col border border-slate-200 bg-white">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+        />
 
-      {/* Table header */}
-      <div
-        className={`flex h-14 items-center gap-3 px-6 ${cellBorder} bg-slate-100`}
-      >
+        {/* Table header */}
+        <div
+          className={`flex h-14 items-center gap-3 px-6 ${cellBorder} bg-slate-100`}
+        >
         <button
           type="button"
           onClick={toggleExpandAll}
@@ -165,6 +167,11 @@ export function VariantList({
           className={`text-center font-semibold text-slate-900 text-paragraph-sm ${colPrice}`}
         >
           Price
+        </span>
+        <span
+          className={`text-center font-semibold text-slate-900 text-paragraph-sm ${colWeight}`}
+        >
+          Weight (g)
         </span>
         <span
           className={`text-center font-semibold text-slate-900 text-paragraph-sm underline ${colAvailable}`}
@@ -216,6 +223,7 @@ export function VariantList({
                 </span>
               </div>
               <span className={colPrice} />
+              <span className={colWeight} />
               <span className={colAvailable} />
             </button>
 
@@ -279,6 +287,21 @@ export function VariantList({
                       <input
                         type="number"
                         min={0}
+                        step={1}
+                        value={value.weight ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          updateValue(group.id, value.id, {
+                            weight: v === "" ? undefined : Number(v) || 0,
+                          });
+                        }}
+                        placeholder="0"
+                        title="Weight in grams"
+                        className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colWeight}`}
+                      />
+                      <input
+                        type="number"
+                        min={0}
                         value={value.available ?? ""}
                         onChange={(e) =>
                           updateValue(group.id, value.id, {
@@ -297,17 +320,18 @@ export function VariantList({
         );
       })}
 
-      {/* Add button */}
-      <div className="border-t border-slate-200 p-6">
-        <Button
-          variant="default"
-          size="large"
-          type="button"
-          onClick={onOpenDrawer}
-          leadingIcon="add"
-        >
-          Add
-        </Button>
+        {/* Add button */}
+        <div className="border-t border-slate-200 p-6">
+          <Button
+            variant="default"
+            size="large"
+            type="button"
+            onClick={onOpenDrawer}
+            leadingIcon="add"
+          >
+            Add
+          </Button>
+        </div>
       </div>
     </div>
   );

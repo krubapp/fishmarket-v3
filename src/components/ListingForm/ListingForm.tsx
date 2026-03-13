@@ -110,6 +110,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
           condition: initialData.condition,
           category: initialData.category,
           fishType: initialData.fishType ?? "",
+          weight: initialData.weight ?? undefined,
         }
       : {
           title: "",
@@ -121,6 +122,7 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
           condition: "new" as const,
           category: "",
           fishType: "",
+          weight: undefined,
         },
   });
 
@@ -427,6 +429,19 @@ export function ListingForm({ mode, initialData }: ListingFormProps) {
               />
             </div>
           </div>
+
+          {variantGroups.filter((g) => g.values.length > 0).length === 0 && (
+            <Input
+              {...register("weight", { valueAsNumber: true })}
+              type="number"
+              min={0}
+              step={1}
+              label="Weight (g)"
+              placeholder="0"
+              helperText="Product weight for shipping"
+              error={Boolean(errors.weight)}
+            />
+          )}
         </SectionCard>
 
         <SectionCard>
