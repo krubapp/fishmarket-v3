@@ -1,20 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
 import { VariantOptionButton } from "@/components/VariantOptionButton";
 import { AccordionItem } from "@/components/Accordion";
+import { Badge } from "@/components/Badge";
+import { Drawer } from "@/components/Drawer";
 import { ImageButton } from "@/components/ImageButton";
 import { Icon } from "@/components/Icon";
 import { Rating } from "@/components/Rating";
-import { IconButton } from "@/components/IconButton";
+import { Textarea } from "@/components/Textarea";
+import { BottomNav } from "@/components/BottomNav";
 import { Snackbar } from "@/components/Snackbar";
-import { getListing, getUserProfile, isListingFavorited, toggleListingFavorite } from "@/lib/firestore";
+import {
+  getListing,
+  getListingReviewByUser,
+  getListingReviews,
+  getUserProfile,
+  getUserProfiles,
+  getPostsByTaggedListingId,
+  isListingFavorited,
+  setListingReview,
+  toggleListingFavorite,
+} from "@/lib/firestore";
 import type { UserProfile } from "@/lib/firestore";
 import type { Listing, VariantGroup, VariantValue } from "@/lib/schemas/listing";
+import type { ListingReview } from "@/lib/schemas/listing-review";
+import type { Post } from "@/lib/schemas/post";
+import { VideoThumbnailCard } from "@/components/VideoThumbnailCard";
 import { useAuth } from "@/hooks/useAuth";
 import { getAuthHeaders } from "@/lib/firebase";
 import { ROUTES } from "@/lib/routes";
@@ -33,7 +50,7 @@ function findVariantValue(
 export default function ListingDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, profile: authProfile } = useAuth();
   const listingId = params.id as string;
 
   const [listing, setListing] = useState<Listing | null>(null);
@@ -50,6 +67,23 @@ export default function ListingDetailPage() {
   const [togglingFavorite, setTogglingFavorite] = useState(false);
   const [shareSnackbarOpen, setShareSnackbarOpen] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [taggedPosts, setTaggedPosts] = useState<Post[]>([]);
+  const [taggedPostsLoading, setTaggedPostsLoading] = useState(false);
+  const [taggedPostCreators, setTaggedPostCreators] = useState<
+    Map<string, UserProfile>
+  >(new Map());
+  const [reviews, setReviews] = useState<ListingReview[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewerProfiles, setReviewerProfiles] = useState<
+    Map<string, UserProfile>
+  >(new Map());
+  const [myReview, setMyReview] = useState<ListingReview | null>(null);
+  const [addReviewOpen, setAddReviewOpen] = useState(false);
+  const [reviewFormRating, setReviewFormRating] = useState(0);
+  const [reviewFormText, setReviewFormText] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSnackbarOpen, setReviewSnackbarOpen] = useState(false);
+  const [reviewErrorSnackbarOpen, setReviewErrorSnackbarOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -76,6 +110,55 @@ export default function ListingDetailPage() {
   useEffect(() => {
     if (!user?.uid || !listingId) return;
     isListingFavorited(listingId, user.uid).then(setFavorited).catch(() => {});
+  }, [listingId, user?.uid]);
+
+  useEffect(() => {
+    if (!listingId) return;
+    let cancelled = false;
+    setTaggedPostsLoading(true);
+    getPostsByTaggedListingId(listingId)
+      .then((posts) => {
+        if (!cancelled) setTaggedPosts(posts);
+        const userIds = [...new Set(posts.map((p) => p.userId).filter(Boolean))];
+        if (userIds.length === 0) return;
+        return getUserProfiles(userIds);
+      })
+      .then((profilesMap) => {
+        if (!cancelled && profilesMap) setTaggedPostCreators(profilesMap);
+      })
+      .finally(() => {
+        if (!cancelled) setTaggedPostsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [listingId]);
+
+  useEffect(() => {
+    if (!listingId) return;
+    let cancelled = false;
+    setReviewsLoading(true);
+    getListingReviews(listingId)
+      .then((list) => {
+        if (!cancelled) setReviews(list);
+        const userIds = [...new Set(list.map((r) => r.userId).filter(Boolean))];
+        if (userIds.length === 0) return;
+        return getUserProfiles(userIds);
+      })
+      .then((profilesMap) => {
+        if (!cancelled && profilesMap) setReviewerProfiles(profilesMap);
+      })
+      .finally(() => {
+        if (!cancelled) setReviewsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [listingId]);
+
+  useEffect(() => {
+    if (!listingId || !user?.uid) return;
+    getListingReviewByUser(listingId, user.uid).then(setMyReview).catch(() => {});
   }, [listingId, user?.uid]);
 
   async function handleToggleFavorite() {
@@ -193,6 +276,74 @@ export default function ListingDetailPage() {
       setCheckoutError("Failed to start checkout");
     } finally {
       setPurchasing(false);
+    }
+  }
+
+  function formatReviewDate(createdAt: ListingReview["createdAt"]): string {
+    if (!createdAt?.seconds) return "—";
+    const d = new Date(createdAt.seconds * 1000);
+    return d.toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
+  async function handleSubmitReview() {
+    if (!user?.uid || !listingId || reviewFormRating < 1 || reviewSubmitting)
+      return;
+    const rating = reviewFormRating;
+    const text = reviewFormText.trim();
+    setReviewSubmitting(true);
+
+    // Close drawer and reset form immediately
+    setAddReviewOpen(false);
+    setReviewFormRating(0);
+    setReviewFormText("");
+
+    const optimisticId = `opt-${Date.now()}`;
+    const optimisticReview: ListingReview = {
+      id: optimisticId,
+      listingId,
+      userId: user.uid,
+      rating,
+      text,
+      createdAt: {
+        seconds: Math.floor(Date.now() / 1000),
+        nanoseconds: 0,
+      },
+    };
+
+    // Show the new review right away
+    setReviews((prev) => [optimisticReview, ...prev]);
+    setMyReview(optimisticReview);
+    setReviewerProfiles((prev) => {
+      const next = new Map(prev);
+      if (authProfile) next.set(user.uid, authProfile);
+      return next;
+    });
+    setReviewSubmitting(false);
+
+    try {
+      await setListingReview({ listingId, userId: user.uid, rating, text });
+      const [updatedReviews, updatedMy] = await Promise.all([
+        getListingReviews(listingId),
+        getListingReviewByUser(listingId, user.uid),
+      ]);
+      setReviews(updatedReviews);
+      setMyReview(updatedMy);
+      const userIds = [
+        ...new Set(updatedReviews.map((r) => r.userId).filter(Boolean)),
+      ];
+      if (userIds.length > 0) {
+        const profiles = await getUserProfiles(userIds);
+        setReviewerProfiles(profiles);
+      }
+      setReviewSnackbarOpen(true);
+    } catch {
+      setReviews((prev) => prev.filter((r) => r.id !== optimisticId));
+      setMyReview(null);
+      setReviewErrorSnackbarOpen(true);
     }
   }
 
@@ -385,23 +536,42 @@ export default function ListingDetailPage() {
           </button>
         </div>
 
-        {/* Tag videos (Figma 611:2226–2229) */}
-        <section className="flex flex-col gap-6">
-          <div>
-            <h2 className="font-medium leading-[1.33] text-[length:var(--font-size-body-xl)] text-slate-900">
-              Tag videos
-            </h2>
-            <p className="mt-1 font-normal leading-[1.5] text-[length:var(--font-size-body-md)] text-grey-800">
-              Here&apos;s what people tagging for this lure
-            </p>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {/* Placeholder: no tagged videos data yet */}
-            <div className="flex h-[180px] w-[222px] shrink-0 items-center justify-center rounded-sm bg-grey-200 text-grey-500 text-[length:var(--font-size-paragraph-sm)]">
-              No videos yet
+        {/* Tag videos – only show when this listing has tagged posts */}
+        {taggedPosts.length > 0 && (
+          <section className="flex flex-col gap-6">
+            <div>
+              <h2 className="font-bold leading-[1.33] text-[length:var(--font-size-paragraph-xl)] text-slate-900">
+                Videos featuring this product
+              </h2>
+              <p className="mt-1 font-normal leading-[1.5] text-[length:var(--font-size-body-md)] text-grey-800">
+                Community posts that tagged this listing
+              </p>
             </div>
-          </div>
-        </section>
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              {taggedPosts.map((post) => {
+                const creator = post.userId
+                  ? taggedPostCreators.get(post.userId)
+                  : null;
+                return (
+                  <div
+                    key={post.id}
+                    className="w-[140px] shrink-0"
+                  >
+                    <VideoThumbnailCard
+                      thumbnailUrl={post.thumbnailUrl ?? null}
+                      viewCount={post.viewCount ?? 0}
+                      creatorAvatarUrl={creator?.avatarUrl ?? null}
+                      creatorName={creator?.displayName ?? creator?.username}
+                      onClick={() =>
+                        post.id && router.push(ROUTES.postDetail(post.id))
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Accordions: full-bleed, border top/bottom only (Figma 611:2583) */}
         <div className="-mx-6">
@@ -424,45 +594,145 @@ export default function ListingDetailPage() {
           </AccordionItem>
 
           <AccordionItem
-            title="Ratings"
-            headerRight={<Rating value={0} size={24} className="shrink-0" />}
+            title="Reviews"
+            headerRight={
+              <div className="flex items-center gap-2">
+                <Rating
+                  value={
+                    reviews.length > 0
+                      ? Math.round(
+                          reviews.reduce((s, r) => s + r.rating, 0) /
+                            reviews.length,
+                        )
+                      : 0
+                  }
+                  size={24}
+                  className="shrink-0"
+                />
+                <Badge variant="default">
+                  {reviewsLoading ? "…" : `${reviews.length} reviews`}
+                </Badge>
+              </div>
+            }
             defaultOpen
           >
             <div className="flex flex-col gap-6">
-              <Button size="small" variant="subtle" className="w-fit">
-                Add a Review
-              </Button>
-              <div className="flex flex-col divide-y divide-slate-200">
-                <div className="flex flex-col gap-4 py-4">
-                  <div className="flex gap-2">
-                    <Avatar size={80} className="shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-medium text-[length:var(--font-size-body-md)] text-grey-800">
-                          Customer review
-                        </span>
-                        <IconButton
-                          name="more_vert"
-                          size="large"
-                          variant="transparent"
-                          aria-label="More options"
-                        />
-                      </div>
-                      <Rating value={0} size={24} className="mt-1" />
-                      <p className="mt-2 font-normal text-[length:var(--font-size-paragraph-sm)] leading-[1.43] text-grey-600">
-                        No reviews yet. Be the first to share your experience.
-                      </p>
-                      <span className="mt-1 block font-normal text-[length:var(--font-size-caption)] text-grey-700">
-                        —
-                      </span>
-                    </div>
-                  </div>
+              {user && !myReview && (
+                <Button
+                  size="small"
+                  variant="subtle"
+                  className="w-fit"
+                  onClick={() => setAddReviewOpen(true)}
+                >
+                  Add a Review
+                </Button>
+              )}
+              {reviewsLoading ? (
+                <div className="py-4 text-[length:var(--font-size-paragraph-sm)] text-grey-500">
+                  Loading reviews…
                 </div>
-              </div>
+              ) : reviews.length === 0 ? (
+                <p className="font-normal text-[length:var(--font-size-paragraph-sm)] leading-[1.43] text-grey-600">
+                  No reviews yet.
+                  {user && !myReview
+                    ? " Be the first to share your experience."
+                    : ""}
+                </p>
+              ) : (
+                <div className="flex flex-col divide-y divide-slate-200">
+                  {reviews.map((review) => {
+                    const reviewer = reviewerProfiles.get(review.userId);
+                    return (
+                      <div
+                        key={review.id ?? `${review.listingId}_${review.userId}`}
+                        className="flex flex-col gap-4 py-4"
+                      >
+                        <div className="flex gap-2">
+                          <Link
+                            href={ROUTES.profileByUsername(
+                              reviewer?.username ?? review.userId,
+                            )}
+                            className="shrink-0 block transition-opacity hover:opacity-90"
+                          >
+                            <Avatar
+                              size={80}
+                              src={reviewer?.avatarUrl ?? null}
+                              alt={reviewer?.displayName ?? "Reviewer"}
+                            />
+                          </Link>
+                          <div className="min-w-0 flex-1 flex flex-col gap-1">
+                            <Link
+                              href={ROUTES.profileByUsername(
+                                reviewer?.username ?? review.userId,
+                              )}
+                              className="inline-block font-semibold text-[length:var(--font-size-body-md)] text-slate-900 hover:text-slate-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2 rounded"
+                            >
+                              {reviewer?.displayName ?? reviewer?.username ?? "Customer"}
+                            </Link>
+                            <Rating
+                              value={review.rating}
+                              size={24}
+                              className="shrink-0"
+                            />
+                            {review.text ? (
+                              <p className="mt-2 font-normal text-[length:var(--font-size-paragraph-sm)] leading-[1.43] text-grey-600">
+                                {review.text}
+                              </p>
+                            ) : null}
+                            <span className="mt-1 block font-normal text-[length:var(--font-size-caption)] text-grey-700">
+                              {formatReviewDate(review.createdAt)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </AccordionItem>
         </div>
       </div>
+
+      <Drawer
+        open={addReviewOpen}
+        onClose={() => {
+          setAddReviewOpen(false);
+          setReviewFormRating(0);
+          setReviewFormText("");
+        }}
+        title="Add a Review"
+        width={440}
+      >
+        <div className="flex flex-col gap-6">
+          <div>
+            <p className="mb-2 font-medium text-[length:var(--font-size-paragraph-sm)] text-slate-900">
+              Your rating
+            </p>
+            <Rating
+              value={reviewFormRating}
+              onChange={setReviewFormRating}
+              size={28}
+            />
+          </div>
+          <Textarea
+            label="Your review (optional)"
+            placeholder="Share your experience with this product…"
+            value={reviewFormText}
+            onChange={(e) => setReviewFormText(e.target.value)}
+            rows={4}
+          />
+          <Button
+            size="medium"
+            onClick={handleSubmitReview}
+            disabled={reviewFormRating < 1 || reviewSubmitting}
+            loading={reviewSubmitting}
+            className="w-full"
+          >
+            Submit review
+          </Button>
+        </div>
+      </Drawer>
 
       <Snackbar
         open={shareSnackbarOpen}
@@ -472,12 +742,27 @@ export default function ListingDetailPage() {
         duration={3000}
       />
       <Snackbar
+        open={reviewSnackbarOpen}
+        onClose={() => setReviewSnackbarOpen(false)}
+        message="Review submitted"
+        icon="check_circle"
+        duration={3000}
+      />
+      <Snackbar
+        open={reviewErrorSnackbarOpen}
+        onClose={() => setReviewErrorSnackbarOpen(false)}
+        message="Couldn’t submit review. Try again."
+        icon="error"
+        duration={5000}
+      />
+      <Snackbar
         open={!!checkoutError}
         onClose={() => setCheckoutError(null)}
         message={checkoutError || ""}
         icon="error"
         duration={5000}
       />
+      <BottomNav activeItem="shop" />
     </div>
   );
 }

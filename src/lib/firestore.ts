@@ -25,6 +25,7 @@ import type { Listing } from "./schemas/listing";
 import type { Order, OrderStatus } from "./schemas/order";
 import type { Post, CreatePostInput, PostComment } from "./schemas/post";
 import type { SaveCollection, CollectionItem } from "./schemas/collection";
+import type { ListingReview, CreateListingReviewInput } from "./schemas/listing-review";
 
 const db = getFirestore(firebaseApp);
 
@@ -280,6 +281,7 @@ export async function getListingsByIds(
 // ─── Listing Favorites ──────────────────────────────────────────────────
 
 export const LISTING_FAVORITES_COLLECTION = "listing_favorites";
+export const LISTING_REVIEWS_COLLECTION = "listing_reviews";
 
 function listingFavoriteDocId(listingId: string, userId: string) {
   return `${listingId}_${userId}`;
@@ -336,6 +338,53 @@ export async function getUserFavoriteListings(
   if (ids.length === 0) return [];
   const map = await getListingsByIds(ids);
   return ids.map((id) => map.get(id)).filter((l): l is Listing => l != null);
+}
+
+// ─── Listing reviews ───────────────────────────────────────────────────
+
+function listingReviewDocId(listingId: string, userId: string): string {
+  return `${listingId}_${userId}`;
+}
+
+/** Create or update a review (one per user per listing). Overwrites if exists. */
+export async function setListingReview(
+  data: CreateListingReviewInput,
+): Promise<void> {
+  const reviewId = listingReviewDocId(data.listingId, data.userId);
+  const ref = doc(db, LISTING_REVIEWS_COLLECTION, reviewId);
+  await setDoc(ref, {
+    listingId: data.listingId,
+    userId: data.userId,
+    rating: data.rating,
+    ...(data.text != null && data.text !== "" ? { text: data.text } : {}),
+    createdAt: serverTimestamp(),
+  });
+}
+
+/** Get all reviews for a listing, newest first. */
+export async function getListingReviews(
+  listingId: string,
+  limitCount = 50,
+): Promise<ListingReview[]> {
+  const q = query(
+    collection(db, LISTING_REVIEWS_COLLECTION),
+    where("listingId", "==", listingId),
+    orderBy("createdAt", "desc"),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as ListingReview));
+}
+
+/** Get the current user's review for a listing, if any. */
+export async function getListingReviewByUser(
+  listingId: string,
+  userId: string,
+): Promise<ListingReview | null> {
+  const reviewId = listingReviewDocId(listingId, userId);
+  const snap = await getDoc(doc(db, LISTING_REVIEWS_COLLECTION, reviewId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() } as ListingReview;
 }
 
 // ─── Orders ────────────────────────────────────────────────────────────
@@ -487,6 +536,23 @@ export async function getTaggedPosts(
   const q = query(
     collection(db, POSTS_COLLECTION),
     where("taggedUserIds", "array-contains", userId),
+    limit(limitCount),
+  );
+  const snap = await getDocs(q);
+  const posts = snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Post);
+  return posts.sort(
+    (a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0),
+  );
+}
+
+/** Posts that have this listing in their taggedListingIds (videos tagging this product). */
+export async function getPostsByTaggedListingId(
+  listingId: string,
+  limitCount = 20,
+): Promise<Post[]> {
+  const q = query(
+    collection(db, POSTS_COLLECTION),
+    where("taggedListingIds", "array-contains", listingId),
     limit(limitCount),
   );
   const snap = await getDocs(q);

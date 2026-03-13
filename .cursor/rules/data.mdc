@@ -79,6 +79,24 @@ Stores product listings. Schema defined in `src/lib/schemas/listing.ts`.
 - `getUserProfiles(uids)` — `src/lib/firestore.ts` — batch-fetch user profiles by UID array (groups of 10 for Firestore `in` limit). Returns `Map<string, UserProfile>`
 - `getListingsByIds(ids)` — `src/lib/firestore.ts` — batch-fetch listings by ID array (groups of 10 for Firestore `in` limit). Returns `Map<string, Listing>`
 
+### `listing_reviews` collection
+
+Stores one review per user per listing. Document ID = `{listingId}_{userId}`. Schema in `src/lib/schemas/listing-review.ts`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `listingId` | `string` | Reference to the listing |
+| `userId` | `string` | Reviewer's Firebase Auth UID |
+| `rating` | `number` | 1–5 stars |
+| `text` | `string` | Optional review body (max 2000 chars) |
+| `createdAt` | `Timestamp` | Server timestamp |
+
+**Helpers** (in `src/lib/firestore.ts`):
+
+- `setListingReview(data)` — create or overwrite review (one per user per listing). Uses doc ID `listingId_userId`.
+- `getListingReviews(listingId, limitCount?)` — all reviews for a listing, `createdAt` desc. Requires composite index on `(listingId, createdAt)` if not auto-created.
+- `getListingReviewByUser(listingId, userId)` — current user's review for the listing, if any.
+
 ### `orders` collection
 
 Stores purchase orders. Schema defined in `src/lib/schemas/order.ts`. Created when a buyer purchases a listing.
@@ -183,6 +201,7 @@ Stores video posts for the social feed. Schema defined in `src/lib/schemas/post.
 - `getUserPostInteractions(postIds, userId)` — batch check liked/saved states for feed rendering
 - `getUserPosts(userId, limitCount?)` — query posts by userId, ordered by `createdAt` desc. Used in profile "My videos" tab
 - `getTaggedPosts(userId, limitCount?)` — query posts where `taggedUserIds` array-contains userId, ordered by `createdAt` desc. Used in profile "Tagged" tab
+- `getPostsByTaggedListingId(listingId, limitCount?)` — query posts where `taggedListingIds` array-contains listingId, ordered by `createdAt` desc. Used in listing detail "Tag videos" section
 - `getUserLikedPosts(userId, limitCount?)` — query `post_likes` by userId, batch-fetch corresponding posts. Used in profile "Like" tab
 - `getUserSavedPosts(userId, limitCount?)` — query `post_saves` by userId, batch-fetch corresponding posts. Used in profile "Favorites" tab
 - `addComment(postId, userId, text)` — adds doc to `post_comments`, increments `commentCount`. Returns comment ID
