@@ -10,6 +10,7 @@ import {
   CategoriesSection,
   FavoritesSection,
   PromoCTASection,
+  MapComingSoonSection,
   BrandSuggestionsSection,
   BecauseYouLikeSection,
 } from "@/components/BuyerDashboard";
@@ -87,6 +88,7 @@ export default function HomePage() {
             <PromoCTASection />
           </div>
 
+          <MapComingSoonSection />
           <BrandSuggestionsSection listings={brandListings} />
           <BecauseYouLikeSection listings={recommendedListings} />
         </div>

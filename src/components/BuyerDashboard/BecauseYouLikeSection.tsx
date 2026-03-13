@@ -24,7 +24,7 @@ export function BecauseYouLikeSection({
         subtitle="Discover similar lures from other creators."
       />
 
-      <div className="flex flex-wrap gap-1">
+      <div className="grid grid-cols-2 gap-4">
         {listings.map((listing) => (
           <RecommendedCard key={listing.id} listing={listing} />
         ))}
@@ -39,7 +39,7 @@ function RecommendedCard({ listing }: { listing: Listing }) {
 
   return (
     <div
-      className="flex w-[194px] cursor-pointer flex-col gap-3"
+      className="flex cursor-pointer flex-col gap-3"
       onClick={() => listing.id && router.push(ROUTES.listingDetail(listing.id))}
       role="link"
     >

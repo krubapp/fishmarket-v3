@@ -1673,4 +1673,29 @@ const [savePostId, setSavePostId] = useState<string | null>(null);
 
 ---
 
+## MapComingSoonSection
+
+**Path**: `@/components/BuyerDashboard/MapComingSoonSection`
+**Figma**: Nike Fishing Maning 2026 → home dashboard (node `798:6035`), "Near By you / MAPPING AREA COMING SOON".
+
+Buyer-home teaser section for the upcoming map feature. Includes: eyebrow (`Near By you`), heading (`MAPPING AREA COMING SOON`), beta row (`Beta` + `Sign up for the beta`), large blurred map placeholder hero with center copy (`New Area found by`) and display-only pill (`Sign Up for Beta`), plus bottom strip (`People that are posting in this same location`, avatar stack/count, `View All`). This section is currently visual-only (no click handlers).
+
+**Props**
+
+| Prop | Type | Required | Description |
+|---|---|----|----|
+| `className` | `string` | No | Root section class |
+
+**Exports**: `MapComingSoonSection`, `MapComingSoonSectionProps`.
+
+**Example**
+
+```tsx
+import { MapComingSoonSection } from "@/components/BuyerDashboard";
+
+<MapComingSoonSection />
+```
+
+---
+
 When adding or changing primitives, update this rule and keep Figma node IDs in component comments where useful.

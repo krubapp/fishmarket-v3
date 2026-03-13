@@ -4,5 +4,6 @@ export { NewReleaseSection } from "./NewReleaseSection";
 export { CategoriesSection } from "./CategoriesSection";
 export { FavoritesSection } from "./FavoritesSection";
 export { PromoCTASection } from "./PromoCTASection";
+export { MapComingSoonSection } from "./MapComingSoonSection";
 export { BrandSuggestionsSection } from "./BrandSuggestionsSection";
 export { BecauseYouLikeSection } from "./BecauseYouLikeSection";
