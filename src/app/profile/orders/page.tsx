@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/Badge";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/Button";
+import { ContextTopBar } from "@/components/ContextTopBar";
 import { ProductListing } from "@/components/ProductListing";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -180,11 +181,11 @@ export default function ProfileOrdersPage() {
       <div
         className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
       >
-        <header className="flex h-[88px] shrink-0 items-center border-b border-slate-200 px-6">
-          <h1 className="font-medium leading-[1.4] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-lg)]">
-            Orders
-          </h1>
-        </header>
+        <ContextTopBar
+          backLabel="Profile"
+          title="Orders"
+          onBack={() => router.push(ROUTES.profile)}
+        />
         <div className="flex flex-1 items-center justify-center">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
         </div>
@@ -199,11 +200,11 @@ export default function ProfileOrdersPage() {
     <div
       className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
     >
-      <header className="flex h-[88px] shrink-0 items-center border-b border-slate-200 px-6">
-        <h1 className="font-medium leading-[1.4] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-lg)]">
-          Orders
-        </h1>
-      </header>
+      <ContextTopBar
+        backLabel="Profile"
+        title="Orders"
+        onBack={() => router.push(ROUTES.profile)}
+      />
 
       <main className="min-h-0 flex-1 overflow-auto">
         {isEmpty ? (
