@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback } from "react";
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/Button";
-import { TRENDING_HASHTAGS, COVER_FRAME_COLORS } from "@/lib/constants/post";
+import { TRENDING_HASHTAGS } from "@/lib/constants/post";
 import type { CreatePostFormData } from "@/lib/schemas/post";
 
 type StepPreviewProps = {
@@ -17,12 +17,11 @@ export function StepPreview({
   videoPreviewUrl,
   onNext,
 }: StepPreviewProps) {
-  const { register, watch, setValue, control } =
+  const { register, watch, setValue } =
     useFormContext<CreatePostFormData>();
 
   const caption = watch("caption");
   const hashtags = watch("hashtags");
-  const coverFrameColor = watch("coverFrameColor");
 
   const toggleHashtag = useCallback(
     (tag: string) => {
@@ -43,14 +42,7 @@ export function StepPreview({
     <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6">
       {/* Video preview */}
       {videoPreviewUrl && (
-        <div
-          className="relative overflow-hidden rounded-2xl"
-          style={{
-            borderColor: coverFrameColor ?? "transparent",
-            borderWidth: coverFrameColor ? 3 : 0,
-            borderStyle: "solid",
-          }}
-        >
+        <div className="relative overflow-hidden rounded-2xl">
           <video
             src={videoPreviewUrl}
             className="max-h-[280px] w-full object-contain bg-black"
@@ -111,40 +103,6 @@ export function StepPreview({
           })}
         </div>
       </div>
-
-      {/* Cover Frame Color */}
-      <Controller
-        control={control}
-        name="coverFrameColor"
-        render={({ field }) => (
-          <div className="flex flex-col gap-3">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-text-default-secondary">
-              Cover Frame
-            </label>
-            <div className="flex gap-3 overflow-x-auto scrollbar-none p-2">
-              {COVER_FRAME_COLORS.map((c) => {
-                const isSelected = field.value === c.hex;
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() =>
-                      field.onChange(isSelected ? null : c.hex)
-                    }
-                    className={`h-16 w-16 shrink-0 rounded-lg transition-all ${
-                      isSelected
-                        ? "ring-2 ring-slate-900 ring-offset-2 ring-offset-white"
-                        : "ring-1 ring-slate-200"
-                    }`}
-                    style={{ backgroundColor: c.hex }}
-                    aria-label={c.label}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
-      />
 
       <Button
         size="large"

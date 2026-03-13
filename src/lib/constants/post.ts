@@ -12,23 +12,6 @@ export const TRENDING_HASHTAGS = [
   "#art",
 ] as const;
 
-export type CoverFrameColor = {
-  id: string;
-  label: string;
-  hex: string;
-};
-
-export const COVER_FRAME_COLORS: CoverFrameColor[] = [
-  { id: "crimson", label: "Crimson", hex: "#8B1A1A" },
-  { id: "olive", label: "Olive", hex: "#6B6B2A" },
-  { id: "forest", label: "Forest", hex: "#2D5A27" },
-  { id: "teal", label: "Teal", hex: "#1A5A5A" },
-  { id: "navy", label: "Navy", hex: "#1A1A5A" },
-  { id: "purple", label: "Purple", hex: "#3A1A5A" },
-  { id: "magenta", label: "Magenta", hex: "#8B1A6B" },
-  { id: "charcoal", label: "Charcoal", hex: "#2A2A2A" },
-];
-
 export type VisibilityOption = {
   id: Visibility;
   label: string;

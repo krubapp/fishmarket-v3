@@ -45,7 +45,6 @@ export type CreatePostInput = Omit<
 export const createPostFormSchema = z.object({
   caption: z.string().max(300),
   hashtags: z.array(z.string()),
-  coverFrameColor: z.string().nullable(),
   taggedUserIds: z.array(z.string()),
   taggedListingIds: z.array(z.string()),
   visibility: z.enum(VISIBILITY_VALUES),

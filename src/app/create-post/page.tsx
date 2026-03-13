@@ -38,7 +38,6 @@ export default function CreatePostPage() {
     defaultValues: {
       caption: "",
       hashtags: [],
-      coverFrameColor: null,
       taggedUserIds: [],
       taggedListingIds: [],
       visibility: "everyone",
@@ -103,7 +102,6 @@ export default function CreatePostPage() {
         videoUrl: "",
         caption: data.caption,
         hashtags: data.hashtags,
-        coverFrameColor: data.coverFrameColor,
         taggedUserIds: data.taggedUserIds,
         taggedListingIds: data.taggedListingIds,
         visibility: data.visibility,
