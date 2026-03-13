@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { signOut } from "firebase/auth";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Icon } from "@/components/Icon";
 import { ROUTES } from "@/lib/routes";
+import { auth } from "@/lib/firebase";
 import type { MaterialSymbol } from "material-symbols";
 
 const SETTINGS_ITEMS: {
@@ -28,6 +30,14 @@ const SETTINGS_ITEMS: {
 
 export default function SettingsPage() {
   const router = useRouter();
+
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+    } finally {
+      router.replace(ROUTES.login);
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-white">
@@ -64,6 +74,23 @@ export default function SettingsPage() {
             </button>
           ))}
         </nav>
+
+        <button
+          className="mt-4 flex items-center gap-4 border-b border-slate-200 px-6 py-4 text-left text-red-700 transition-colors duration-(--duration-press) ease-(--ease-spring) hover:bg-red-50 active:scale-[0.99] active:bg-red-100"
+          onClick={handleLogout}
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-50">
+            <Icon name="logout" size={20} className="text-red-700" />
+          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="font-semibold text-[16px] leading-normal">
+              Log out
+            </span>
+            <span className="font-normal text-[13px] leading-[1.4] text-grey-500">
+              Sign out of your account
+            </span>
+          </div>
+        </button>
       </div>
     </div>
   );
