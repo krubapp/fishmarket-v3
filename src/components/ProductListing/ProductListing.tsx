@@ -51,8 +51,8 @@ export function ProductListing({
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2">
-          <h3 className="font-bold leading-[1.5] text-lime-600 text-[length:var(--font-size-paragraph-md)]">
+        <div className="flex min-w-0 flex-col gap-2">
+          <h3 className="min-w-0 font-bold leading-[1.5] text-lime-600 text-[length:var(--font-size-paragraph-md)] line-clamp-3 break-words">
             {title}
           </h3>
           <div className="flex items-center gap-3">

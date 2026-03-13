@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { ListingForm } from "@/components/ListingForm";
@@ -10,8 +10,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { ROUTES } from "@/lib/routes";
 import type { Listing } from "@/lib/schemas/listing";
 
-export default function EditListingPage() {
-  const params = useParams<{ id: string }>();
+type EditListingPageProps = { params: Promise<{ id: string }> };
+
+export default function EditListingPage({ params }: EditListingPageProps) {
+  const { id: listingId } = use(params);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [listing, setListing] = useState<Listing | null>(null);
@@ -20,7 +22,7 @@ export default function EditListingPage() {
   useEffect(() => {
     if (authLoading || !user) return;
 
-    getListing(params.id)
+    getListing(listingId)
       .then((data) => {
         if (!data || data.sellerId !== user.uid) {
           router.replace(ROUTES.createListing);
@@ -32,7 +34,7 @@ export default function EditListingPage() {
       .catch(() => {
         router.replace(ROUTES.createListing);
       });
-  }, [params.id, user, authLoading, router]);
+  }, [listingId, user, authLoading, router]);
 
   if (authLoading || loading) {
     return (

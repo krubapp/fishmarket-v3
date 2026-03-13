@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { use, useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FeedCard } from "@/components/FeedCard";
 import type {
   FeedCardTaggedProduct,
@@ -27,11 +27,12 @@ import { ROUTES } from "@/lib/routes";
 
 const BOTTOM_NAV_PX = 66;
 
-export default function PostDetailPage() {
-  const params = useParams();
+type PostDetailPageProps = { params: Promise<{ id: string }> };
+
+export default function PostDetailPage({ params }: PostDetailPageProps) {
+  const { id: postId } = use(params);
   const router = useRouter();
   const { user } = useAuth();
-  const postId = params.id as string;
 
   const [post, setPost] = useState<Post | null>(null);
   const [author, setAuthor] = useState<UserProfile | null>(null);

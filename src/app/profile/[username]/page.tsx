@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
+import { use, useCallback, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -95,10 +95,11 @@ function profileToDisplay(profile: UserProfile | null): {
   };
 }
 
-export default function ProfileByUsernamePage() {
+type ProfileByUsernamePageProps = { params: Promise<{ username: string }> };
+
+export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageProps) {
   const router = useRouter();
-  const params = useParams();
-  const usernameParam = typeof params?.username === "string" ? params.username : "";
+  const { username: usernameParam = "" } = use(params);
   const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(true);

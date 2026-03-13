@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { Avatar } from "@/components/Avatar";
 
@@ -22,22 +23,27 @@ export function VideoThumbnailCard({
   onClick,
   className = "",
 }: VideoThumbnailCardProps) {
+  const [imageError, setImageError] = useState(false);
+  useEffect(() => setImageError(false), [thumbnailUrl]);
+  const showPlaceholder = !thumbnailUrl || imageError;
+
   return (
     <button
       type="button"
       onClick={onClick}
       className={`group relative aspect-4/5 w-full overflow-hidden rounded-[2px] bg-slate-100 transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.97] ${className}`}
     >
-      {thumbnailUrl ? (
+      {showPlaceholder ? (
+        <div className="flex h-full w-full items-center justify-center">
+          <Icon name="videocam" size={32} className="text-grey-400" fill={0} />
+        </div>
+      ) : (
         <img
           src={thumbnailUrl}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
+          onError={() => setImageError(true)}
         />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center">
-          <Icon name="videocam" size={32} className="text-grey-400" fill={0} />
-        </div>
       )}
 
       {/* Centered play button */}
@@ -45,14 +51,14 @@ export function VideoThumbnailCard({
         <Icon name="play_circle" size={20} className="text-slate-900" />
       </div>
 
-      {/* Bottom-right: view count */}
-      <div className="absolute bottom-2 right-2 flex items-center gap-1">
+      {/* Top-right: view count */}
+      <div className="absolute right-2 top-2 flex items-center gap-1">
         <Icon name="play_circle" size={20} className="text-slate-100" />
         <span
           className="whitespace-nowrap font-semibold leading-(--line-height-paragraph-sm) text-slate-100 text-paragraph-sm"
           style={{ textShadow: TEXT_SHADOW }}
         >
-          {formatViewCount(viewCount)} view
+          {formatViewCount(viewCount)} views
         </span>
       </div>
 

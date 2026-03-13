@@ -1741,7 +1741,7 @@ See `project.mdc` **Loading Strategy** for conventions on when and how to use sk
 **Path**: `@/components/VideoThumbnailCard`
 **Figma**: Roy design system → video sizes (node 731:3753), Video-feedgroup (node 731:3767).
 
-Video thumbnail card for grids (profile tabs, collections). Aspect ratio 4:5, 2px border-radius, object-cover thumbnail. Centered play button (40×40 circle, subtle bg, shadow). Bottom-right: play_circle icon + formatted view count (white, text-shadow). Optional bottom-left: 16px avatar + creator name (white, text-shadow).
+Video thumbnail card for grids (profile tabs, collections). Aspect ratio 4:5, 2px border-radius, object-cover thumbnail. Centered play button (40×40 circle, subtle bg, shadow). Top-right: play_circle icon + formatted view count (white, text-shadow). Optional bottom-left: 16px avatar + creator name (white, text-shadow).
 
 **Props**
 

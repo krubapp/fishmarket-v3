@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { use, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { BottomNav } from "@/components/BottomNav";
 import { Dropdown } from "@/components/Dropdown";
@@ -21,11 +21,12 @@ const db = getFirestore(firebaseApp);
 
 type SavedPost = Post & { collectionItemPostId: string };
 
-export default function CollectionDetailPage() {
-  const params = useParams();
+type CollectionDetailPageProps = { params: Promise<{ id: string }> };
+
+export default function CollectionDetailPage({ params }: CollectionDetailPageProps) {
+  const { id: collectionId } = use(params);
   const router = useRouter();
   const { user } = useAuth();
-  const collectionId = params.id as string;
 
   const [collectionName, setCollectionName] = useState("");
   const [posts, setPosts] = useState<SavedPost[]>([]);

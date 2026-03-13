@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
@@ -47,11 +47,12 @@ function findVariantValue(
   return undefined;
 }
 
-export default function ListingDetailPage() {
-  const params = useParams();
+type ListingDetailPageProps = { params: Promise<{ id: string }> };
+
+export default function ListingDetailPage({ params }: ListingDetailPageProps) {
+  const { id: listingId } = use(params);
   const router = useRouter();
   const { user, profile: authProfile } = useAuth();
-  const listingId = params.id as string;
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<UserProfile | null>(null);
