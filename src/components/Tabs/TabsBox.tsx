@@ -27,11 +27,13 @@ function TabsBoxCell({
   isActive,
   onSelect,
   isLast,
+  iconWeight,
 }: {
   tab: TabsBoxItem;
   isActive: boolean;
   onSelect: () => void;
   isLast: boolean;
+  iconWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700;
 }) {
   const isDisabled = tab.disabled ?? false;
   const content = (
@@ -45,6 +47,7 @@ function TabsBoxCell({
         name={tab.icon}
         size={34}
         fill={isActive ? 1 : 0}
+        weight={iconWeight}
         className={`shrink-0 ${isDisabled ? "opacity-60" : ""}`}
       />
       <span className="font-medium leading-[1.5] text-[length:var(--font-size-paragraph-md)]">
@@ -86,6 +89,7 @@ export function TabsBox({
   value,
   onValueChange,
   className = "",
+  iconWeight,
 }: TabsBoxProps) {
   return (
     <div
@@ -100,6 +104,7 @@ export function TabsBox({
           isActive={value === tab.id || value === tab.href}
           onSelect={() => !tab.disabled && onValueChange?.(tab.id)}
           isLast={index === tabs.length - 1}
+          iconWeight={iconWeight}
         />
       ))}
     </div>

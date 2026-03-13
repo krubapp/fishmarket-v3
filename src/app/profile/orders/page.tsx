@@ -173,14 +173,14 @@ export default function ProfileOrdersPage() {
   }, [user?.uid]);
 
   const handleGoShop = () => router.push(ROUTES.shop);
-  const pagePaddingBottom =
-    "pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]";
+  const navHeight = "66px";
+  const buttonBarBottom = `calc(${navHeight} + env(safe-area-inset-bottom, 0px))`;
+  const mainPaddingForBottom =
+    "pb-[calc(5.5rem+66px+env(safe-area-inset-bottom,0px))]";
 
   if (authLoading || loading) {
     return (
-      <div
-        className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
-      >
+      <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar
           backLabel="Profile"
           title="Orders"
@@ -197,16 +197,16 @@ export default function ProfileOrdersPage() {
   const isEmpty = orders.length === 0;
 
   return (
-    <div
-      className={`mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white ${pagePaddingBottom}`}
-    >
+    <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       <ContextTopBar
         backLabel="Profile"
         title="Orders"
         onBack={() => router.push(ROUTES.profile)}
       />
 
-      <main className="min-h-0 flex-1 overflow-auto">
+      <main
+        className={`min-h-0 flex-1 overflow-auto ${mainPaddingForBottom}`}
+      >
         {isEmpty ? (
           <OrdersEmptyState />
         ) : (
@@ -224,17 +224,23 @@ export default function ProfileOrdersPage() {
         )}
       </main>
 
-      <div className="flex shrink-0 flex-col gap-6 border-t border-slate-200 bg-white p-6">
-        <Button
-          size="medium"
-          variant="default"
-          className="w-full"
-          onClick={handleGoShop}
-        >
-          Go shop
-        </Button>
-        <BottomNav activeItem="profile" />
+      <div
+        className="fixed left-0 right-0 z-40 px-6 py-4"
+        style={{ bottom: buttonBarBottom }}
+      >
+        <div className="mx-auto max-w-[320px]">
+          <Button
+            size="medium"
+            variant="default"
+            className="w-full"
+            onClick={handleGoShop}
+          >
+            Go shop
+          </Button>
+        </div>
       </div>
+
+      <BottomNav activeItem="profile" />
     </div>
   );
 }

@@ -8,7 +8,7 @@
 
 import type { MaterialSymbol } from "material-symbols";
 
-export type IconButtonSize = "small" | "large";
+export type IconButtonSize = "small" | "large" | "xlarge";
 
 export type IconButtonVariant =
   | "default"
@@ -22,7 +22,7 @@ export type IconButtonTone = "default" | "error";
 export type IconButtonProps = {
   /** Icon name (Material Symbol). */
   name: MaterialSymbol;
-  /** Size: small 32×32, large 40×40. */
+  /** Size: small 32×32, large 40×40, xlarge 48×48. */
   size?: IconButtonSize;
   /** Visual variant. */
   variant?: IconButtonVariant;
@@ -36,4 +36,6 @@ export type IconButtonProps = {
   "aria-label": string;
   /** Root class. */
   className?: string;
+  /** Icon stroke weight (Material Symbols wght axis). Lighter e.g. 300 for thinner strokes. */
+  iconWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700;
 };

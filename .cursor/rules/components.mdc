@@ -870,14 +870,14 @@ import { Button } from "@/components/Button";
 **Path**: `@/components/IconButton`  
 **Figma**: icon-buttons -small (561:1274), icon-buttons -large (65:270), icon-buttons-error small (599:3723), icon-buttons-error large (184:1356).
 
-Circular icon-only button. **Size**: small 32×32 or large 40×40; icon 20px. **Variant**: default (filled), subtle (light bg), outline (border), transparent (no bg), neutrals (white bg). **Tone**: default (slate) or error (red). **States**: hover, focus (2px ring), disabled (grey-200 bg, grey-700 icon).
+Circular icon-only button. **Size**: small 32×32, large 40×40, or xlarge 48×48; icon 20px (small/large) or 24px (xlarge). **Variant**: default (filled), subtle (light bg), outline (border), transparent (no bg), neutrals (white bg). **Tone**: default (slate) or error (red). **States**: hover, focus (2px ring), disabled (grey-200 bg, grey-700 icon).
 
 **Props**
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `name` | `MaterialSymbol` | Yes | Icon name |
-| `size` | `IconButtonSize` | No | `"small"` \| `"large"` (default `"small"`) |
+| `size` | `IconButtonSize` | No | `"small"` \| `"large"` \| `"xlarge"` (default `"small"`) |
 | `variant` | `IconButtonVariant` | No | `"default"` \| `"subtle"` \| `"outline"` \| `"transparent"` \| `"neutrals"` |
 | `tone` | `IconButtonTone` | No | `"default"` \| `"error"` |
 | `disabled` | `boolean` | No | Disabled state |

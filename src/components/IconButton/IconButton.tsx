@@ -9,8 +9,16 @@ import type {
   IconButtonVariant,
 } from "./types";
 
-const SIZE_PX: Record<IconButtonSize, number> = { small: 32, large: 40 };
-const ICON_PX = 20;
+const SIZE_PX: Record<IconButtonSize, number> = {
+  small: 32,
+  large: 40,
+  xlarge: 48,
+};
+const ICON_PX: Record<IconButtonSize, number> = {
+  small: 20,
+  large: 20,
+  xlarge: 24,
+};
 
 function getButtonClasses(
   variant: IconButtonVariant,
@@ -61,8 +69,10 @@ export function IconButton({
   onClick,
   "aria-label": ariaLabel,
   className = "",
+  iconWeight,
 }: IconButtonProps) {
   const px = SIZE_PX[size];
+  const iconPx = ICON_PX[size];
 
   return (
     <button
@@ -73,7 +83,7 @@ export function IconButton({
       disabled={disabled}
       aria-label={ariaLabel}
     >
-      <Icon name={name} size={ICON_PX} className="shrink-0" />
+      <Icon name={name} size={iconPx} className="shrink-0" weight={iconWeight} />
     </button>
   );
 }

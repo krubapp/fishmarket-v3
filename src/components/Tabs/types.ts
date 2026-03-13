@@ -44,4 +44,6 @@ export type TabsBoxProps = {
   /** Called when a tab is selected (button mode). Omit when all tabs use href. */
   onValueChange?: (id: string) => void;
   className?: string;
+  /** Icon stroke weight (Material Symbols wght). Lighter e.g. 300 for thinner strokes. */
+  iconWeight?: 100 | 200 | 300 | 400 | 500 | 600 | 700;
 };

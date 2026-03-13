@@ -28,7 +28,7 @@ import {
 import type { Post } from "@/lib/schemas/post";
 import { ROUTES } from "@/lib/routes";
 
-const QR_CODE_SIZE = 200;
+const QR_CODE_SIZE = 280;
 
 function getProfileUrl(usernameOrId: string): string {
   if (typeof window === "undefined") return "";
@@ -37,11 +37,10 @@ function getProfileUrl(usernameOrId: string): string {
 }
 
 const PROFILE_SECTION_TABS = [
-  { id: "order", label: "Order", icon: "receipt_long" as const, href: ROUTES.profileOrders },
+  { id: "order", label: "Order", icon: "delivery_truck_speed" as const, href: ROUTES.profileOrders },
   { id: "favorites", label: "Favorites", icon: "favorite" as const, href: ROUTES.profileFavorites },
   { id: "collections", label: "Collections", icon: "folder" as const, href: ROUTES.profileCollections },
   { id: "comments", label: "Comments", icon: "chat" as const, href: ROUTES.profileComments },
-  { id: "settings", label: "Settings", icon: "settings" as const, href: ROUTES.settings },
 ];
 
 const CONTENT_TABS_BASE = [
@@ -225,6 +224,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 tabs={PROFILE_SECTION_TABS}
                 value=""
                 className="w-full justify-center lg:justify-start"
+                iconWeight={100}
               />
             </section>
           </div>
@@ -281,12 +281,29 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
       {/* Profile header — centered on mobile, left-aligned card on desktop */}
       <section className="flex flex-col items-center px-4 py-4 sm:px-6 sm:py-6 lg:items-start lg:border-0 lg:px-0 lg:py-0">
         <div className="flex w-full max-w-[360px] flex-col items-center gap-3 sm:gap-4 lg:max-w-none lg:items-start">
-          <Avatar
-            src={display.avatarUrl}
-            alt={display.displayName || "Profile"}
-            size={80}
-            className="shrink-0"
-          />
+          <div
+            className={`flex w-full items-start ${isOwnProfile ? "justify-between" : "justify-center"}`}
+          >
+            {isOwnProfile && (
+              <div className="w-12 shrink-0" aria-hidden />
+            )}
+            <Avatar
+              src={display.avatarUrl}
+              alt={display.displayName || "Profile"}
+              size={80}
+              className="shrink-0"
+            />
+            {isOwnProfile ? (
+              <IconButton
+                name="settings"
+                size="xlarge"
+                variant="transparent"
+                aria-label="Settings"
+                onClick={() => router.push(ROUTES.settings)}
+                iconWeight={100}
+              />
+            ) : null}
+          </div>
           <div className="flex flex-col items-center gap-1 lg:items-start">
             <div className="flex items-center justify-center gap-2 lg:justify-start">
               <span className="font-semibold leading-[var(--line-height-paragraph-xl)] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-xl)]">
@@ -316,7 +333,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
           </div>
 
           {hasBio ? (
-            <p className="w-full text-center font-medium leading-[1.5] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-md)] lg:text-left">
+            <p className="w-full min-w-0 break-words text-center font-medium leading-[1.5] text-[var(--color-text-default-body)] text-[length:var(--font-size-paragraph-md)] lg:text-left">
               {display.bio}
             </p>
           ) : (
@@ -336,10 +353,10 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
             <button
               type="button"
               onClick={() => setQrPopupOpen(true)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-slate-600 transition-colors hover:text-slate-900"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded text-slate-600 transition-colors hover:text-slate-900"
               aria-label="Show QR code"
             >
-              <Icon name="qr_code_2" size={24} />
+              <Icon name="qr_code_2" size={40} weight={100} />
             </button>
             <Link
               onClick={() => {}}
@@ -360,7 +377,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded p-1 text-slate-600 transition-colors hover:text-slate-900"
                 aria-label="TikTok"
               >
-                <Icon name="videocam" size={24} fill={0} />
+                <Icon name="videocam" size={24} fill={0} weight={100} />
               </a>
             )}
             {display.youtubeUrl && (
@@ -371,7 +388,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded p-1 text-slate-600 transition-colors hover:text-slate-900"
                 aria-label="YouTube"
               >
-                <Icon name="smart_display" size={24} fill={0} />
+                <Icon name="smart_display" size={24} fill={0} weight={100} />
               </a>
             )}
             {display.instagramUrl && (
@@ -382,7 +399,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded p-1 text-slate-600 transition-colors hover:text-slate-900"
                 aria-label="Instagram"
               >
-                <Icon name="photo_camera" size={24} fill={0} />
+                <Icon name="photo_camera" size={24} fill={0} weight={100} />
               </a>
             )}
             <button
@@ -413,7 +430,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
               className="flex h-8 w-8 shrink-0 items-center justify-center rounded p-1 text-slate-600 transition-colors hover:text-slate-900"
               aria-label="Share profile"
             >
-              <Icon name="share" size={24} fill={0} />
+              <Icon name="share" size={24} fill={0} weight={100} />
             </button>
           </div>
         </div>
@@ -425,6 +442,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
             tabs={PROFILE_SECTION_TABS}
             value={pathname ?? ""}
             className="w-full justify-center lg:justify-start"
+            iconWeight={100}
           />
         </section>
       )}
@@ -462,7 +480,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
             </div>
           ) : contentTab === "repost" ? (
             <div className="flex flex-col items-center justify-center gap-3 px-4 py-16">
-              <Icon name="repeat" size={40} className="text-grey-400" fill={0} />
+              <Icon name="repeat" size={40} className="text-grey-400" fill={0} weight={100} />
               <p className="text-center font-medium text-grey-600 text-paragraph-sm">
                 Coming soon
               </p>
@@ -474,6 +492,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                 size={40}
                 className="text-grey-400"
                 fill={0}
+                weight={100}
               />
               <p className="text-center font-medium text-grey-600 text-paragraph-sm">
                 {contentTab === "my-videos"
@@ -550,7 +569,7 @@ export default function ProfileByUsernamePage({ params }: ProfileByUsernamePageP
                     alt="QR code to profile"
                     width={QR_CODE_SIZE}
                     height={QR_CODE_SIZE}
-                    className="h-auto max-h-[min(50dvh,200px)] w-auto max-w-full rounded-lg border border-slate-200"
+                    className="h-auto max-h-[min(50dvh,280px)] w-auto max-w-full rounded-lg border border-slate-200"
                   />
                   <p className="max-w-full truncate text-center font-medium text-grey-600 text-[length:var(--font-size-paragraph-sm)]">
                     {getProfileUrl(usernameParam)}
