@@ -41,7 +41,7 @@ export const orderSchema = z.object({
   sellerId: z.string().min(1),
   buyerId: z.string().min(1),
   buyerName: z.string().min(1),
-  buyerEmail: z.string().email().optional(),
+  buyerEmail: z.email().optional(),
   listingId: z.string().min(1),
   listingTitle: z.string().min(1),
   quantity: z.number().int().positive().default(1),

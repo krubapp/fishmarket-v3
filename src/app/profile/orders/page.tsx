@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/Badge";
 import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/Button";
 import { ProductListing } from "@/components/ProductListing";
@@ -13,6 +14,10 @@ import {
   type UserProfile,
 } from "@/lib/firestore";
 import type { Order } from "@/lib/schemas/order";
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE_VARIANT,
+} from "@/lib/schemas/order";
 import type { Listing } from "@/lib/schemas/listing";
 import { ROUTES } from "@/lib/routes";
 
@@ -24,6 +29,15 @@ const CONDITION_LABELS: Record<string, string> = {
 
 function formatPrice(amount: number, currency: string): string {
   return `${currency} ${amount.toLocaleString("sv-SE", { minimumFractionDigits: 2 })}`;
+}
+
+function formatOrderDate(createdAt?: { seconds: number }): string | null {
+  if (!createdAt?.seconds) return null;
+  return new Date(createdAt.seconds * 1000).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function OrdersEmptyState() {
@@ -70,32 +84,50 @@ function OrderCard({
       : undefined;
   const sellerName =
     order.sellerProfile?.displayName ?? order.sellerProfile?.username ?? "Seller";
-  const priceStr = formatPrice(order.unitPrice, order.currency);
+  const priceStr = formatPrice(order.totalAmount, order.currency);
+  const orderDate = formatOrderDate(order.createdAt);
+
+  const conditionWithVariant = [
+    condition,
+    order.selectedVariantLabel,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div className="border-b border-slate-200">
       <ProductListing
         imageSrc={imageSrc}
         imageAlt={order.listingTitle}
-        badge="NEW DROP"
+        badge={orderDate ?? undefined}
         conditionLabel="Condition:"
-        conditionValue={condition}
+        conditionValue={conditionWithVariant || undefined}
         title={order.listingTitle}
         price={priceStr}
+        originalPrice={
+          order.quantity > 1
+            ? `${order.quantity} × ${formatPrice(order.unitPrice, order.currency)}`
+            : undefined
+        }
         sellerAvatarSrc={order.sellerProfile?.avatarUrl ?? null}
         sellerName={sellerName}
         contentPosition="right"
         trailingContent={
-          <Button
-            size="small"
-            variant="outline"
-            onClick={(e) => {
-              e.stopPropagation();
-              onBuyAgain();
-            }}
-          >
-            Buy again
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Badge variant={ORDER_STATUS_BADGE_VARIANT[order.status]}>
+              {ORDER_STATUS_LABELS[order.status]}
+            </Badge>
+            <Button
+              size="small"
+              variant="outline"
+              onClick={(e) => {
+                e.stopPropagation();
+                onBuyAgain();
+              }}
+            >
+              Buy again
+            </Button>
+          </div>
         }
         onClick={onBuyAgain}
       />

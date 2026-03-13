@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { Button } from "@/components/Button";
 import { Drawer } from "@/components/Drawer";
 import { DrawerTopBar } from "@/components/DrawerTopBar";
 import { Checkbox } from "@/components/Checkbox";
@@ -128,81 +129,91 @@ export function SaveDrawer({
 
   return (
     <Drawer open={open} onClose={onClose} width={440} aria-label="Save to collection">
-      <DrawerTopBar
-        title="Save to collection"
-        onBack={onClose}
-        className="-mx-6 -mt-4"
-      />
-
-      {/* Create new collection */}
-      <form
-        className="-mx-6 border-b border-slate-200 px-6 py-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleCreate();
-        }}
-      >
-        <Input
-          placeholder="New collection name..."
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          trailingIcon="add"
-          onTrailingClick={handleCreate}
-          trailingAriaLabel="Create collection"
-          aria-label="New collection name"
-          disabled={creating}
+      <div className="-mx-6 -mt-4 -mb-4 flex min-h-full flex-col">
+        <DrawerTopBar
+          title="Save to collection"
+          onBack={onClose}
         />
-      </form>
 
-      {/* Collection list */}
-      <div className="-mx-6 flex flex-1 flex-col overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
-          </div>
-        ) : collections.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-2 py-16">
-            <Icon
-              name="collections_bookmark"
-              size={32}
-              className="text-text-default-placeholder"
-            />
-            <p className="text-sm font-medium text-text-default-secondary">
-              No collections yet
-            </p>
-            <p className="text-xs text-text-default-placeholder">
-              Create your first collection above
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col">
-            {collections.map((col) => {
-              const colId = col.id!;
-              return (
-                <div
-                  key={colId}
-                  className="flex items-center gap-3 border-b border-slate-100 px-6 py-4"
-                >
-                  <Checkbox
-                    checked={checkedIds.has(colId)}
-                    onChange={(checked) => handleToggle(colId, checked)}
-                    aria-label={`Save to ${col.name}`}
-                  />
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-sm font-semibold text-text-default-headings">
-                      {col.name}
-                    </span>
+        <form
+          className="border-b border-slate-200 px-6 py-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCreate();
+          }}
+        >
+          <Input
+            placeholder="New collection name..."
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            trailingIcon="add"
+            onTrailingClick={handleCreate}
+            trailingAriaLabel="Create collection"
+            aria-label="New collection name"
+            disabled={creating}
+          />
+        </form>
+
+        <div className="flex flex-1 flex-col overflow-y-auto">
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
+            </div>
+          ) : collections.length === 0 ? (
+            <div className="flex flex-1 flex-col items-center justify-center gap-2 py-16">
+              <Icon
+                name="collections_bookmark"
+                size={32}
+                className="text-text-default-placeholder"
+              />
+              <p className="text-sm font-medium text-text-default-secondary">
+                No collections yet
+              </p>
+              <p className="text-xs text-text-default-placeholder">
+                Create your first collection above
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              {collections.map((col) => {
+                const colId = col.id!;
+                return (
+                  <div
+                    key={colId}
+                    className="flex items-center gap-3 border-b border-slate-100 px-6 py-4"
+                  >
+                    <Checkbox
+                      checked={checkedIds.has(colId)}
+                      onChange={(checked) => handleToggle(colId, checked)}
+                      aria-label={`Save to ${col.name}`}
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-semibold text-text-default-headings">
+                        {col.name}
+                      </span>
+                    </div>
+                    <Icon
+                      name="folder"
+                      size={20}
+                      className="shrink-0 text-text-default-placeholder"
+                    />
                   </div>
-                  <Icon
-                    name="folder"
-                    size={20}
-                    className="shrink-0 text-text-default-placeholder"
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="sticky -bottom-4 shrink-0 border-t border-slate-200 bg-white px-6 py-4">
+          <Button
+            size="medium"
+            variant="default"
+            className="w-full"
+            onClick={onClose}
+          >
+            Done
+          </Button>
+        </div>
       </div>
     </Drawer>
   );
