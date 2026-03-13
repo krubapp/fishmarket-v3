@@ -129,20 +129,21 @@ export function VariantList({
   const colWeight = "w-[80px] shrink-0";
 
   return (
-    <div className="-mx-6 min-w-0 overflow-x-auto">
-      <div className="flex min-w-[420px] flex-col border border-slate-200 bg-white">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleFileChange}
-        />
+    <div className="-mx-6 flex flex-col border border-slate-200 bg-white">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
-        {/* Table header */}
-        <div
-          className={`flex h-14 items-center gap-3 px-6 ${cellBorder} bg-slate-100`}
-        >
+      <div className="overflow-x-auto">
+        <div className="min-w-max">
+          {/* Table header */}
+          <div
+            className={`flex h-14 items-center gap-3 px-6 ${cellBorder} bg-slate-100`}
+          >
         <button
           type="button"
           onClick={toggleExpandAll}
@@ -319,19 +320,20 @@ export function VariantList({
           </div>
         );
       })}
-
-        {/* Add button */}
-        <div className="border-t border-slate-200 p-6">
-          <Button
-            variant="default"
-            size="large"
-            type="button"
-            onClick={onOpenDrawer}
-            leadingIcon="add"
-          >
-            Add
-          </Button>
         </div>
+      </div>
+
+      {/* Add button */}
+      <div className="border-t border-slate-200 p-6">
+        <Button
+          variant="default"
+          size="large"
+          type="button"
+          onClick={onOpenDrawer}
+          leadingIcon="add"
+        >
+          Add
+        </Button>
       </div>
     </div>
   );
