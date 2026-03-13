@@ -41,7 +41,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       <ContextTopBar
         backLabel="Profile"
         title="Settings"
