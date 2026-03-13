@@ -16,6 +16,7 @@ export const LISTING_CATEGORIES = [
 export const FISH_TYPES = [
   "Perch",
   "Pike",
+  "Zanders",
   "Bass",
   "Salmon",
   "Trout",
