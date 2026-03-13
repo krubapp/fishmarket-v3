@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
+import { BottomNav } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Icon } from "@/components/Icon";
 import { ROUTES } from "@/lib/routes";
@@ -44,7 +45,7 @@ export default function SettingsPage() {
       <ContextTopBar
         backLabel="Profile"
         title="Settings"
-        onBack={() => router.back()}
+        onBack={() => router.push(ROUTES.profile)}
       />
 
       <div className="mx-auto flex w-full max-w-[440px] flex-col">
@@ -92,6 +93,8 @@ export default function SettingsPage() {
           </div>
         </button>
       </div>
+
+      <BottomNav activeItem="profile" />
     </div>
   );
 }

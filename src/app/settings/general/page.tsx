@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BottomNav } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Switch } from "@/components/Switch";
 import { Snackbar } from "@/components/Snackbar";
@@ -90,6 +91,8 @@ export default function SettingsGeneralPage() {
         message={snackbar.message}
         icon={snackbar.icon}
       />
+
+      <BottomNav activeItem="profile" />
     </div>
   );
 }

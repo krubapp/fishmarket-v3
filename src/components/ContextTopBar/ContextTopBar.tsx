@@ -46,23 +46,25 @@ export function ContextTopBar({
         style={{ borderBottomWidth: 1 }}
         role="banner"
       >
-        {onBack && <div className="relative z-10 flex min-w-0 shrink-0 items-center gap-2">
+        {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-none bg-transparent outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+            className="relative z-10 flex min-w-0 shrink-0 items-center gap-2 rounded-full border-none bg-transparent py-2 pr-2 pl-1 outline-none transition-transform duration-(--duration-press) ease-(--ease-spring) active:scale-[0.9] focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
             aria-label={`Back to ${backLabel}`}
           >
-            <Icon
-              name="chevron_left"
-              size={24}
-              className="text-[var(--color-text-default-headings)]"
-            />
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center">
+              <Icon
+                name="chevron_left"
+                size={24}
+                className="text-[var(--color-text-default-headings)]"
+              />
+            </span>
+            <span className="whitespace-nowrap font-medium leading-[1.43] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-sm)]">
+              {backLabel}
+            </span>
           </button>
-          <span className="whitespace-nowrap font-medium leading-[1.43] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-sm)]">
-            {backLabel}
-          </span>
-        </div>}
+        )}
 
         <h1 className="pointer-events-none absolute inset-0 flex items-center justify-center truncate px-6 font-semibold leading-[1.5] text-[var(--color-text-default-headings)] text-[length:var(--font-size-paragraph-md)]">
           {title}

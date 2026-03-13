@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/Button";
+import { BottomNav } from "@/components/BottomNav";
 import { ContextTopBar } from "@/components/ContextTopBar";
 import { Input } from "@/components/Input";
 import { MediaDropzone } from "@/components/MediaDropzone";
@@ -225,6 +226,8 @@ export default function SettingsAccountPage() {
         message={snackbar.message}
         icon={snackbar.icon}
       />
+
+      <BottomNav activeItem="profile" />
     </div>
   );
 }
