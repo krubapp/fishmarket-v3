@@ -10,6 +10,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { ProductListing } from "@/components/ProductListing";
 import { BottomNav } from "@/components/BottomNav";
 import { Tabs } from "@/components/Tabs";
+import { Skeleton } from "@/components/Skeleton";
 import { ROUTES } from "@/lib/routes";
 import {
   searchListings,
@@ -244,8 +245,20 @@ function SearchPageInner() {
       {/* Results grid */}
       <div className="mx-auto w-full max-w-[440px] flex-1 pb-[120px]">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <span className="text-grey-500 text-sm">Loading...</span>
+          <div className="grid grid-cols-2 gap-x-1 gap-y-2">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="flex flex-col gap-3 bg-white p-2">
+                <Skeleton className="h-[218px] w-full" />
+                <div className="flex flex-col gap-2 px-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-1/2" />
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-full" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : listings.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 py-20">
