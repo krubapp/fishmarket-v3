@@ -181,7 +181,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar backLabel="Shop" title="" onBack={() => router.back()} />
         <div className="flex flex-1 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
@@ -192,7 +192,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
 
   if (error || !listing) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
+      <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar
           backLabel="Back"
           title="Not Found"
@@ -398,7 +398,7 @@ export default function ListingDetailPage({ params }: ListingDetailPageProps) {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col border-x border-slate-200 bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       <ContextTopBar
         backLabel={listing.category || "Back"}
         title={listing.title}

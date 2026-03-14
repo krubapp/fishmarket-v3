@@ -32,7 +32,7 @@ export default function CreateListingPage() {
   const showImageGrid = count <= 2;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col bg-white pb-[120px]">
+    <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       {showImageGrid && (
         <div className="flex-1 overflow-hidden">
           <div className="flex justify-center gap-4">

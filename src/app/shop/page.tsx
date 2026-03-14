@@ -256,7 +256,7 @@ function SearchPageInner() {
       </div>
 
       {/* Results grid */}
-      <div className="mx-auto w-full max-w-[480px] flex-1 pb-[120px]">
+      <div className="mx-auto w-full max-w-[480px] flex-1 pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         {loading ? (
           <div className="grid grid-cols-2 gap-x-1 gap-y-2">
             {Array.from({ length: 6 }, (_, i) => (
@@ -328,7 +328,7 @@ export default function SearchPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-dvh flex-col bg-white">
+        <div className="flex min-h-dvh flex-col bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
           <ContextTopBar title="Shop" />
           <div className="flex flex-1 items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />

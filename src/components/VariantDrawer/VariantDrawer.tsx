@@ -309,13 +309,9 @@ export function VariantDrawer({
                       handleAddValue();
                     }
                   }}
-                  placeholder={
-                    activeGroup.values.length === 0
-                      ? "Red, Blue, Green"
-                      : "Add value"
-                  }
+                  placeholder={`Variant name for ${activeGroup.name}`}
                   className="w-full bg-transparent text-[#101828] text-paragraph-md leading-normal outline-none placeholder:text-[#8b9189]"
-                  aria-label="New variant value"
+                  aria-label={`Variant name for ${activeGroup.name}`}
                 />
               </div>
               <IconButton

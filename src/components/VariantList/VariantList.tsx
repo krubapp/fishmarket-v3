@@ -7,6 +7,31 @@ import { Button } from "@/components/Button";
 import type { VariantValue } from "@/lib/schemas/listing";
 import type { VariantListProps } from "./types";
 
+const NUMERIC_KEY_SEP = "|";
+
+function filterPriceInput(value: string): string {
+  const digitsAndDot = value.replace(/[^\d.]/g, "");
+  const firstDot = digitsAndDot.indexOf(".");
+  if (firstDot === -1) return digitsAndDot;
+  return digitsAndDot.slice(0, firstDot + 1) + digitsAndDot.slice(firstDot + 1).replace(/\./g, "");
+}
+
+function filterIntegerInput(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function parsePrice(value: string): number {
+  if (value === "" || value === ".") return 0;
+  const n = parseFloat(value);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
+function parseInteger(value: string): number {
+  if (value === "") return 0;
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
 /**
  * VariantList (Figma: node 443:1585).
  *
@@ -26,6 +51,7 @@ export function VariantList({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pendingValueId, setPendingValueId] = useState<string | null>(null);
+  const [localNumericStrings, setLocalNumericStrings] = useState<Record<string, string>>({});
 
   const groupsWithValues = useMemo(
     () => groups.filter((g) => g.values.length > 0),
@@ -41,6 +67,32 @@ export function VariantList({
     if (groupsWithValues.length === 0) return;
     setExpandedGroups(new Set(groupsWithValues.map((g) => g.id)));
   }, [groupIdsKey]);
+
+  const validNumericKeys = useMemo(() => {
+    const set = new Set<string>();
+    groupsWithValues.forEach((g) =>
+      g.values.forEach((v) => {
+        set.add(`${g.id}${NUMERIC_KEY_SEP}${v.id}${NUMERIC_KEY_SEP}price`);
+        set.add(`${g.id}${NUMERIC_KEY_SEP}${v.id}${NUMERIC_KEY_SEP}weight`);
+        set.add(`${g.id}${NUMERIC_KEY_SEP}${v.id}${NUMERIC_KEY_SEP}available`);
+      }),
+    );
+    return set;
+  }, [groupsWithValues]);
+
+  useEffect(() => {
+    setLocalNumericStrings((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const key of Object.keys(next)) {
+        if (!validNumericKeys.has(key)) {
+          delete next[key];
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [validNumericKeys]);
 
   const allExpanded =
     groupsWithValues.length > 0 &&
@@ -273,27 +325,34 @@ export function VariantList({
                         {value.name}
                       </span>
                       <input
-                        type="number"
-                        min={0}
-                        step={0.01}
-                        value={value.price ?? ""}
-                        onChange={(e) =>
-                          updateValue(group.id, value.id, {
-                            price: Number(e.target.value) || 0,
-                          })
+                        type="text"
+                        inputMode="decimal"
+                        value={
+                          localNumericStrings[`${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}price`] ??
+                          (value.price === 0 ? "" : String(value.price))
                         }
+                        onChange={(e) => {
+                          const filtered = filterPriceInput(e.target.value);
+                          const key = `${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}price`;
+                          setLocalNumericStrings((prev) => ({ ...prev, [key]: filtered }));
+                          updateValue(group.id, value.id, { price: parsePrice(filtered) });
+                        }}
                         placeholder="0.00"
                         className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colPrice}`}
                       />
                       <input
-                        type="number"
-                        min={0}
-                        step={1}
-                        value={value.weight ?? ""}
+                        type="text"
+                        inputMode="numeric"
+                        value={
+                          localNumericStrings[`${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}weight`] ??
+                          (value.weight === undefined || value.weight === 0 ? "" : String(value.weight))
+                        }
                         onChange={(e) => {
-                          const v = e.target.value;
+                          const filtered = filterIntegerInput(e.target.value);
+                          const key = `${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}weight`;
+                          setLocalNumericStrings((prev) => ({ ...prev, [key]: filtered }));
                           updateValue(group.id, value.id, {
-                            weight: v === "" ? undefined : Number(v) || 0,
+                            weight: filtered === "" ? undefined : parseInteger(filtered),
                           });
                         }}
                         placeholder="0"
@@ -301,14 +360,18 @@ export function VariantList({
                         className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colWeight}`}
                       />
                       <input
-                        type="number"
-                        min={0}
-                        value={value.available ?? ""}
-                        onChange={(e) =>
-                          updateValue(group.id, value.id, {
-                            available: Number(e.target.value) || 0,
-                          })
+                        type="text"
+                        inputMode="numeric"
+                        value={
+                          localNumericStrings[`${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}available`] ??
+                          (value.available === 0 ? "" : String(value.available))
                         }
+                        onChange={(e) => {
+                          const filtered = filterIntegerInput(e.target.value);
+                          const key = `${group.id}${NUMERIC_KEY_SEP}${value.id}${NUMERIC_KEY_SEP}available`;
+                          setLocalNumericStrings((prev) => ({ ...prev, [key]: filtered }));
+                          updateValue(group.id, value.id, { available: parseInteger(filtered) });
+                        }}
                         placeholder="0"
                         className={`h-9 rounded border border-slate-300 px-2 text-center text-slate-900 text-paragraph-sm outline-none focus:border-slate-900 ${colAvailable}`}
                       />
