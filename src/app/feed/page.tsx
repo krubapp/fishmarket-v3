@@ -278,7 +278,7 @@ export default function FeedPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center">
+      <div className="flex min-h-dvh items-center justify-center pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-slate-900" />
         <BottomNav activeItem="feed" />
       </div>
@@ -287,7 +287,7 @@ export default function FeedPage() {
 
   if (posts.length === 0) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 text-center">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 px-8 pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)] text-center">
         <Icon name="videocam_off" size={48} className="text-grey-400" />
         <p className="text-lg font-medium text-text-default-headings">No posts yet</p>
         <p className="text-sm text-text-default-secondary">

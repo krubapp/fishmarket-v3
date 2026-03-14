@@ -56,7 +56,7 @@ export default function HomePage() {
   const recommendedListings = allListings.slice(0, 4);
 
   return (
-    <div className="flex min-h-screen flex-col bg-white pb-24">
+    <div className="flex min-h-screen flex-col bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
       <RootTopBar
         title={profile?.displayName ?? (isSeller ? "Seller" : "Home")}
         avatarSrc={profile?.avatarUrl}

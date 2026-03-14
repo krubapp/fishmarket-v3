@@ -186,7 +186,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh flex-col bg-black">
+      <div className="flex min-h-dvh flex-col bg-black pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar
           backLabel="Feed"
           title=""
@@ -202,7 +202,7 @@ export default function PostDetailPage({ params }: PostDetailPageProps) {
 
   if (notFound || !post) {
     return (
-      <div className="flex min-h-dvh flex-col bg-white">
+      <div className="flex min-h-dvh flex-col bg-white pb-[max(7.5rem,env(safe-area-inset-bottom)+5rem)]">
         <ContextTopBar
           backLabel="Feed"
           title="Post"
