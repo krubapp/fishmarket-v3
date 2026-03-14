@@ -19,8 +19,12 @@ export interface InputProps {
   label?: string;
   /** Helper text below the input (medium/paragraph-sm, grey-800). */
   helperText?: string;
-  /** Input type (e.g. text, email, password). */
+  /** Input type (e.g. text, email, password, number). */
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
+  /** For type="number": minimum value (number or string for native compat). */
+  min?: number | string;
+  /** For type="number": step value. */
+  step?: number | string;
   /** Disabled state (grey-200 bg, grey-700 text). */
   disabled?: boolean;
   /** Error state (red-100 bg, red-600 border, red-700 text). */

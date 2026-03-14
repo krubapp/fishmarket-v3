@@ -47,6 +47,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     label,
     helperText,
     type = "text",
+    min,
+    step,
     disabled = false,
     error = false,
     leadingCheckbox = false,
@@ -102,6 +104,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         onBlur?.(e);
       }}
       placeholder={placeholder}
+      min={min}
+      step={step}
       disabled={disabled}
       aria-label={label == null ? ariaLabel : undefined}
       aria-invalid={error ? true : undefined}
